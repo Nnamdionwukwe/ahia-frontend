@@ -1,0 +1,16 @@
+.dark-mode {
+  background-color: var(--color-dark);
+  color: var(--color-light);
+}
+
+.dark-mode header,
+.dark-mode nav {
+  background-color: var(--color-light);
+  border-bottom-color: var(--color-gray-light);
+}
+
+.dark-mode button,
+.dark-mode input {
+  background-color: var(--color-light);
+  color: var(--color-dark);
+}

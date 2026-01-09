@@ -1,0 +1,155 @@
+.card {
+  background: var(--color-light);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  border: 1px solid var(--color-gray-light);
+  cursor: pointer;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  overflow: hidden;
+  background: var(--color-gray-light);
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.card:hover .image {
+  transform: scale(1.1);
+}
+
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-medium);
+  background: var(--color-gray-light);
+}
+
+.discount {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  background: var(--color-error);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.wishlist {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+}
+
+.content {
+  padding: var(--spacing-md);
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-dark);
+  margin-bottom: var(--spacing-sm);
+  line-height: 1.4;
+  min-height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  font-size: 12px;
+}
+
+.stars {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.reviews {
+  color: var(--color-gray-medium);
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.original {
+  text-decoration: line-through;
+  color: var(--color-gray-medium);
+  font-size: 12px;
+}
+
+.current {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+.button {
+  width: 100%;
+  padding: var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.button:hover {
+  background: #ff8a00;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: var(--spacing-sm);
+  }
+
+  .name {
+    font-size: 13px;
+    min-height: 36px;
+  }
+
+  .current {
+    font-size: 16px;
+  }
+}

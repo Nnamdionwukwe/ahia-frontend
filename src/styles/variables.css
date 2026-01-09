@@ -1,0 +1,51 @@
+:root {
+  /* Colors */
+  --color-primary: #ff9500;
+  --color-dark: #1a1a1a;
+  --color-light: #ffffff;
+  --color-gray-light: #f5f5f5;
+  --color-gray-medium: #999999;
+  --color-gray-dark: #666666;
+  --color-error: #ff6b6b;
+  --color-success: #4caf50;
+
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+  /* Z-index */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal: 400;
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-light: #2d2d2d;
+    --color-dark: #ffffff;
+    --color-gray-light: #3d3d3d;
+    --color-gray-medium: #999999;
+    --color-gray-dark: #cccccc;
+  }
+}

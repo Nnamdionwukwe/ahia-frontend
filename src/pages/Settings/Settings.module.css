@@ -1,0 +1,183 @@
+/* src/pages/Settings.module.css */
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card h1 {
+  font-size: 28px;
+  margin-bottom: 30px;
+  color: #1a1a1a;
+  margin-top: 0;
+}
+
+.section {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+.section.danger {
+  border-color: #ff6b6b;
+}
+
+.section h2 {
+  font-size: 18px;
+  color: #1a1a1a;
+  margin-bottom: 15px;
+  margin-top: 0;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.item label {
+  color: #666;
+  font-weight: 500;
+}
+
+.item span {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.themeToggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+}
+
+.themeToggle label {
+  color: #666;
+  font-weight: 500;
+  margin: 0;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  color: #666;
+  font-size: 14px;
+}
+
+.toggleBtn:hover {
+  border-color: #ff9500;
+}
+
+.toggleBtn.active {
+  border-color: #ff9500;
+  background: #fff5f0;
+  color: #ff9500;
+}
+
+.btnSecondary,
+.btnDanger {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.btnSecondary {
+  background: #f0f0f0;
+  color: #1a1a1a;
+}
+
+.btnSecondary:hover {
+  background: #e0e0e0;
+}
+
+.btnDanger {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btnDanger:hover {
+  background: #ff5252;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: #1a1a1a;
+    color: white;
+  }
+
+  .card h1 {
+    color: white;
+  }
+
+  .section h2 {
+    color: white;
+  }
+
+  .item label {
+    color: #ccc;
+  }
+
+  .item span {
+    color: white;
+  }
+
+  .toggleBtn {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #ccc;
+  }
+
+  .toggleBtn:hover {
+    border-color: #ff9500;
+  }
+
+  .toggleBtn.active {
+    background: #3d2500;
+    color: #ff9500;
+  }
+
+  .btnSecondary {
+    background: #2d2d2d;
+    color: white;
+  }
+
+  .btnSecondary:hover {
+    background: #3d3d3d;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+}

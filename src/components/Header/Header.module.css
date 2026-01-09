@@ -1,0 +1,124 @@
+.header {
+  background: var(--color-light);
+  border-bottom: 1px solid var(--color-gray-light);
+  padding: var(--spacing-md) 0;
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  box-shadow: var(--shadow-sm);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.logo h1 {
+  font-size: 28px;
+  color: var(--color-primary);
+  margin: 0;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.actions {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.iconBtn,
+.cartBtn,
+.userBtn,
+.loginBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-sm);
+  border: none;
+  background: transparent;
+  color: var(--color-dark);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  position: relative;
+}
+
+.iconBtn:hover,
+.cartBtn:hover,
+.userBtn:hover {
+  color: var(--color-primary);
+}
+
+.cartBtn {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--border-radius-full);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.userBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius-full);
+  background: var(--color-gray-light);
+  color: var(--color-primary);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.userBtn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.loginBtn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-primary);
+  color: white;
+  border-radius: var(--border-radius-md);
+  font-weight: 600;
+}
+
+.loginBtn:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 var(--spacing-sm);
+  }
+
+  .logo h1 {
+    font-size: 24px;
+  }
+
+  .actions {
+    gap: var(--spacing-sm);
+  }
+}
