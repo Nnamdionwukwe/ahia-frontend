@@ -16,6 +16,7 @@ import Home from "./pages/Home/Home";
 import Auth from "./pages/Auth/Auth";
 import Settings from "./pages/Settings/Settings";
 import "./App.css";
+import ProductDetail from "./components/ProductDetail";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -35,6 +36,7 @@ const App = () => {
           <Navigation />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route
               path="/settings"
