@@ -8,7 +8,7 @@ const useWishlistStore = create((set, get) => ({
   addToWishlist: async (productId, token) => {
     try {
       await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/wishlist/add/${productId}`,
+        `${import.meta.env.VITE_API_URL}/api/wishlist/add/${productId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -23,7 +23,7 @@ const useWishlistStore = create((set, get) => ({
   removeFromWishlist: async (productId, token) => {
     try {
       await axios.delete(
-        `${process.env.REACT_APP_API_URL}/api/wishlist/remove/${productId}`,
+        `${import.meta.env.VITE_API_URL}/api/wishlist/remove/${productId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       set((state) => ({
@@ -37,7 +37,7 @@ const useWishlistStore = create((set, get) => ({
   fetchWishlist: async (token) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/wishlist`,
+        `${import.meta.env.VITE_API_URL}/api/wishlist`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -55,7 +55,7 @@ const useWishlistStore = create((set, get) => ({
   checkWishlist: async (productId, token) => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/wishlist/check/${productId}`,
+        `${import.meta.env.VITE_API_URL}/api/wishlist/check/${productId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       set((state) => ({
