@@ -1,9 +1,10 @@
-// frontend/src/components/ProductDetail.jsx
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import "./ProductDetail.css";
 
-const ProductDetail = ({ productId }) => {
+const ProductDetail = () => {
+  const { id } = useParams(); // Get ID from URL params
   const [product, setProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -11,20 +12,20 @@ const ProductDetail = ({ productId }) => {
   const [reviewSummary, setReviewSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "http://localhost:5001";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
   useEffect(() => {
-    fetchProduct();
-    fetchReviews();
-  }, [productId]);
+    if (id) {
+      fetchProduct();
+      fetchReviews();
+    }
+  }, [id]);
 
   const fetchProduct = async () => {
     try {
-      const response = await axios.get(
-        `${API_URL}/api/products/${productId}/details`
-      );
+      const response = await axios.get(`${API_URL}/api/products/${id}/details`);
       setProduct(response.data);
-      if (response.data.variants.length > 0) {
+      if (response.data.variants && response.data.variants.length > 0) {
         setSelectedVariant(response.data.variants[0]);
       }
       setLoading(false);
@@ -36,11 +37,11 @@ const ProductDetail = ({ productId }) => {
 
   const fetchReviews = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/reviews/${productId}`);
-      setReviews(response.data.reviews);
+      const response = await axios.get(`${API_URL}/api/reviews/${id}`);
+      setReviews(response.data.reviews || []);
 
       const summaryResponse = await axios.get(
-        `${API_URL}/api/reviews/${productId}/summary`
+        `${API_URL}/api/reviews/${id}/summary`
       );
       setReviewSummary(summaryResponse.data);
     } catch (error) {
@@ -75,17 +76,22 @@ const ProductDetail = ({ productId }) => {
     <div className="product-detail">
       {/* Product Images */}
       <div className="product-images">
-        {product.images.map((img, idx) => (
-          <img key={idx} src={img.image_url} alt={img.alt_text} />
-        ))}
+        {product.images &&
+          product.images.map((img, idx) => (
+            <img
+              key={idx}
+              src={img.image_url}
+              alt={img.alt_text || "Product"}
+            />
+          ))}
       </div>
 
       {/* Product Info */}
       <div className="product-info">
-        <h1>{product.product.name}</h1>
+        <h1>{product.product?.name}</h1>
 
         {/* Discount Badge */}
-        {product.product.discount_percentage > 0 && (
+        {product.product?.discount_percentage > 0 && (
           <div className="discount-badge">
             -{product.product.discount_percentage}%
           </div>
@@ -93,8 +99,8 @@ const ProductDetail = ({ productId }) => {
 
         {/* Pricing */}
         <div className="pricing">
-          <span className="original">₦{product.product.original_price}</span>
-          <span className="current">₦{product.product.price}</span>
+          <span className="original">₦{product.product?.original_price}</span>
+          <span className="current">₦{product.product?.price}</span>
         </div>
 
         {/* Rating */}
@@ -108,17 +114,18 @@ const ProductDetail = ({ productId }) => {
         {/* Variants */}
         <div className="variants">
           <h3>Color & Size:</h3>
-          {product.variants.map((variant) => (
-            <button
-              key={variant.id}
-              className={`variant-btn ${
-                selectedVariant?.id === variant.id ? "active" : ""
-              }`}
-              onClick={() => setSelectedVariant(variant)}
-            >
-              {variant.color} - {variant.size}
-            </button>
-          ))}
+          {product.variants &&
+            product.variants.map((variant) => (
+              <button
+                key={variant.id}
+                className={`variant-btn ${
+                  selectedVariant?.id === variant.id ? "active" : ""
+                }`}
+                onClick={() => setSelectedVariant(variant)}
+              >
+                {variant.color} - {variant.size}
+              </button>
+            ))}
         </div>
 
         {/* Quantity */}
