@@ -13,3 +13,49 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+/* Light Mode (Default) */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8f9fa;
+  --card-bg: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --badge-bg: #e3f2fd;
+  --badge-text: #1976d2;
+  --bar-bg: #e0e0e0;
+  --input-bg: #ffffff;
+  --primary-color: #3498db;
+  --primary-bg: #e3f2fd;
+  --success-color: #27ae60;
+  --danger-color: #e74c3c;
+  --warning-color: #ff6b35;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Mode */
+[data-theme="dark"],
+.dark {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --card-bg: #2d2d2d;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #3a3a3a;
+  --badge-bg: #2d4a6d;
+  --badge-text: #64b5f6;
+  --bar-bg: #3a3a3a;
+  --input-bg: #2d2d2d;
+  --primary-color: #64b5f6;
+  --primary-bg: #2d4a6d;
+  --success-color: #4caf50;
+  --danger-color: #f44336;
+  --warning-color: #ff8a65;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth transition between themes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
