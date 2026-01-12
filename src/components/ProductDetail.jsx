@@ -92,7 +92,12 @@ const ProductDetail = () => {
 
       // Set first variant as selected if available
       if (response.data.variants && response.data.variants.length > 0) {
-        setSelectedVariant(response.data.variants[0]);
+        // Get the first color's first size variant
+        const firstColor = response.data.variants[0].color;
+        const firstVariantOfColor = response.data.variants.find(
+          (v) => v.color === firstColor
+        );
+        setSelectedVariant(firstVariantOfColor);
       }
 
       setLoading(false);
@@ -198,17 +203,23 @@ const ProductDetail = () => {
 
   const hasDiscount = productData.discount_percentage > 0;
   const activeSale = flashSale || seasonalSale;
-  const salePrice =
-    flashSale?.sale_price || seasonalSale?.sale_price || productData.price;
+
+  // Use variant price if selected, otherwise use product price
+  const basePrice = selectedVariant?.base_price || productData.price;
+  const variantDiscount = selectedVariant?.discount_percentage || 0;
+  const originalPrice =
+    selectedVariant?.base_price || productData.original_price;
+
+  const salePrice = activeSale
+    ? flashSale?.sale_price || seasonalSale?.sale_price
+    : variantDiscount > 0
+    ? basePrice * (1 - variantDiscount / 100)
+    : basePrice;
 
   // Calculate actual discount if in sale
   const actualDiscount = activeSale
-    ? Math.round(
-        ((productData.original_price - salePrice) /
-          productData.original_price) *
-          100
-      )
-    : productData.discount_percentage;
+    ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
+    : variantDiscount || productData.discount_percentage;
 
   return (
     <div className={styles.container}>
@@ -234,14 +245,16 @@ const ProductDetail = () => {
           >
             Reviews
           </button>
-          <button
-            className={`${styles.tab} ${
-              activeTab === "recommended" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("recommended")}
-          >
-            Recommended
-          </button>
+          {displayImages.length > 4 && (
+            <button
+              className={`${styles.tab} ${
+                activeTab === "gallery" ? styles.activeTab : ""
+              }`}
+              onClick={() => setActiveTab("gallery")}
+            >
+              Gallery
+            </button>
+          )}
         </div>
         <div className={styles.headerActions}>
           <button className={styles.iconButton}>🔍</button>
@@ -365,16 +378,17 @@ const ProductDetail = () => {
           {/* Price Section */}
           <div className={styles.priceSection}>
             <div className={styles.priceRow}>
-              {(hasDiscount || activeSale) && (
-                <>
-                  <span className={styles.originalPrice}>
-                    ₦{parseInt(productData.original_price).toLocaleString()}
-                  </span>
-                  <span className={styles.discountBadge}>
-                    {actualDiscount}% OFF {activeSale ? "limited time" : ""}
-                  </span>
-                </>
-              )}
+              {(hasDiscount || activeSale || variantDiscount > 0) &&
+                originalPrice > salePrice && (
+                  <>
+                    <span className={styles.originalPrice}>
+                      ₦{parseInt(originalPrice).toLocaleString()}
+                    </span>
+                    <span className={styles.discountBadge}>
+                      {actualDiscount}% OFF {activeSale ? "limited time" : ""}
+                    </span>
+                  </>
+                )}
             </div>
             <div className={styles.currentPriceRow}>
               <div className={styles.currentPrice}>
@@ -385,34 +399,93 @@ const ProductDetail = () => {
               </div>
               <span className={styles.estimate}>Est.</span>
             </div>
+            {selectedVariant && (
+              <div className={styles.variantInfo}>
+                Selected: {selectedVariant.color} - Size {selectedVariant.size}
+              </div>
+            )}
             <div className={styles.afterPromo}>
               after applying promos & credit to ₦
               {parseInt(salePrice * 0.9).toLocaleString()}
             </div>
           </div>
 
-          {/* Variants */}
+          {/* Color Variants */}
           {variants.length > 0 && (
-            <div className={styles.variantSection}>
-              <div className={styles.variantLabel}>Select Option:</div>
-              <div className={styles.variantOptions}>
-                {variants.map((variant) => (
-                  <button
-                    key={variant.id}
-                    className={`${styles.variantButton} ${
-                      selectedVariant?.id === variant.id
-                        ? styles.variantButtonActive
-                        : ""
-                    }`}
-                    onClick={() => setSelectedVariant(variant)}
-                  >
-                    {variant.color && variant.size
-                      ? `${variant.color} - ${variant.size}`
-                      : variant.color || variant.size || variant.sku}
-                  </button>
-                ))}
+            <>
+              <div className={styles.colorSection}>
+                <h3 className={styles.colorTitle}>Color</h3>
+                <div className={styles.colorOptions}>
+                  {[...new Map(variants.map((v) => [v.color, v])).values()].map(
+                    (variant) => (
+                      <div
+                        key={variant.id}
+                        className={`${styles.colorOption} ${
+                          selectedVariant?.color === variant.color
+                            ? styles.colorOptionActive
+                            : ""
+                        }`}
+                        onClick={() => {
+                          setSelectedVariant(variant);
+                          // Find the image index for this variant if it has an image_url
+                          if (variant.image_url && displayImages.length > 0) {
+                            const imgIndex = displayImages.findIndex(
+                              (img) => img.image_url === variant.image_url
+                            );
+                            if (imgIndex !== -1) {
+                              setSelectedImage(imgIndex);
+                            }
+                          }
+                        }}
+                      >
+                        {variant.image_url && (
+                          <img
+                            src={variant.image_url}
+                            alt={variant.color}
+                            className={styles.colorOptionImage}
+                          />
+                        )}
+                        {selectedVariant?.color === variant.color && (
+                          <div className={styles.colorSelectedBadge}>🔥</div>
+                        )}
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
-            </div>
+
+              {/* Size Selection */}
+              <div className={styles.sizeSection}>
+                <div className={styles.sizeHeader}>
+                  <h3 className={styles.sizeTitle}>Size(UK)</h3>
+                  <button className={styles.sizeGuideButton}>
+                    <span className={styles.sizeGuideIcon}>📏</span>
+                    Size guide
+                  </button>
+                </div>
+                <div className={styles.sizeOptions}>
+                  {variants
+                    .filter((v) => v.color === selectedVariant?.color)
+                    .map((variant) => (
+                      <button
+                        key={variant.id}
+                        className={`${styles.sizeOption} ${
+                          selectedVariant?.id === variant.id
+                            ? styles.sizeOptionActive
+                            : ""
+                        }`}
+                        onClick={() => setSelectedVariant(variant)}
+                      >
+                        {variant.size}
+                      </button>
+                    ))}
+                </div>
+                <div className={styles.sizeFitInfo}>
+                  <span className={styles.infoIcon}>ⓘ</span>
+                  <span>90% of customers say these fit true to size</span>
+                </div>
+              </div>
+            </>
           )}
 
           {/* Quantity Selector */}
@@ -676,6 +749,28 @@ const ProductDetail = () => {
         <div className={styles.content}>
           <div className={styles.noReviews}>
             <p>Recommended products coming soon!</p>
+          </div>
+        </div>
+      )}
+
+      {/* Gallery Tab - All Product Images */}
+      {activeTab === "gallery" && (
+        <div className={styles.content}>
+          <h2 className={styles.sectionTitle}>All Product Images</h2>
+          <div className={styles.fullImagesGrid}>
+            {displayImages.map((img, idx) => (
+              <div key={idx} className={styles.fullGridImageContainer}>
+                <img
+                  src={img.image_url}
+                  alt={img.alt_text || `Product image ${idx + 1}`}
+                  className={styles.fullGridImage}
+                  onClick={() => {
+                    setSelectedImage(idx);
+                    setActiveTab("overview");
+                  }}
+                />
+              </div>
+            ))}
           </div>
         </div>
       )}

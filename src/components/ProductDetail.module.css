@@ -428,6 +428,167 @@
   font-weight: 600;
 }
 
+.variantInfo {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* Color Selection */
+.colorSection {
+  margin: 20px 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.colorTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.colorOptions {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+
+.colorOption {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  background: var(--card-bg);
+}
+
+.colorOption:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.colorOptionActive {
+  border-color: #ff6b35;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.colorOptionImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.colorSelectedBadge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: #ff6b35;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Size Selection */
+.sizeSection {
+  margin: 20px 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sizeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.sizeTitle {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sizeGuideButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.sizeGuideButton:hover {
+  background: var(--card-bg);
+}
+
+.sizeGuideIcon {
+  font-size: 16px;
+}
+
+.sizeOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sizeOption {
+  min-width: 70px;
+  padding: 12px 20px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sizeOption:hover {
+  border-color: #ff6b35;
+  transform: translateY(-2px);
+}
+
+.sizeOptionActive {
+  background: #ff6b35;
+  color: white;
+  border-color: #ff6b35;
+  font-weight: 600;
+}
+
+.sizeFitInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--card-bg);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.infoIcon {
+  font-size: 16px;
+  color: #3498db;
+}
+
 /* Quantity Selector */
 .quantityRow {
   display: flex;
@@ -1235,8 +1396,7 @@
   color: var(--text-secondary);
   margin-bottom: 24px;
 }
-
-.modalTimer {
+s .modalTimer {
   display: flex;
   gap: 10px;
   align-items: center;
