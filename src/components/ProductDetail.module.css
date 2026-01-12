@@ -403,6 +403,12 @@
   font-size: 14px;
 }
 
+.variantOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
 .variantButton {
   background: white;
   border: 2px solid #ff6b35;
@@ -414,6 +420,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.variantButtonActive {
+  border-color: #ff6b35 !important;
+  background: #fff3e0 !important;
+  font-weight: 600;
 }
 
 /* Quantity Selector */
@@ -454,6 +466,12 @@
   text-align: center;
   font-weight: 600;
   font-size: 16px;
+}
+
+.stockInfo {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-left: 12px;
 }
 
 /* Guarantees */
@@ -664,6 +682,29 @@
   text-align: center;
 }
 
+.tagsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  background: #ff6b35;
+  color: white;
+  border-color: #ff6b35;
+}
+
 .featuresGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -828,6 +869,13 @@
   color: var(--text-secondary);
 }
 
+.reviewTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
 .purchasedVariant {
   font-size: 12px;
   color: var(--text-secondary);
@@ -871,6 +919,19 @@
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* No Reviews State */
+.noReviews {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.noReviews p {
+  margin: 0;
+  line-height: 1.6;
 }
 
 /* Seller Card */

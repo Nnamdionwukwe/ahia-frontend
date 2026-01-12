@@ -181,6 +181,22 @@ const ProductDetail = () => {
     }
   };
 
+  const getFallbackImage = (category) => {
+    const fallbackImages = {
+      Electronics:
+        "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=800",
+      Fashion:
+        "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800",
+      "Home & Kitchen":
+        "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800",
+      Sports:
+        "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800",
+      default:
+        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+    };
+    return fallbackImages[category] || fallbackImages.default;
+  };
+
   if (loading) {
     return <div className={styles.loading}>Loading...</div>;
   }
@@ -194,7 +210,15 @@ const ProductDetail = () => {
   const variants = product.variants || [];
   const attributes = product.attributes || {};
 
-  const displayImages = images;
+  const displayImages =
+    images.length > 0
+      ? images
+      : [
+          {
+            image_url: getFallbackImage(productData.category),
+            alt_text: productData.name,
+          },
+        ];
 
   const hasDiscount = productData.discount_percentage > 0;
   const activeSale = flashSale || seasonalSale;
@@ -250,39 +274,46 @@ const ProductDetail = () => {
       </div>
 
       {/* Image Gallery */}
-      {displayImages.length > 0 && (
-        <div className={styles.imageSection}>
-          <div className={styles.mainImage}>
-            <img
-              src={displayImages[selectedImage]?.image_url}
-              alt={displayImages[selectedImage]?.alt_text || productData.name}
-            />
-            <div className={styles.imageCounter}>
-              {selectedImage + 1}/{displayImages.length}
-            </div>
-            <button className={styles.fullScreenButton}>⛶</button>
-          </div>
-
-          {displayImages.length > 1 && (
-            <div className={styles.thumbnails}>
-              {displayImages.map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`${styles.thumbnail} ${
-                    selectedImage === idx ? styles.activeThumbnail : ""
-                  }`}
-                  onClick={() => setSelectedImage(idx)}
-                >
-                  <img
-                    src={img.image_url}
-                    alt={img.alt_text || `View ${idx + 1}`}
-                  />
-                </div>
-              ))}
-            </div>
+      <div className={styles.imageSection}>
+        <div className={styles.mainImage}>
+          <img
+            src={displayImages[selectedImage]?.image_url}
+            alt={displayImages[selectedImage]?.alt_text || productData.name}
+            onError={(e) => {
+              e.target.src = getFallbackImage(productData.category);
+            }}
+          />
+          {images.length === 0 && (
+            <div className={styles.noImageBadge}>No product images</div>
           )}
+          <div className={styles.imageCounter}>
+            {selectedImage + 1}/{displayImages.length}
+          </div>
+          <button className={styles.fullScreenButton}>⛶</button>
         </div>
-      )}
+
+        {displayImages.length > 1 && (
+          <div className={styles.thumbnails}>
+            {displayImages.map((img, idx) => (
+              <div
+                key={idx}
+                className={`${styles.thumbnail} ${
+                  selectedImage === idx ? styles.activeThumbnail : ""
+                }`}
+                onClick={() => setSelectedImage(idx)}
+              >
+                <img
+                  src={img.image_url}
+                  alt={img.alt_text || `View ${idx + 1}`}
+                  onError={(e) => {
+                    e.target.src = getFallbackImage(productData.category);
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Tab Content */}
       {activeTab === "overview" && (
@@ -560,32 +591,6 @@ const ProductDetail = () => {
                   </span>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Product Image Gallery Grid */}
-          {displayImages.length > 0 && (
-            <div className={styles.productImagesSection}>
-              <h3 className={styles.imagesTitle}>Product Images</h3>
-              <div className={styles.imagesGrid}>
-                {displayImages.slice(0, 4).map((img, idx) => (
-                  <div key={idx} className={styles.gridImageContainer}>
-                    <img
-                      src={img.image_url}
-                      alt={img.alt_text || `Product image ${idx + 1}`}
-                      className={styles.gridImage}
-                    />
-                  </div>
-                ))}
-              </div>
-              {displayImages.length > 4 && (
-                <button
-                  className={styles.viewMoreButton}
-                  onClick={() => setActiveTab("gallery")}
-                >
-                  View More ({displayImages.length - 4}+)
-                </button>
-              )}
             </div>
           )}
         </div>
