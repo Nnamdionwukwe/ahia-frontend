@@ -490,7 +490,7 @@ const ProductDetail = () => {
             </button>
           </div>
 
-          {/* {displayImages.length > 1 && (
+          {displayImages.length > 1 && (
             <div className={styles.thumbnails}>
               {displayImages.map((img, idx) => (
                 <div
@@ -507,7 +507,7 @@ const ProductDetail = () => {
                 </div>
               ))}
             </div>
-          )} */}
+          )}
         </div>
       )}
 
