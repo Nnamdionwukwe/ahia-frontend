@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./ProductDetail.module.css";
@@ -23,6 +23,11 @@ const ProductDetail = () => {
     minutes: 0,
     seconds: 0,
   });
+  const [showFullscreenImage, setShowFullscreenImage] = useState(false);
+  const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  const fullscreenImageRef = useRef(null);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -83,6 +88,54 @@ const ProductDetail = () => {
 
     return () => clearInterval(timer);
   }, [flashSale, seasonalSale]);
+
+  // Handle keyboard navigation for fullscreen image
+  useEffect(() => {
+    if (!showFullscreenImage) return;
+
+    const handleKeyDown = (e) => {
+      const images = product?.images || [];
+      if (e.key === "ArrowRight") {
+        setFullscreenImageIndex((prev) => (prev + 1) % images.length);
+      } else if (e.key === "ArrowLeft") {
+        setFullscreenImageIndex(
+          (prev) => (prev - 1 + images.length) % images.length
+        );
+      } else if (e.key === "Escape") {
+        setShowFullscreenImage(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showFullscreenImage, product]);
+
+  // Handle touch swipe
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = (e) => {
+    setTouchEnd(e.changedTouches[0].clientX);
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const images = product?.images || [];
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      setFullscreenImageIndex((prev) => (prev + 1) % images.length);
+    } else if (isRightSwipe) {
+      setFullscreenImageIndex(
+        (prev) => (prev - 1 + images.length) % images.length
+      );
+    }
+  };
 
   const fetchProduct = async () => {
     try {
@@ -223,6 +276,96 @@ const ProductDetail = () => {
 
   return (
     <div className={styles.container}>
+      {/* Fullscreen Image Viewer */}
+      {showFullscreenImage && displayImages.length > 0 && (
+        <div
+          className={styles.fullscreenImageOverlay}
+          onClick={() => setShowFullscreenImage(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          <button
+            className={styles.fullscreenClose}
+            onClick={() => setShowFullscreenImage(false)}
+          >
+            ×
+          </button>
+
+          <div
+            className={styles.fullscreenImageContainer}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              ref={fullscreenImageRef}
+              src={displayImages[fullscreenImageIndex]?.image_url}
+              alt={`Product image ${fullscreenImageIndex + 1}`}
+              className={styles.fullscreenImage}
+            />
+
+            {/* Image Counter */}
+            <div className={styles.fullscreenCounter}>
+              {fullscreenImageIndex + 1} / {displayImages.length}
+            </div>
+
+            {/* Navigation Arrows */}
+            {displayImages.length > 1 && (
+              <>
+                <button
+                  className={styles.fullscreenArrowLeft}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFullscreenImageIndex(
+                      (prev) =>
+                        (prev - 1 + displayImages.length) % displayImages.length
+                    );
+                  }}
+                >
+                  ‹
+                </button>
+                <button
+                  className={styles.fullscreenArrowRight}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setFullscreenImageIndex(
+                      (prev) => (prev + 1) % displayImages.length
+                    );
+                  }}
+                >
+                  ›
+                </button>
+              </>
+            )}
+
+            {/* Thumbnails Strip */}
+            {displayImages.length > 1 && (
+              <div className={styles.fullscreenThumbnails}>
+                {displayImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img.image_url}
+                    alt={`Thumbnail ${idx + 1}`}
+                    className={`${styles.fullscreenThumbnail} ${
+                      idx === fullscreenImageIndex
+                        ? styles.fullscreenThumbnailActive
+                        : ""
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setFullscreenImageIndex(idx);
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Touch/Swipe Hint */}
+          <div className={styles.fullscreenHint}>
+            Swipe to navigate • Press ESC to close
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className={styles.header}>
         <button onClick={() => navigate(-1)} className={styles.backButton}>
@@ -265,7 +408,13 @@ const ProductDetail = () => {
       {/* Image Gallery */}
       {displayImages.length > 0 && (
         <div className={styles.imageSection}>
-          <div className={styles.mainImage}>
+          <div
+            className={styles.mainImage}
+            onClick={() => {
+              setFullscreenImageIndex(selectedImage);
+              setShowFullscreenImage(true);
+            }}
+          >
             <img
               src={displayImages[selectedImage]?.image_url}
               alt={displayImages[selectedImage]?.alt_text || productData.name}
@@ -273,7 +422,16 @@ const ProductDetail = () => {
             <div className={styles.imageCounter}>
               {selectedImage + 1}/{displayImages.length}
             </div>
-            <button className={styles.fullScreenButton}>⛶</button>
+            <button
+              className={styles.fullScreenButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreenImageIndex(selectedImage);
+                setShowFullscreenImage(true);
+              }}
+            >
+              ⛶
+            </button>
           </div>
 
           {displayImages.length > 1 && (
@@ -703,9 +861,6 @@ const ProductDetail = () => {
                           <div className={styles.reviewerName}>
                             {review.full_name || "Anonymous"}
                           </div>
-                          <div className={styles.reviewStars}>
-                            {"★".repeat(review.rating)}
-                          </div>
                         </div>
                       </div>
                       <div className={styles.reviewDate}>
@@ -877,3 +1032,6 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+{
+  /* <div className={styles.reviewStars}>{"★".repeat(review.rating)}</div>; */
+}
