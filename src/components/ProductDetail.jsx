@@ -139,7 +139,7 @@ const ProductDetail = () => {
     // Check if vertical swipe is greater than horizontal (prioritize vertical)
     if (Math.abs(verticalDistance) > Math.abs(horizontalDistance)) {
       // Swipe down to close
-      if (verticalDistance > minSwipeDistance && touchStartY < 100) {
+      if (verticalDistance > minSwipeDistance && touchStartY < 50) {
         setShowFullscreenImage(false);
         return;
       }
@@ -336,6 +336,7 @@ const ProductDetail = () => {
                         (prev - 1 + displayImages.length) % displayImages.length
                     );
                   }}
+                  style={{ display: "none" }}
                 >
                   ‹
                 </button>
@@ -347,6 +348,7 @@ const ProductDetail = () => {
                       (prev) => (prev + 1) % displayImages.length
                     );
                   }}
+                  style={{ display: "none" }}
                 >
                   ›
                 </button>
@@ -439,6 +441,16 @@ const ProductDetail = () => {
             <div className={styles.imageCounter}>
               {selectedImage + 1}/{displayImages.length}
             </div>
+            <button
+              className={styles.fullScreenButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                setFullscreenImageIndex(selectedImage);
+                setShowFullscreenImage(true);
+              }}
+            >
+              ⛶
+            </button>
           </div>
 
           {displayImages.length > 1 && (
