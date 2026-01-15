@@ -308,13 +308,6 @@ const ProductDetail = () => {
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
         >
-          <button
-            className={styles.fullscreenClose}
-            onClick={() => setShowFullscreenImage(false)}
-          >
-            ×
-          </button>
-
           <div
             className={styles.fullscreenImageContainer}
             onClick={(e) => e.stopPropagation()}
@@ -446,16 +439,6 @@ const ProductDetail = () => {
             <div className={styles.imageCounter}>
               {selectedImage + 1}/{displayImages.length}
             </div>
-            <button
-              className={styles.fullScreenButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setFullscreenImageIndex(selectedImage);
-                setShowFullscreenImage(true);
-              }}
-            >
-              ⛶
-            </button>
           </div>
 
           {displayImages.length > 1 && (
@@ -1056,6 +1039,3 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-{
-  /* <div className={styles.reviewStars}>{"★".repeat(review.rating)}</div>; */
-}
