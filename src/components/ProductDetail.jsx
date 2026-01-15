@@ -113,6 +113,7 @@ const ProductDetail = () => {
   // Handle touch swipe
   const [touchStartY, setTouchStartY] = useState(0);
   const [touchStartX, setTouchStartX] = useState(0);
+  const [fullscreenSwipeProgress, setFullscreenSwipeProgress] = useState(0);
 
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
@@ -126,6 +127,20 @@ const ProductDetail = () => {
     const touchEndX = e.changedTouches[0].clientX;
 
     handleSwipe(touchEndY, touchEndX);
+    setFullscreenSwipeProgress(0);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!showFullscreenImage) return;
+
+    const currentY = e.targetTouches[0].clientY;
+    const verticalDistance = currentY - touchStartY;
+
+    if (verticalDistance > 0) {
+      // Calculate progress (0 to 1)
+      const progress = Math.min(verticalDistance / 200, 1);
+      setFullscreenSwipeProgress(progress);
+    }
   };
 
   const handleSwipe = (touchEndY, touchEndX) => {
@@ -138,9 +153,14 @@ const ProductDetail = () => {
 
     // Check if vertical swipe is greater than horizontal (prioritize vertical)
     if (Math.abs(verticalDistance) > Math.abs(horizontalDistance)) {
-      // Swipe down to close
-      if (verticalDistance > minSwipeDistance && touchStartY < 50) {
+      // Swipe down to close (from any height)
+      if (verticalDistance > minSwipeDistance) {
         setShowFullscreenImage(false);
+        setFullscreenSwipeProgress(0);
+        return;
+      } else {
+        // Reset if didn't swipe far enough
+        setFullscreenSwipeProgress(0);
         return;
       }
     }
@@ -307,10 +327,27 @@ const ProductDetail = () => {
           onClick={() => setShowFullscreenImage(false)}
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
+          onTouchMove={handleTouchMove}
+          style={{
+            opacity: 1 - fullscreenSwipeProgress * 0.3,
+            backgroundColor: `rgba(0, 0, 0, ${
+              0.9 - fullscreenSwipeProgress * 0.3
+            })`,
+          }}
         >
           <div
             className={styles.fullscreenImageContainer}
             onClick={(e) => e.stopPropagation()}
+            style={{
+              transform: `translateY(${
+                fullscreenSwipeProgress * 100
+              }px) scale(${1 - fullscreenSwipeProgress * 0.05})`,
+              opacity: 1 - fullscreenSwipeProgress * 0.2,
+              transition:
+                fullscreenSwipeProgress === 0
+                  ? "transform 0.3s ease-out, opacity 0.3s ease-out"
+                  : "none",
+            }}
           >
             <img
               ref={fullscreenImageRef}
