@@ -853,6 +853,20 @@ const ProductDetail = () => {
           {/* Product Image Gallery Grid */}
           {displayImages.length > 0 && (
             <div className={styles.productImagesSection}>
+              {/* Mobile Horizontal Scroll View */}
+              <div className={styles.imagesMobileThumbnails}>
+                {displayImages.map((img, idx) => (
+                  <img
+                    key={idx}
+                    src={img.image_url}
+                    alt={`Product image ${idx + 1}`}
+                    className={styles.imageMobileThumbnail}
+                    onClick={() => setSelectedImage(idx)}
+                  />
+                ))}
+              </div>
+
+              {/* Desktop Grid View */}
               <div className={styles.imagesGrid}>
                 {displayImages.map((img, idx) => (
                   <div
