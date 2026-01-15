@@ -111,22 +111,46 @@ const ProductDetail = () => {
   }, [showFullscreenImage, product]);
 
   // Handle touch swipe
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(0);
+
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
+    setTouchStartY(e.targetTouches[0].clientY);
+    setTouchStartX(e.targetTouches[0].clientX);
   };
 
   const handleTouchEnd = (e) => {
     setTouchEnd(e.changedTouches[0].clientX);
-    handleSwipe();
+    const touchEndY = e.changedTouches[0].clientY;
+    const touchEndX = e.changedTouches[0].clientX;
+
+    handleSwipe(touchEndY, touchEndX);
   };
 
-  const handleSwipe = () => {
+  const handleSwipe = (touchEndY, touchEndX) => {
+    // Vertical swipe detection (top to bottom closes fullscreen)
+    const verticalDistance = touchEndY - touchStartY;
+    const horizontalDistance = touchStartX - touchEndX;
+
+    // Minimum distance to register a swipe
+    const minSwipeDistance = 50;
+
+    // Check if vertical swipe is greater than horizontal (prioritize vertical)
+    if (Math.abs(verticalDistance) > Math.abs(horizontalDistance)) {
+      // Swipe down to close
+      if (verticalDistance > minSwipeDistance && touchStartY < 100) {
+        setShowFullscreenImage(false);
+        return;
+      }
+    }
+
+    // Horizontal swipe for image navigation
     if (!touchStart || !touchEnd) return;
 
     const images = product?.images || [];
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
+    const isLeftSwipe = horizontalDistance > minSwipeDistance;
+    const isRightSwipe = horizontalDistance < -minSwipeDistance;
 
     if (isLeftSwipe) {
       setFullscreenImageIndex((prev) => (prev + 1) % images.length);
@@ -1032,6 +1056,4 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-{
-  /* <div className={styles.reviewStars}>{"★".repeat(review.rating)}</div>; */
-}
+<div className={styles.reviewStars}>{"★".repeat(review.rating)}</div>;
