@@ -1056,4 +1056,6 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-<div className={styles.reviewStars}>{"★".repeat(review.rating)}</div>;
+{
+  /* <div className={styles.reviewStars}>{"★".repeat(review.rating)}</div>; */
+}
