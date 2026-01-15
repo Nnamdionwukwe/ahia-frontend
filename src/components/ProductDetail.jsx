@@ -853,10 +853,15 @@ const ProductDetail = () => {
           {/* Product Image Gallery Grid */}
           {displayImages.length > 0 && (
             <div className={styles.productImagesSection}>
-              <h3 className={styles.imagesTitle}>Product Images</h3>
               <div className={styles.imagesGrid}>
-                {displayImages.slice(0, 4).map((img, idx) => (
-                  <div key={idx} className={styles.gridImageContainer}>
+                {displayImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={styles.gridImageContainer}
+                    onClick={() => {
+                      setSelectedImage(idx);
+                    }}
+                  >
                     <img
                       src={img.image_url}
                       alt={img.alt_text || `Product image ${idx + 1}`}
@@ -865,14 +870,6 @@ const ProductDetail = () => {
                   </div>
                 ))}
               </div>
-              {displayImages.length > 4 && (
-                <button
-                  className={styles.viewMoreButton}
-                  onClick={() => setActiveTab("gallery")}
-                >
-                  View More ({displayImages.length - 4}+)
-                </button>
-              )}
             </div>
           )}
         </div>
