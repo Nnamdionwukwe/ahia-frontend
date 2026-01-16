@@ -1,9 +1,10 @@
+/* Card Component with Dark/Light Mode Support */
 .card {
-  background: var(--color-light);
+  background: var(--card-bg);
   border-radius: var(--border-radius-md);
   overflow: hidden;
   transition: all var(--transition-base);
-  border: 1px solid var(--color-gray-light);
+  border: 1px solid var(--border-color);
   cursor: pointer;
 }
 
@@ -17,7 +18,7 @@
   width: 100%;
   padding-bottom: 100%;
   overflow: hidden;
-  background: var(--color-gray-light);
+  background: var(--bg-secondary);
 }
 
 .image {
@@ -43,8 +44,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-gray-medium);
-  background: var(--color-gray-light);
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
 }
 
 .discount {
@@ -72,7 +73,7 @@
 .name {
   font-size: 14px;
   font-weight: 600;
-  color: var(--color-dark);
+  color: var(--text-primary);
   margin-bottom: var(--spacing-sm);
   line-height: 1.4;
   min-height: 40px;
@@ -96,7 +97,7 @@
 }
 
 .reviews {
-  color: var(--color-gray-medium);
+  color: var(--text-secondary);
 }
 
 .price {
@@ -108,7 +109,7 @@
 
 .original {
   text-decoration: line-through;
-  color: var(--color-gray-medium);
+  color: var(--text-secondary);
   font-size: 12px;
 }
 
@@ -153,3 +154,34 @@
     font-size: 16px;
   }
 }
+
+/* Update your CSS variables to include theme support */
+/* Add these to your globals.css or root styles: */
+
+/*
+:root {
+  --color-light: #ffffff;
+  --color-dark: #1a1a1a;
+  --color-gray-light: #e0e0e0;
+  --color-gray-medium: #666666;
+  --color-primary: #ff9500;
+  --color-error: #e74c3c;
+  
+  --card-bg: #f8f9fa;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"],
+.dark {
+  --card-bg: #2d2d2d;
+  --bg-secondary: #3a3a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #3a3a3a;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+*/
