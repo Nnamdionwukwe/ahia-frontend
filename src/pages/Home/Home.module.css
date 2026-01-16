@@ -1,6 +1,13 @@
 .container {
   min-height: 100vh;
   background-color: #f9fafb;
+  transition: background-color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #111827;
+  }
 }
 
 /* Hero Section */
@@ -9,6 +16,7 @@
   color: white;
   padding: 64px 16px;
   text-align: center;
+  transition: background 0.3s ease;
 }
 
 .heroContent h1 {
@@ -16,12 +24,14 @@
   margin-bottom: 16px;
   font-weight: bold;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  color: white;
 }
 
 .heroContent p {
   font-size: 20px;
   margin-bottom: 32px;
   opacity: 0.9;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .heroButtons {
@@ -47,6 +57,17 @@
   transform: scale(1.05);
 }
 
+@media (prefers-color-scheme: dark) {
+  .btnPrimary {
+    background: #1f2937;
+    color: #f97316;
+  }
+
+  .btnPrimary:hover {
+    background: #374151;
+  }
+}
+
 .btnSecondary {
   border: 2px solid white;
   color: white;
@@ -61,6 +82,14 @@
 .btnSecondary:hover {
   background: white;
   color: #dc2626;
+}
+
+@media (prefers-color-scheme: dark) {
+  .btnSecondary:hover {
+    background: #1f2937;
+    color: #f97316;
+    border-color: #f97316;
+  }
 }
 
 /* Main Content */
@@ -90,6 +119,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.3s ease;
 }
 
 .iconBoxRed {
@@ -104,11 +134,25 @@
   font-size: 30px;
   font-weight: bold;
   color: #1f2937;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .titleText h2 {
+    color: #f3f4f6;
+  }
 }
 
 .titleText p {
   color: #6b7280;
   font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .titleText p {
+    color: #9ca3af;
+  }
 }
 
 .viewAllBtn {
@@ -127,6 +171,16 @@
   color: #b91c1c;
 }
 
+@media (prefers-color-scheme: dark) {
+  .viewAllBtn {
+    color: #f97316;
+  }
+
+  .viewAllBtn:hover {
+    color: #fb923c;
+  }
+}
+
 /* Flash Sale Section */
 .flashSaleSection {
   margin-bottom: 48px;
@@ -137,6 +191,7 @@
   border-radius: 16px;
   padding: 32px;
   margin-bottom: 24px;
+  transition: background 0.3s ease;
 }
 
 .seasonalBannerContent {
@@ -152,12 +207,26 @@
   font-weight: bold;
   color: #1f2937;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .seasonalInfo h2 {
+    color: #f3f4f6;
+  }
 }
 
 .seasonalInfo p {
   font-size: 18px;
   color: #374151;
   margin-bottom: 16px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .seasonalInfo p {
+    color: #d1d5db;
+  }
 }
 
 .seasonalBadges {
@@ -173,10 +242,25 @@
   border-radius: 9999px;
   font-weight: bold;
   color: #059669;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .discountBadge {
+    background: #1f2937;
+    color: #10b981;
+  }
 }
 
 .productCountBadge {
   color: #374151;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .productCountBadge {
+    color: #d1d5db;
+  }
 }
 
 .seasonalEndDate {
@@ -187,12 +271,26 @@
   font-size: 14px;
   color: #6b7280;
   margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .seasonalEndDate .label {
+    color: #9ca3af;
+  }
 }
 
 .seasonalEndDate .date {
   font-size: 24px;
   font-weight: bold;
   color: #1f2937;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .seasonalEndDate .date {
+    color: #f3f4f6;
+  }
 }
 
 /* Product Grid */
@@ -212,9 +310,23 @@
   border: 1px solid #f3f4f6;
 }
 
+@media (prefers-color-scheme: dark) {
+  .productCard {
+    background: #1f2937;
+    border-color: #374151;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+}
+
 .productCard:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   transform: translateY(-2px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .productCard:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  }
 }
 
 .productImageWrapper {
@@ -222,6 +334,14 @@
   width: 100%;
   height: 224px;
   overflow: hidden;
+  background: #f3f4f6;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .productImageWrapper {
+    background: #374151;
+  }
 }
 
 .productImage {
@@ -243,6 +363,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  transition: background 0.3s ease;
 }
 
 .lowStockBadge {
@@ -255,6 +376,7 @@
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
+  transition: background 0.3s ease;
 }
 
 .seasonalBadgeOverlay {
@@ -274,6 +396,13 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .productName {
+    color: #f3f4f6;
+  }
 }
 
 .rating {
@@ -286,6 +415,13 @@
 .ratingText {
   font-size: 14px;
   color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ratingText {
+    color: #9ca3af;
+  }
 }
 
 .priceSection {
@@ -299,20 +435,42 @@
   font-size: 24px;
   font-weight: bold;
   color: #dc2626;
+  transition: color 0.3s ease;
 }
 
 .salePriceSeasonal {
   color: #059669;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .salePriceSeasonal {
+    color: #10b981;
+  }
 }
 
 .salePriceRegular {
   color: #3b82f6;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .salePriceRegular {
+    color: #60a5fa;
+  }
 }
 
 .originalPrice {
   font-size: 14px;
   color: #9ca3af;
   text-decoration: line-through;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .originalPrice {
+    color: #6b7280;
+  }
 }
 
 /* Progress Bar */
@@ -326,6 +484,13 @@
   font-size: 12px;
   color: #6b7280;
   margin-bottom: 4px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .progressLabels {
+    color: #9ca3af;
+  }
 }
 
 .progressBar {
@@ -334,6 +499,13 @@
   border-radius: 9999px;
   height: 8px;
   overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .progressBar {
+    background: #374151;
+  }
 }
 
 .progressFill {
@@ -349,6 +521,13 @@
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 12px;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .countdown {
+    background: #374151;
+  }
 }
 
 .countdownContent {
@@ -372,6 +551,14 @@
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .countdownDigit {
+    background: #111827;
+    color: #f3f4f6;
+  }
 }
 
 .timeLeftBadge {
@@ -383,6 +570,14 @@
   text-align: center;
   font-weight: 600;
   margin-bottom: 12px;
+  transition: all 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .timeLeftBadge {
+    background: #064e3b;
+    color: #a7f3d0;
+  }
 }
 
 /* Buttons */
@@ -419,10 +614,21 @@
 .addToCartBtnRegular {
   background: #3b82f6;
   color: white;
+  transition: background 0.3s ease;
 }
 
 .addToCartBtnRegular:hover {
   background: #2563eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  .addToCartBtnRegular {
+    background: #2563eb;
+  }
+
+  .addToCartBtnRegular:hover {
+    background: #1d4ed8;
+  }
 }
 
 /* Loading and Error States */
@@ -433,6 +639,14 @@
   align-items: center;
   justify-content: center;
   background: #f9fafb;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .loadingContainer,
+  .errorContainer {
+    background: #111827;
+  }
 }
 
 .loadingContent,
@@ -449,6 +663,14 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
+  transition: border-color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .spinner {
+    border-color: #374151;
+    border-top-color: #f97316;
+  }
 }
 
 @keyframes spin {
@@ -470,11 +692,25 @@
 .loadingText {
   color: #6b7280;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .loadingText {
+    color: #9ca3af;
+  }
 }
 
 .errorIcon {
   color: #ef4444;
   margin: 0 auto 16px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .errorIcon {
+    color: #f87171;
+  }
 }
 
 .errorTitle {
@@ -482,11 +718,25 @@
   font-weight: bold;
   color: #1f2937;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .errorTitle {
+    color: #f3f4f6;
+  }
 }
 
 .errorMessage {
   color: #6b7280;
   margin-bottom: 24px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .errorMessage {
+    color: #9ca3af;
+  }
 }
 
 .retryBtn {
@@ -504,17 +754,37 @@
   background: #dc2626;
 }
 
+@media (prefers-color-scheme: dark) {
+  .retryBtn:hover {
+    background: #991b1b;
+  }
+}
+
 /* Empty State */
 .emptyState {
   text-align: center;
   padding: 80px 16px;
   background: white;
   border-radius: 12px;
+  transition: background 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .emptyState {
+    background: #1f2937;
+  }
 }
 
 .emptyIcon {
   color: #d1d5db;
   margin: 0 auto 16px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .emptyIcon {
+    color: #4b5563;
+  }
 }
 
 .emptyTitle {
@@ -522,10 +792,24 @@
   font-weight: bold;
   color: #1f2937;
   margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .emptyTitle {
+    color: #f3f4f6;
+  }
 }
 
 .emptyMessage {
   color: #6b7280;
+  transition: color 0.3s ease;
+}
+
+@media (prefers-color-scheme: dark) {
+  .emptyMessage {
+    color: #9ca3af;
+  }
 }
 
 /* Featured Products Section */
