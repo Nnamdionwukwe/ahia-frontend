@@ -1,29 +1,15 @@
 .card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px var(--shadow);
   transition: all 0.3s ease;
-  border: 1px solid #f3f4f6;
-}
-
-@media (prefers-color-scheme: dark) {
-  .card {
-    background: #1f2937;
-    border-color: #374151;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
+  border: 1px solid var(--border-color);
 }
 
 .card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px var(--shadow);
   transform: translateY(-2px);
-}
-
-@media (prefers-color-scheme: dark) {
-  .card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  }
 }
 
 .imageWrapper {
@@ -31,14 +17,7 @@
   width: 100%;
   height: 224px;
   overflow: hidden;
-  background: #f3f4f6;
-  transition: background 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .imageWrapper {
-    background: #374151;
-  }
+  background: var(--bg-secondary);
 }
 
 .image {
@@ -56,7 +35,7 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: #ef4444;
+  background: var(--danger-color);
   color: white;
   padding: 4px 12px;
   border-radius: 9999px;
@@ -65,36 +44,22 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  .discountBadge {
-    background: #dc2626;
-    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
-  }
 }
 
 .lowStockBadge {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: #f97316;
+  background: var(--warning-color);
   color: white;
   padding: 4px 8px;
   border-radius: 4px;
   font-size: 12px;
   font-weight: 600;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(249, 115, 22, 0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  .lowStockBadge {
-    background: #ea580c;
-    box-shadow: 0 2px 4px rgba(249, 115, 22, 0.5);
-  }
 }
 
 .content {
@@ -103,7 +68,7 @@
 
 .productName {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin-bottom: 8px;
   min-height: 48px;
   display: -webkit-box;
@@ -111,12 +76,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .productName {
-    color: #f3f4f6;
-  }
 }
 
 .rating {
@@ -128,14 +87,8 @@
 
 .ratingText {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .ratingText {
-    color: #9ca3af;
-  }
 }
 
 .priceSection {
@@ -148,27 +101,15 @@
 .salePrice {
   font-size: 24px;
   font-weight: bold;
-  color: #dc2626;
+  color: var(--danger-color);
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .salePrice {
-    color: #f87171;
-  }
 }
 
 .originalPrice {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-secondary);
   text-decoration: line-through;
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .originalPrice {
-    color: #6b7280;
-  }
 }
 
 .progressSection {
@@ -179,51 +120,37 @@
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin-bottom: 4px;
   transition: color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .progressLabels {
-    color: #9ca3af;
-  }
-}
-
 .progressBar {
   width: 100%;
-  background: #e5e7eb;
+  background: var(--bar-bg);
   border-radius: 9999px;
   height: 8px;
   overflow: hidden;
   transition: background 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .progressBar {
-    background: #374151;
-  }
-}
-
 .progressFill {
-  background: linear-gradient(to right, #ef4444, #f97316);
+  background: linear-gradient(
+    to right,
+    var(--danger-color),
+    var(--warning-color)
+  );
   height: 100%;
   border-radius: 9999px;
   transition: width 0.5s ease;
 }
 
 .countdown {
-  background: #f9fafb;
+  background: var(--bg-secondary);
   border-radius: 8px;
   padding: 8px;
   margin-bottom: 12px;
   transition: background 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .countdown {
-    background: #374151;
-  }
 }
 
 .countdownContent {
@@ -243,18 +170,11 @@
 }
 
 .countdownDigit {
-  background: #1f2937;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   padding: 4px 8px;
   border-radius: 4px;
   transition: all 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .countdownDigit {
-    background: #111827;
-    color: #f3f4f6;
-  }
 }
 
 .buyNowBtn {
@@ -265,25 +185,14 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(to right, #ef4444, #f97316);
+  background: var(--danger-color);
   color: white;
 }
 
 .buyNowBtn:hover {
-  background: linear-gradient(to right, #dc2626, #ea580c);
   transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  .buyNowBtn {
-    background: linear-gradient(to right, #dc2626, #ea580c);
-  }
-
-  .buyNowBtn:hover {
-    background: linear-gradient(to right, #b91c1c, #c2410c);
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
-  }
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
 }
 
 /* Responsive Design */
@@ -374,34 +283,5 @@
 
   .buyNowBtn:hover {
     transform: none;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .card {
-    border-width: 2px;
-  }
-
-  .discountBadge {
-    border: 2px solid white;
-  }
-
-  .lowStockBadge {
-    border: 2px solid white;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .discountBadge {
-      border-color: #fca5a5;
-    }
-
-    .lowStockBadge {
-      border-color: #fdba74;
-    }
-  }
-
-  .progressBar {
-    border: 1px solid currentColor;
   }
 }

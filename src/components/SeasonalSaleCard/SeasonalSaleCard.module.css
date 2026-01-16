@@ -1,29 +1,15 @@
 .card {
-  background: white;
+  background: var(--card-bg);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px var(--shadow);
   transition: all 0.3s ease;
-  border: 1px solid #f3f4f6;
-}
-
-@media (prefers-color-scheme: dark) {
-  .card {
-    background: #1f2937;
-    border-color: #374151;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  }
+  border: 1px solid var(--border-color);
 }
 
 .card:hover {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 25px var(--shadow);
   transform: translateY(-2px);
-}
-
-@media (prefers-color-scheme: dark) {
-  .card:hover {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-  }
 }
 
 .imageWrapper {
@@ -31,14 +17,7 @@
   width: 100%;
   height: 224px;
   overflow: hidden;
-  background: #f3f4f6;
-  transition: background 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .imageWrapper {
-    background: #374151;
-  }
+  background: var(--bg-secondary);
 }
 
 .image {
@@ -56,20 +35,14 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  background: linear-gradient(to right, #10b981, #14b8a6);
+  background: var(--success-color);
   color: white;
   padding: 4px 12px;
   border-radius: 9999px;
   font-size: 14px;
   font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-}
-
-@media (prefers-color-scheme: dark) {
-  .seasonalBadge {
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
-  }
 }
 
 .content {
@@ -81,7 +54,7 @@
 
 .productName {
   font-weight: 600;
-  color: #1f2937;
+  color: var(--text-primary);
   margin: 0;
   min-height: 48px;
   display: -webkit-box;
@@ -89,12 +62,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .productName {
-    color: #f3f4f6;
-  }
 }
 
 .rating {
@@ -105,14 +72,8 @@
 
 .ratingText {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-secondary);
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .ratingText {
-    color: #9ca3af;
-  }
 }
 
 .priceSection {
@@ -124,45 +85,26 @@
 .salePrice {
   font-size: 24px;
   font-weight: bold;
-  color: #059669;
+  color: var(--success-color);
   transition: color 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .salePrice {
-    color: #10b981;
-  }
 }
 
 .originalPrice {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--text-secondary);
   text-decoration: line-through;
   transition: color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  .originalPrice {
-    color: #6b7280;
-  }
-}
-
 .timeLeftBadge {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--primary-bg);
+  color: var(--primary-color);
   font-size: 12px;
   padding: 8px 12px;
   border-radius: 8px;
   text-align: center;
   font-weight: 600;
   transition: all 0.3s ease;
-}
-
-@media (prefers-color-scheme: dark) {
-  .timeLeftBadge {
-    background: #064e3b;
-    color: #a7f3d0;
-  }
 }
 
 .addToCartBtn {
@@ -173,24 +115,14 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: linear-gradient(to right, #10b981, #14b8a6);
+  background: var(--success-color);
   color: white;
 }
 
 .addToCartBtn:hover {
-  background: linear-gradient(to right, #059669, #0d9488);
   transform: scale(1.05);
-}
-
-@media (prefers-color-scheme: dark) {
-  .addToCartBtn {
-    background: linear-gradient(to right, #059669, #0d9488);
-  }
-
-  .addToCartBtn:hover {
-    background: linear-gradient(to right, #047857, #0b7285);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
-  }
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  opacity: 0.9;
 }
 
 /* Responsive Design */
@@ -258,22 +190,5 @@
 
   .card:hover .image {
     transform: none;
-  }
-}
-
-/* High Contrast Mode */
-@media (prefers-contrast: high) {
-  .card {
-    border-width: 2px;
-  }
-
-  .seasonalBadge {
-    border: 2px solid white;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .seasonalBadge {
-      border-color: #10b981;
-    }
   }
 }

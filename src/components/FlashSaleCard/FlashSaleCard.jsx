@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Clock, Flame, Star } from "lucide-react";
 import styles from "./FlashSaleCard.module.css";
+import { useNavigate } from "react-router-dom";
 
 const FlashSaleCard = ({ product, saleEndTime }) => {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(`/product/${product.id}`);
+  };
+
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -43,7 +50,7 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   );
 
   return (
-    <div className={styles.card}>
+    <div className={styles.card} onClick={handleClick}>
       <div className={styles.imageWrapper}>
         <img
           src={
