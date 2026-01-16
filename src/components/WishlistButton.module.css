@@ -1,38 +1,29 @@
-/* src/components/WishlistButton.module.css */
 .btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border: 2px solid #ddd;
   border-radius: 50%;
-  background: white;
-  color: #1a1a1a;
-  cursor: pointer;
   transition: all 0.3s ease;
-  padding: 0;
-  font-size: 0;
+  color: var(--text-primary);
 }
 
 .btn:hover {
-  border-color: #FF9500;
+  background: rgba(255, 149, 0, 0.1);
   transform: scale(1.1);
 }
 
 .btn.active {
-  border-color: #FF9500;
-  background: #fff5f0;
-  color: #FF9500;
+  color: var(--color-error);
 }
 
-.btn.active:hover {
-  background: #ffede0;
+.btn.active svg {
+  fill: var(--color-error);
 }
 
-@media (max-width: 480px) {
-  .btn {
-    width: 40px;
-    height: 40px;
-  }
+.btn:active {
+  transform: scale(0.95);
 }

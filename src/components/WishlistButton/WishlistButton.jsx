@@ -1,3 +1,6 @@
+// ============================================
+// 3. FRONTEND: WishlistButton.jsx
+// ============================================
 import React, { useEffect } from "react";
 import { FiHeart } from "react-icons/fi";
 import useWishlistStore from "../../store/wishlistStore";
@@ -8,16 +11,18 @@ const WishlistButton = ({ productId, className = "" }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const { inWishlist, addToWishlist, removeFromWishlist, checkWishlist } =
     useWishlistStore();
+
   const isWishlisted = inWishlist[productId] || false;
 
   useEffect(() => {
     if (accessToken && !inWishlist.hasOwnProperty(productId)) {
       checkWishlist(productId, accessToken);
     }
-  }, [productId, accessToken]);
+  }, [productId, accessToken, checkWishlist, inWishlist]);
 
   const handleToggle = async (e) => {
     e.stopPropagation();
+    e.preventDefault();
 
     if (!accessToken) {
       alert("Please login first");

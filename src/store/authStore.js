@@ -1,3 +1,4 @@
+// src/store/authStore.js
 import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
@@ -19,6 +20,12 @@ const useAuthStore = create((set) => ({
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     set({ user: null, accessToken: null, refreshToken: null });
+
+    // Clear wishlist store on logout
+    // Import the store dynamically to avoid circular dependencies
+    import("./wishlistStore").then((module) => {
+      module.default.setState({ items: [], inWishlist: {} });
+    });
   },
 
   isAuthenticated: () => {

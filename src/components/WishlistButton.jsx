@@ -1,16 +1,26 @@
-// src/components/WishlistButton.jsx
-import React, { useState, useEffect } from "react";
-import { FiHeart, FiFill } from "react-icons/fi";
-import useWishlistStore from "../store/wishlistStore";
-import useAuthStore from "../store/authStore";
+import React, { useEffect } from "react";
+import { FiHeart } from "react-icons/fi";
+import useWishlistStore from "../../store/wishlistStore";
+import useAuthStore from "../../store/authStore";
 import styles from "./WishlistButton.module.css";
 
 const WishlistButton = ({ productId, className = "" }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
-  const { inWishlist, addToWishlist, removeFromWishlist } = useWishlistStore();
+  const { inWishlist, addToWishlist, removeFromWishlist, checkWishlist } =
+    useWishlistStore();
+
   const isWishlisted = inWishlist[productId] || false;
 
-  const handleToggle = async () => {
+  useEffect(() => {
+    if (accessToken && !inWishlist.hasOwnProperty(productId)) {
+      checkWishlist(productId, accessToken);
+    }
+  }, [productId, accessToken, checkWishlist, inWishlist]);
+
+  const handleToggle = async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     if (!accessToken) {
       alert("Please login first");
       return;
@@ -32,7 +42,7 @@ const WishlistButton = ({ productId, className = "" }) => {
       title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
       aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
     >
-      {isWishlisted ? <FiFill size={24} /> : <FiHeart size={24} />}
+      <FiHeart size={24} />
     </button>
   );
 };

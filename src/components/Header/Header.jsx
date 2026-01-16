@@ -31,9 +31,9 @@ const Header = ({ onMenuClick }) => {
           <button
             className={styles.iconBtn}
             onClick={toggleTheme}
-            title={isDark ? "Light mode" : "Dark mode"}
+            title={isDark ? "Dark mode" : "Light mode"}
           >
-            {isDark ? "☀️" : "🌙"}
+            {isDark ? "🌙" : "☀️"}
           </button>
 
           {/* Wishlist */}
