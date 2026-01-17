@@ -1,6 +1,3 @@
-// ============================================
-// SearchOverlay.jsx
-// ============================================
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,7 +12,7 @@ import {
 import axios from "axios";
 import styles from "./SearchOverlay.module.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const SearchOverlay = ({ isOpen, onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,19 +21,23 @@ const SearchOverlay = ({ isOpen, onClose }) => {
     categories: [],
   });
   const [recentSearches, setRecentSearches] = useState([]);
-  const [popularSearches] = useState([
+  const [popularSearches, setPopularSearches] = useState([
     { text: "rotating stand", emoji: "🔥" },
     { text: "rotating display stand", emoji: "🔥" },
     { text: "shoes men", emoji: "👟" },
     { text: "docking station laptop", emoji: "💻" },
     { text: "content creation equipment", emoji: "🎥" },
   ]);
+  const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [browsingHistory, setBrowsingHistory] = useState([]);
   const inputRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
+      // Load browsing history when overlay opens
+      loadBrowsingHistory();
     }
   }, [isOpen]);
 
@@ -53,14 +54,17 @@ const SearchOverlay = ({ isOpen, onClose }) => {
     const timer = setTimeout(() => {
       if (searchQuery.length >= 2) {
         fetchAutocomplete(searchQuery);
+        fetchSearchSuggestions(searchQuery);
       } else {
         setSuggestions({ products: [], categories: [] });
+        setSearchSuggestions([]);
       }
     }, 300);
 
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  // Fetch autocomplete suggestions
   const fetchAutocomplete = async (query) => {
     try {
       const response = await axios.get(`${API_URL}/api/search/autocomplete`, {
@@ -69,6 +73,48 @@ const SearchOverlay = ({ isOpen, onClose }) => {
       setSuggestions(response.data);
     } catch (error) {
       console.error("Autocomplete error:", error);
+    }
+  };
+
+  // Fetch "did you mean" suggestions
+  const fetchSearchSuggestions = async (query) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/search/suggestions`, {
+        params: { q: query },
+      });
+      if (response.data.suggestions && response.data.suggestions.length > 0) {
+        setSearchSuggestions(response.data.suggestions);
+      }
+    } catch (error) {
+      console.error("Search suggestions error:", error);
+    }
+  };
+
+  // Load browsing history (recently viewed products)
+  const loadBrowsingHistory = async () => {
+    try {
+      const history = localStorage.getItem("browsingHistory");
+      if (history) {
+        const productIds = JSON.parse(history).slice(0, 4);
+
+        // Fetch product details for each ID
+        const products = await Promise.all(
+          productIds.map(async (id) => {
+            try {
+              const response = await axios.get(
+                `${API_URL}/api/products/${id}/details`
+              );
+              return response.data.product;
+            } catch (error) {
+              return null;
+            }
+          })
+        );
+
+        setBrowsingHistory(products.filter((p) => p !== null));
+      }
+    } catch (error) {
+      console.error("Error loading browsing history:", error);
     }
   };
 
@@ -83,7 +129,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
     setRecentSearches(updated);
     localStorage.setItem("recentSearches", JSON.stringify(updated));
 
-    // Navigate to search results
+    // Navigate to search results with query
     navigate(`/search?q=${encodeURIComponent(query)}`);
     onClose();
   };
@@ -121,7 +167,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="perfume display stand"
+              placeholder="Search products..."
               className={styles.searchInput}
             />
             {searchQuery && (
@@ -149,13 +195,32 @@ const SearchOverlay = ({ isOpen, onClose }) => {
         {/* Content */}
         <div className={styles.content}>
           {/* Show autocomplete if typing */}
-          {searchQuery.length >= 2 &&
-          (suggestions.products.length > 0 ||
-            suggestions.categories.length > 0) ? (
+          {searchQuery.length >= 2 ? (
             <div className={styles.autocomplete}>
-              {suggestions.categories.length > 0 && (
+              {/* Did you mean suggestions */}
+              {searchSuggestions.length > 0 && (
                 <div className={styles.section}>
-                  <h3>Categories</h3>
+                  <h3 className={styles.sectionTitle}>Did you mean?</h3>
+                  {searchSuggestions.slice(0, 3).map((suggestion, idx) => (
+                    <div
+                      key={idx}
+                      className={styles.suggestionItem}
+                      onClick={() => {
+                        setSearchQuery(suggestion);
+                        handleSearch(suggestion);
+                      }}
+                    >
+                      <FiSearch className={styles.itemIcon} />
+                      <span>{suggestion}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Categories */}
+              {suggestions.categories && suggestions.categories.length > 0 && (
+                <div className={styles.section}>
+                  <h3 className={styles.sectionTitle}>Categories</h3>
                   {suggestions.categories.map((category, idx) => (
                     <div
                       key={idx}
@@ -169,17 +234,25 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                 </div>
               )}
 
-              {suggestions.products.length > 0 && (
+              {/* Products */}
+              {suggestions.products && suggestions.products.length > 0 && (
                 <div className={styles.section}>
-                  <h3>Products</h3>
+                  <h3 className={styles.sectionTitle}>Products</h3>
                   {suggestions.products.slice(0, 5).map((product, idx) => (
                     <div
                       key={idx}
                       className={styles.productItem}
-                      onClick={() => navigate(`/product/${product.id}`)}
+                      onClick={() => {
+                        navigate(`/product/${product.id}`);
+                        onClose();
+                      }}
                     >
                       {product.images && product.images[0] && (
-                        <img src={product.images[0]} alt={product.name} />
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className={styles.productImage}
+                        />
                       )}
                       <div className={styles.productInfo}>
                         <span className={styles.productName}>
@@ -193,6 +266,18 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                   ))}
                 </div>
               )}
+
+              {/* No results */}
+              {suggestions.products.length === 0 &&
+                suggestions.categories.length === 0 &&
+                searchSuggestions.length === 0 && (
+                  <div className={styles.noResults}>
+                    <p>No results found for "{searchQuery}"</p>
+                    <p className={styles.noResultsHint}>
+                      Try different keywords or browse categories
+                    </p>
+                  </div>
+                )}
             </div>
           ) : (
             <>
@@ -200,7 +285,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
               {recentSearches.length > 0 && (
                 <div className={styles.section}>
                   <div className={styles.sectionHeader}>
-                    <h3>
+                    <h3 className={styles.sectionTitle}>
                       <FiClock /> Recently searched
                     </h3>
                     <button
@@ -232,7 +317,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
 
               {/* Popular Right Now */}
               <div className={styles.section}>
-                <h3>
+                <h3 className={styles.sectionTitle}>
                   <FiTrendingUp /> Popular right now
                 </h3>
                 <div className={styles.popularGrid}>
@@ -250,33 +335,47 @@ const SearchOverlay = ({ isOpen, onClose }) => {
               </div>
 
               {/* Browsing History */}
-              <div className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <h3>Browsing history</h3>
-                  <FiChevronRight />
+              {browsingHistory.length > 0 && (
+                <div className={styles.section}>
+                  <div className={styles.sectionHeader}>
+                    <h3 className={styles.sectionTitle}>Browsing history</h3>
+                    <FiChevronRight />
+                  </div>
+                  <div className={styles.historyGrid}>
+                    {browsingHistory.map((product, idx) => (
+                      <div
+                        key={idx}
+                        className={styles.historyCard}
+                        onClick={() => {
+                          navigate(`/product/${product.id}`);
+                          onClose();
+                        }}
+                      >
+                        <div className={styles.historyImage}>
+                          {product.images && product.images[0] ? (
+                            <img src={product.images[0]} alt={product.name} />
+                          ) : (
+                            <div className={styles.imagePlaceholder}>📦</div>
+                          )}
+                        </div>
+                        {product.rating && (
+                          <div className={styles.rating}>
+                            ⭐ {product.rating.toFixed(1)}
+                          </div>
+                        )}
+                        <div className={styles.historyPrice}>
+                          ₦{parseInt(product.price).toLocaleString()}
+                          {product.discount_percentage > 0 && (
+                            <span className={styles.discount}>
+                              -{product.discount_percentage}%
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className={styles.historyGrid}>
-                  {[1, 2, 3, 4].map((_, idx) => (
-                    <div key={idx} className={styles.historyCard}>
-                      <div className={styles.historyImage}>
-                        <div className={styles.imagePlaceholder}>📦</div>
-                      </div>
-                      <div className={styles.rating}>
-                        ⭐ {(4 + Math.random()).toFixed(1)}
-                      </div>
-                      <div className={styles.historyPrice}>
-                        ₦
-                        {(Math.random() * 50000 + 5000)
-                          .toFixed(0)
-                          .toLocaleString()}
-                        <span className={styles.discount}>
-                          -{Math.floor(Math.random() * 60 + 20)}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </>
           )}
         </div>
@@ -286,32 +385,3 @@ const SearchOverlay = ({ isOpen, onClose }) => {
 };
 
 export default SearchOverlay;
-
-// ============================================
-// Usage in Header or Navigation
-// ============================================
-/*
-// Add to your Header.jsx or wherever you have the search bar
-
-import React, { useState } from 'react';
-import SearchOverlay from './SearchOverlay/SearchOverlay';
-
-const Header = () => {
-  const [searchOpen, setSearchOpen] = useState(false);
-
-  return (
-    <>
-      <header>
-        <button onClick={() => setSearchOpen(true)}>
-          Search
-        </button>
-      </header>
-      
-      <SearchOverlay 
-        isOpen={searchOpen} 
-        onClose={() => setSearchOpen(false)} 
-      />
-    </>
-  );
-};
-*/
