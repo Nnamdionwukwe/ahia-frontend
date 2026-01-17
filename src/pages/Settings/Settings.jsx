@@ -6,6 +6,7 @@ import useThemeStore from "../../store/themeStore";
 import { FiSun, FiMoon } from "react-icons/fi";
 import styles from "./Settings.module.css";
 import Header from "../../components/Header/Header";
+import BottomNav from "../../components/BottomNav/BottomNav";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -27,6 +28,7 @@ const Settings = () => {
   return (
     <>
       <Header />
+      <BottomNav />
 
       <div className={styles.container}>
         <div className={styles.card}>

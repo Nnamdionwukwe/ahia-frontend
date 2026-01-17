@@ -8,6 +8,7 @@ import styles from "./Home.module.css";
 import SearchPage from "../Search/SearchPage";
 import SearchHeader from "../../components/SearchHeader/SearchHeader";
 import Navigation from "../../components/Navigation/Navigation";
+import BottomNav from "../../components/BottomNav/BottomNav";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -183,6 +184,7 @@ const Home = () => {
     <div className={styles.container}>
       <SearchHeader />
       <Navigation />
+      <BottomNav />
       {/* Hero Section */}
       {/* <section className={styles.hero}>
         <div className={styles.heroContent}>
