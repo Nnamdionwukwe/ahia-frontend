@@ -19,6 +19,7 @@ import "./App.css";
 import ProductDetail from "./components/ProductDetail";
 import WishlistButton from "./components/WishlistButton/WishlistButton";
 import WishlistPage from "./pages/WishListPage/WishlistPage";
+import SearchPage from "./pages/Search/SearchPage";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -44,6 +45,7 @@ const App = () => {
                 isAuthenticated ? <WishlistPage /> : <Navigate to="/auth" />
               }
             />
+            <Route path="/search" element={<SearchPage />} />
             {/* <Route path="/wishlist" element={<WishlistButton />} /> */}
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/auth" element={<Auth />} />

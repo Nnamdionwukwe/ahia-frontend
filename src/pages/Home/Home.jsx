@@ -5,6 +5,7 @@ import ProductCard from "../../components/ProductCard/ProductCard";
 import FlashSaleCard from "../../components/FlashSaleCard/FlashSaleCard";
 import SeasonalSaleCard from "../../components/SeasonalSaleCard/SeasonalSaleCard";
 import styles from "./Home.module.css";
+import SearchPage from "../Search/SearchPage";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -178,6 +179,7 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
+      <SearchPage />
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.heroContent}>
