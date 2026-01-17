@@ -2,8 +2,30 @@ import React, { useState, useEffect } from "react";
 import { Clock, Flame, Star } from "lucide-react";
 import styles from "./FlashSaleCard.module.css";
 import { useNavigate } from "react-router-dom";
+import useCartStore from "../../store/cartStore";
+import useAuthStore from "../../store/authStore";
 
 const FlashSaleCard = ({ product, saleEndTime }) => {
+  const addItem = useCartStore((state) => state.addItem);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("Please login to add items to cart");
+      return;
+    }
+
+    // Assuming product has a default variant
+    const success = await addItem(product.variant_id, 1, accessToken);
+
+    if (success) {
+      // Show success message
+      alert("Added to cart!");
+    }
+  };
+
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -50,8 +72,8 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   );
 
   return (
-    <div className={styles.card} onClick={handleClick}>
-      <div className={styles.imageWrapper}>
+    <div className={styles.card}>
+      <div className={styles.imageWrapper} onClick={handleClick}>
         <img
           src={
             product.images?.[0] ||
@@ -85,7 +107,7 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
           </span>
         </div>
 
-        <div className={styles.progressSection}>
+        <div className={styles.progressSection} onClick={handleClick}>
           <div className={styles.progressLabels}>
             <span>Sold: {soldPercentage}%</span>
             <span>{remainingQty} left</span>
@@ -98,7 +120,7 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
           </div>
         </div>
 
-        <div className={styles.countdown}>
+        <div className={styles.countdown} onClick={handleClick}>
           <div className={styles.countdownContent}>
             <Clock size={16} className="text-red-500" />
             <div className={styles.countdownDigits}>
@@ -117,7 +139,9 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
           </div>
         </div>
 
-        <button className={styles.buyNowBtn}>Buy Now</button>
+        <button className={styles.buyNowBtn} onClick={handleAddToCart}>
+          Buy Now
+        </button>
       </div>
     </div>
   );

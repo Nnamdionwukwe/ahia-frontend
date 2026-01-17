@@ -2,8 +2,30 @@ import React, { useState, useEffect } from "react";
 import { Star } from "lucide-react";
 import styles from "./SeasonalSaleCard.module.css";
 import { useNavigate } from "react-router-dom";
+import useCartStore from "../../store/cartStore";
+import useAuthStore from "../../store/authStore";
 
 const SeasonalSaleCard = ({ product, sale }) => {
+  const addItem = useCartStore((state) => state.addItem);
+  const accessToken = useAuthStore((state) => state.accessToken);
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("Please login to add items to cart");
+      return;
+    }
+
+    // Assuming product has a default variant
+    const success = await addItem(product.variant_id, 1, accessToken);
+
+    if (success) {
+      // Show success message
+      alert("Added to cart!");
+    }
+  };
+
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -81,7 +103,9 @@ const SeasonalSaleCard = ({ product, sale }) => {
           </div>
         )}
 
-        <button className={styles.addToCartBtn}>Add to Cart</button>
+        <button className={styles.addToCartBtn} onClick={handleAddToCart}>
+          Add to Cart
+        </button>
       </div>
     </div>
   );
