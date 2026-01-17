@@ -6,6 +6,8 @@ import FlashSaleCard from "../../components/FlashSaleCard/FlashSaleCard";
 import SeasonalSaleCard from "../../components/SeasonalSaleCard/SeasonalSaleCard";
 import styles from "./Home.module.css";
 import SearchPage from "../Search/SearchPage";
+import SearchHeader from "../../components/SearchHeader/SearchHeader";
+import Navigation from "../../components/Navigation/Navigation";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -179,9 +181,10 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <SearchPage />
+      <SearchHeader />
+      <Navigation />
       {/* Hero Section */}
-      <section className={styles.hero}>
+      {/* <section className={styles.hero}>
         <div className={styles.heroContent}>
           <h1>Welcome to AHIA</h1>
           <p>Discover amazing flash deals and unbeatable prices</p>
@@ -190,7 +193,7 @@ const Home = () => {
             <button className={styles.btnSecondary}>Browse All Products</button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <div className={styles.content}>
         {/* Active Flash Sales */}

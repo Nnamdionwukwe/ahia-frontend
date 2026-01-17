@@ -10,6 +10,18 @@ const Navigation = () => {
     { id: 4, name: "Sports", path: "/?category=sports" },
     { id: 5, name: "Beauty", path: "/?category=beauty" },
     { id: 6, name: "Furniture", path: "/?category=furniture" },
+    { id: 1, name: "Electronics", path: "/?category=electronics" },
+    { id: 2, name: "Clothing", path: "/?category=clothing" },
+    { id: 3, name: "Home", path: "/?category=home" },
+    { id: 4, name: "Sports", path: "/?category=sports" },
+    { id: 5, name: "Beauty", path: "/?category=beauty" },
+    { id: 6, name: "Furniture", path: "/?category=furniture" },
+    { id: 1, name: "Electronics", path: "/?category=electronics" },
+    { id: 2, name: "Clothing", path: "/?category=clothing" },
+    { id: 3, name: "Home", path: "/?category=home" },
+    { id: 4, name: "Sports", path: "/?category=sports" },
+    { id: 5, name: "Beauty", path: "/?category=beauty" },
+    { id: 6, name: "Furniture", path: "/?category=furniture" },
   ];
 
   return (

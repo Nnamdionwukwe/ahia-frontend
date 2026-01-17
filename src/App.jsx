@@ -8,18 +8,23 @@ import {
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import useThemeStore from "./store/themeStore";
 import useAuthStore from "./store/authStore";
+
 // Components
 import Header from "./components/Header/Header";
 import Navigation from "./components/Navigation/Navigation";
+import BottomNav from "./components/BottomNav/BottomNav";
+
 // Pages
 import Home from "./pages/Home/Home";
 import Auth from "./pages/Auth/Auth";
 import Settings from "./pages/Settings/Settings";
-import "./App.css";
 import ProductDetail from "./components/ProductDetail";
-import WishlistButton from "./components/WishlistButton/WishlistButton";
 import WishlistPage from "./pages/WishListPage/WishlistPage";
 import SearchPage from "./pages/Search/SearchPage";
+import CartPage from "./pages/Cart/CartPage";
+
+import "./App.css";
+import SearchHeader from "./components/SearchHeader/SearchHeader";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -35,8 +40,8 @@ const App = () => {
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Router>
         <div className={isDark ? "dark-mode" : ""}>
-          <Header />
-          <Navigation />
+          {/* <Header />  */}
+          {/* <Navigation />  */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -45,8 +50,12 @@ const App = () => {
                 isAuthenticated ? <WishlistPage /> : <Navigate to="/auth" />
               }
             />
+            <Route
+              path="/cart"
+              element={isAuthenticated ? <CartPage /> : <Navigate to="/auth" />}
+            />
             <Route path="/search" element={<SearchPage />} />
-            {/* <Route path="/wishlist" element={<WishlistButton />} /> */}
+            <Route path="/searchheader" element={<SearchHeader />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route
@@ -55,9 +64,11 @@ const App = () => {
             />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
+          <BottomNav />
         </div>
       </Router>
     </GoogleOAuthProvider>
   );
 };
+
 export default App;

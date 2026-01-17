@@ -1,0 +1,286 @@
+/* BottomNav.module.css */
+
+/* Promo Banner */
+.promoBanner {
+  position: fixed;
+  bottom: 70px;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  z-index: 998;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.promoText {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.promoHighlight {
+  background: white;
+  color: #27ae60;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* Bottom Navigation */
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0 12px 0;
+  z-index: 999;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navItem:active {
+  transform: scale(0.95);
+}
+
+.iconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+}
+
+.navItem.active .icon {
+  color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.navItem:hover:not(.active) .icon {
+  color: var(--text-primary);
+}
+
+.label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.navItem.active .label {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* Special styling for Categories (Search) */
+.categoriesItem .icon {
+  color: #e74c3c;
+}
+
+.categoriesItem.active .icon {
+  color: #c0392b;
+}
+
+.categoriesItem .label {
+  color: #e74c3c;
+}
+
+.categoriesItem.active .label {
+  color: #c0392b;
+  font-weight: 600;
+}
+
+/* Special active indicator for Categories */
+.categoriesItem.active::before {
+  background: #e74c3c;
+}
+
+/* Badge */
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  box-shadow: 0 2px 6px rgba(255, 107, 53, 0.4);
+  animation: popIn 0.3s ease;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Active indicator line */
+.navItem.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 0 0 3px 3px;
+  animation: slideDown 0.3s ease;
+}
+
+/* Special active indicator for Categories */
+.navItem:nth-child(2).active::before {
+  background: #e74c3c;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 3px;
+    opacity: 1;
+  }
+}
+
+/* Ripple effect on click */
+.navItem::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--primary-color);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s, opacity 0.6s;
+}
+
+.navItem:active::after {
+  width: 100px;
+  height: 100px;
+  opacity: 0.1;
+}
+
+/* Dark mode specific adjustments */
+[data-theme="dark"] .bottomNav,
+.dark .bottomNav {
+  background: var(--card-bg);
+  border-top-color: var(--border-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .badge,
+.dark .badge {
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6);
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .bottomNav {
+    display: none;
+  }
+
+  .promoBanner {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .promoBanner {
+    padding: 10px 16px;
+  }
+
+  .promoText,
+  .promoHighlight {
+    font-size: 12px;
+  }
+
+  .label {
+    font-size: 11px;
+  }
+
+  .icon {
+    font-size: 22px;
+  }
+
+  .badge {
+    font-size: 10px;
+    min-width: 18px;
+    height: 18px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    position: static;
+  }
+}
+
+/* Add bottom padding to prevent content from being hidden by nav */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 140px !important;
+  }
+}
