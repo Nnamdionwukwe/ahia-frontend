@@ -105,80 +105,84 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   );
 
   return (
-    <div className={styles.card}>
-      <div className={styles.imageWrapper} onClick={handleClick}>
-        <img
-          src={
-            product.images?.[0] ||
-            "https://via.placeholder.com/300x300?text=Product"
-          }
-          alt={product.name}
-          className={styles.image}
-        />
-        <div className={styles.discountBadge}>
-          <Flame size={16} />-{savingsPercent}%
-        </div>
-        {remainingQty < 10 && remainingQty > 0 && (
-          <div className={styles.lowStockBadge}>Only {remainingQty} left!</div>
-        )}
-      </div>
-
-      <div className={styles.content}>
-        <h3 className={styles.productName}>{product.name}</h3>
-
-        <div className={styles.rating}>
-          <Star className="fill-yellow-400 text-yellow-400" size={16} />
-          <span className={styles.ratingText}>{product.rating || 4.5}</span>
-        </div>
-
-        <div className={styles.priceSection}>
-          <span className={styles.salePrice}>
-            ₦{product.sale_price?.toLocaleString()}
-          </span>
-          <span className={styles.originalPrice}>
-            ₦{(product.original_price || product.price)?.toLocaleString()}
-          </span>
-        </div>
-
-        <div className={styles.progressSection} onClick={handleClick}>
-          <div className={styles.progressLabels}>
-            <span>Sold: {soldPercentage}%</span>
-            <span>{remainingQty} left</span>
+    <>
+      <div className={styles.card}>
+        <div className={styles.imageWrapper} onClick={handleClick}>
+          <img
+            src={
+              product.images?.[0] ||
+              "https://via.placeholder.com/300x300?text=Product"
+            }
+            alt={product.name}
+            className={styles.image}
+          />
+          <div className={styles.discountBadge}>
+            <Flame size={16} />-{savingsPercent}%
           </div>
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${soldPercentage}%` }}
-            />
-          </div>
+          {remainingQty < 10 && remainingQty > 0 && (
+            <div className={styles.lowStockBadge}>
+              Only {remainingQty} left!
+            </div>
+          )}
         </div>
 
-        <div className={styles.countdown} onClick={handleClick}>
-          <div className={styles.countdownContent}>
-            <Clock size={16} className="text-red-500" />
-            <div className={styles.countdownDigits}>
-              <span className={styles.countdownDigit}>
-                {String(timeLeft.hours).padStart(2, "0")}
-              </span>
-              <span>:</span>
-              <span className={styles.countdownDigit}>
-                {String(timeLeft.minutes).padStart(2, "0")}
-              </span>
-              <span>:</span>
-              <span className={styles.countdownDigit}>
-                {String(timeLeft.seconds).padStart(2, "0")}
-              </span>
+        <div className={styles.content}>
+          <h3 className={styles.productName}>{product.name}</h3>
+
+          <div className={styles.rating}>
+            <Star className="fill-yellow-400 text-yellow-400" size={16} />
+            <span className={styles.ratingText}>{product.rating || 4.5}</span>
+          </div>
+
+          <div className={styles.priceSection}>
+            <span className={styles.salePrice}>
+              ₦{product.sale_price?.toLocaleString()}
+            </span>
+            <span className={styles.originalPrice}>
+              ₦{(product.original_price || product.price)?.toLocaleString()}
+            </span>
+          </div>
+
+          <div className={styles.progressSection} onClick={handleClick}>
+            <div className={styles.progressLabels}>
+              <span>Sold: {soldPercentage}%</span>
+              <span>{remainingQty} left</span>
+            </div>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{ width: `${soldPercentage}%` }}
+              />
             </div>
           </div>
-        </div>
 
-        <button
-          className={styles.buyNowBtn}
-          onClick={handleBuyNow}
-          disabled={adding || remainingQty === 0}
-        >
-          {adding ? "Adding..." : remainingQty === 0 ? "Sold Out" : "Buy Now"}
-        </button>
+          <div className={styles.countdown} onClick={handleClick}>
+            <div className={styles.countdownContent}>
+              <Clock size={16} className="text-red-500" />
+              <div className={styles.countdownDigits}>
+                <span className={styles.countdownDigit}>
+                  {String(timeLeft.hours).padStart(2, "0")}
+                </span>
+                <span>:</span>
+                <span className={styles.countdownDigit}>
+                  {String(timeLeft.minutes).padStart(2, "0")}
+                </span>
+                <span>:</span>
+                <span className={styles.countdownDigit}>
+                  {String(timeLeft.seconds).padStart(2, "0")}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            className={styles.buyNowBtn}
+            onClick={handleBuyNow}
+            disabled={adding || remainingQty === 0}
+          >
+            {adding ? "Adding..." : remainingQty === 0 ? "Sold Out" : "Buy Now"}
+          </button>
+        </div>
       </div>
 
       <ProductVariantModal
@@ -187,7 +191,7 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
         product={product}
         onAddToCart={handleAddToCart}
       />
-    </div>
+    </>
   );
 };
 

@@ -4,12 +4,26 @@ import WishlistButton from "../WishlistButton/WishlistButton";
 import useCartStore from "../../store/cartStore";
 import useAuthStore from "../../store/authStore";
 import styles from "./ProductCard.module.css";
+import ProductVariantModal from "../ProductVariantModal/ProductVariantModal";
 
 const ProductCard = ({ product }) => {
+  const [showVariantModal, setShowVariantModal] = useState(false);
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
+
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("Please login to add items to cart");
+      navigate("/auth");
+      return;
+    }
+
+    setShowVariantModal(true);
+  };
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
@@ -49,49 +63,62 @@ const ProductCard = ({ product }) => {
   };
 
   return (
-    <div className={styles.card}>
-      <div className={styles.imageContainer} onClick={handleClick}>
-        {product.images && product.images.length > 0 ? (
-          <img
-            src={product.images[0]}
-            alt={product.name}
-            className={styles.image}
-          />
-        ) : (
-          <div className={styles.placeholder}>No Image</div>
-        )}
-        {product.discount_percentage > 0 && (
-          <div className={styles.discount}>-{product.discount_percentage}%</div>
-        )}
-        <div className={styles.wishlist}>
-          <WishlistButton productId={product.id} />
-        </div>
-      </div>
-      <div className={styles.content} onClick={handleClick}>
-        <h3 className={styles.name}>{product.name?.substring(0, 50)}...</h3>
-        <div className={styles.rating}>
-          <span className={styles.stars}>⭐ {product.rating || 0}</span>
-          <span className={styles.reviews}>({product.total_reviews || 0})</span>
-        </div>
-        <div className={styles.price}>
-          {product.original_price && (
-            <span className={styles.original}>
-              ₦{parseInt(product.original_price).toLocaleString()}
-            </span>
+    <>
+      <div className={styles.card}>
+        <div className={styles.imageContainer} onClick={handleClick}>
+          {product.images && product.images.length > 0 ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className={styles.image}
+            />
+          ) : (
+            <div className={styles.placeholder}>No Image</div>
           )}
-          <span className={styles.current}>
-            ₦{parseInt(product.price).toLocaleString()}
-          </span>
+          {product.discount_percentage > 0 && (
+            <div className={styles.discount}>
+              -{product.discount_percentage}%
+            </div>
+          )}
+          <div className={styles.wishlist}>
+            <WishlistButton productId={product.id} />
+          </div>
         </div>
-        <button
-          className={styles.button}
-          onClick={handleAddToCart}
-          disabled={adding}
-        >
-          {adding ? "Adding..." : "Add to Cart"}
-        </button>
+        <div className={styles.content} onClick={handleClick}>
+          <h3 className={styles.name}>{product.name?.substring(0, 50)}...</h3>
+          <div className={styles.rating}>
+            <span className={styles.stars}>⭐ {product.rating || 0}</span>
+            <span className={styles.reviews}>
+              ({product.total_reviews || 0})
+            </span>
+          </div>
+          <div className={styles.price}>
+            {product.original_price && (
+              <span className={styles.original}>
+                ₦{parseInt(product.original_price).toLocaleString()}
+              </span>
+            )}
+            <span className={styles.current}>
+              ₦{parseInt(product.price).toLocaleString()}
+            </span>
+          </div>
+          <button
+            className={styles.button}
+            onClick={handleBuyNow}
+            disabled={adding}
+          >
+            {adding ? "Adding..." : "Add to Cart"}
+          </button>
+        </div>
       </div>
-    </div>
+
+      <ProductVariantModal
+        isOpen={showVariantModal}
+        onClose={() => setShowVariantModal(false)}
+        product={product}
+        onAddToCart={handleAddToCart}
+      />
+    </>
   );
 };
 

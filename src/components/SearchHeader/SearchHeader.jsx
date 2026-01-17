@@ -1,23 +1,85 @@
+// import React, { useState } from "react";
+// import SearchOverlay from "../SearchOverlay/SearchOverlay";
+// import { FiSearch } from "react-icons/fi";
+// import BottomNav from "../BottomNav/BottomNav";
+// import styles from "./SearchHeader.module.css";
+
+// const SearchHeader = () => {
+//   const [searchOpen, setSearchOpen] = useState(false);
+
+//   return (
+//     <>
+//       <BottomNav />
+//       <header>
+//         {/* Your existing header content */}
+//         <button onClick={() => setSearchOpen(true)}>
+//           <FiSearch /> Search
+//         </button>
+//       </header>
+
+//       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
+//     </>
+//   );
+// };
+// export default SearchHeader;
+
 import React, { useState } from "react";
 import SearchOverlay from "../SearchOverlay/SearchOverlay";
-import { FiSearch } from "react-icons/fi";
+import { FiSearch, FiCamera } from "react-icons/fi";
 import BottomNav from "../BottomNav/BottomNav";
+import styles from "./SearchHeader.module.css";
 
 const SearchHeader = () => {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      console.log("Searching for:", searchQuery);
+      // Add your search logic here
+    }
+  };
 
   return (
     <>
       <BottomNav />
-      <header>
-        {/* Your existing header content */}
-        <button onClick={() => setSearchOpen(true)}>
-          <FiSearch /> Search
-        </button>
+      <header className={styles.header}>
+        <div className={styles.container}>
+          <form onSubmit={handleSearch} className={styles.searchForm}>
+            <div className={styles.searchWrapper}>
+              <input
+                type="text"
+                placeholder="perfume display stand"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+                onFocus={() => setSearchOpen(true)}
+              />
+
+              <button
+                type="button"
+                className={styles.cameraButton}
+                aria-label="Search by image"
+              >
+                <FiCamera />
+              </button>
+
+              <button
+                type="submit"
+                className={styles.searchButton}
+                aria-label="Search"
+              >
+                <FiSearch />
+              </button>
+            </div>
+          </form>
+        </div>
       </header>
 
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 };
+
 export default SearchHeader;

@@ -4,10 +4,24 @@ import styles from "./SeasonalSaleCard.module.css";
 import { useNavigate } from "react-router-dom";
 import useCartStore from "../../store/cartStore";
 import useAuthStore from "../../store/authStore";
+import ProductVariantModal from "../ProductVariantModal/ProductVariantModal";
 
 const SeasonalSaleCard = ({ product, sale }) => {
+  const [showVariantModal, setShowVariantModal] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
+
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("Please login to add items to cart");
+      navigate("/auth");
+      return;
+    }
+
+    setShowVariantModal(true);
+  };
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
@@ -65,49 +79,58 @@ const SeasonalSaleCard = ({ product, sale }) => {
   const savingsPercent = Math.round((savings / product.price) * 100);
 
   return (
-    <div className={styles.card} onClick={handleClick}>
-      <div className={styles.imageWrapper}>
-        <img
-          src={
-            product.images?.[0] ||
-            "https://via.placeholder.com/300x300?text=Product"
-          }
-          alt={product.name}
-          className={styles.image}
-        />
-        <div className={styles.seasonalBadge}>
-          {sale.season} Sale -{savingsPercent}%
-        </div>
-      </div>
-
-      <div className={styles.content}>
-        <h3 className={styles.productName}>{product.name}</h3>
-
-        <div className={styles.rating}>
-          <Star className="fill-yellow-400 text-yellow-400" size={16} />
-          <span className={styles.ratingText}>{product.rating || 4.5}</span>
-        </div>
-
-        <div className={styles.priceSection}>
-          <span className={styles.salePrice}>
-            ₦{product.sale_price?.toLocaleString()}
-          </span>
-          <span className={styles.originalPrice}>
-            ₦{product.price?.toLocaleString()}
-          </span>
-        </div>
-
-        {timeLeft.days > 0 && (
-          <div className={styles.timeLeftBadge}>
-            Ends in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+    <>
+      <div className={styles.card} onClick={handleClick}>
+        <div className={styles.imageWrapper}>
+          <img
+            src={
+              product.images?.[0] ||
+              "https://via.placeholder.com/300x300?text=Product"
+            }
+            alt={product.name}
+            className={styles.image}
+          />
+          <div className={styles.seasonalBadge}>
+            {sale.season} Sale -{savingsPercent}%
           </div>
-        )}
+        </div>
 
-        <button className={styles.addToCartBtn} onClick={handleAddToCart}>
-          Add to Cart
-        </button>
+        <div className={styles.content}>
+          <h3 className={styles.productName}>{product.name}</h3>
+
+          <div className={styles.rating}>
+            <Star className="fill-yellow-400 text-yellow-400" size={16} />
+            <span className={styles.ratingText}>{product.rating || 4.5}</span>
+          </div>
+
+          <div className={styles.priceSection}>
+            <span className={styles.salePrice}>
+              ₦{product.sale_price?.toLocaleString()}
+            </span>
+            <span className={styles.originalPrice}>
+              ₦{product.price?.toLocaleString()}
+            </span>
+          </div>
+
+          {timeLeft.days > 0 && (
+            <div className={styles.timeLeftBadge}>
+              Ends in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+            </div>
+          )}
+
+          <button className={styles.addToCartBtn} onClick={handleBuyNow}>
+            Add to Cart
+          </button>
+        </div>
       </div>
-    </div>
+
+      <ProductVariantModal
+        isOpen={showVariantModal}
+        onClose={() => setShowVariantModal(false)}
+        product={product}
+        onAddToCart={handleAddToCart}
+      />
+    </>
   );
 };
 
