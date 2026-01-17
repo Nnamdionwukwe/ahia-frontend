@@ -6,6 +6,7 @@
   transition: all var(--transition-base);
   border: 1px solid var(--border-color);
   cursor: pointer;
+  /* margin-bottom: ; */
 }
 
 .card:hover {

@@ -4,29 +4,62 @@ import styles from "./FlashSaleCard.module.css";
 import { useNavigate } from "react-router-dom";
 import useCartStore from "../../store/cartStore";
 import useAuthStore from "../../store/authStore";
+import ProductVariantModal from "../ProductVariantModal/ProductVariantModal";
 
 const FlashSaleCard = ({ product, saleEndTime }) => {
+  const [showVariantModal, setShowVariantModal] = useState(false);
+  const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const [adding, setAdding] = useState(false);
+
+  const handleBuyNow = (e) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("Please login to add items to cart");
+      navigate("/auth");
+      return;
+    }
+
+    setShowVariantModal(true);
+  };
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
 
     if (!accessToken) {
       alert("Please login to add items to cart");
+      navigate("/auth");
       return;
     }
 
-    // Assuming product has a default variant
-    const success = await addItem(product.variant_id, 1, accessToken);
+    if (!product.variant_id && !product.product_variant_id) {
+      alert("Product variant not available");
+      return;
+    }
 
-    if (success) {
-      // Show success message
-      alert("Added to cart!");
+    setAdding(true);
+    try {
+      // Use the variant_id from product, or fallback to product_variant_id
+      const variantId = product.variant_id || product.product_variant_id;
+      const success = await addItem(variantId, 1, accessToken);
+
+      if (success) {
+        // Show success message
+        alert("Added to cart!");
+        // Optionally navigate to cart
+        // navigate("/cart");
+      } else {
+        alert("Failed to add to cart. Please try again.");
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      alert("An error occurred. Please try again.");
+    } finally {
+      setAdding(false);
     }
   };
-
-  const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
@@ -139,10 +172,21 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
           </div>
         </div>
 
-        <button className={styles.buyNowBtn} onClick={handleAddToCart}>
-          Buy Now
+        <button
+          className={styles.buyNowBtn}
+          onClick={handleBuyNow}
+          disabled={adding || remainingQty === 0}
+        >
+          {adding ? "Adding..." : remainingQty === 0 ? "Sold Out" : "Buy Now"}
         </button>
       </div>
+
+      <ProductVariantModal
+        isOpen={showVariantModal}
+        onClose={() => setShowVariantModal(false)}
+        product={product}
+        onAddToCart={handleAddToCart}
+      />
     </div>
   );
 };

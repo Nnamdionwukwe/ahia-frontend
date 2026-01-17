@@ -1,13 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import WishlistButton from "../WishlistButton/WishlistButton";
+import useCartStore from "../../store/cartStore";
+import useAuthStore from "../../store/authStore";
 import styles from "./ProductCard.module.css";
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
+  const addItem = useCartStore((state) => state.addItem);
+  const accessToken = useAuthStore((state) => state.accessToken);
+  const [adding, setAdding] = useState(false);
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
+  };
+
+  const handleAddToCart = async (e) => {
+    e.stopPropagation();
+
+    if (!accessToken) {
+      alert("Please login to add items to cart");
+      navigate("/auth");
+      return;
+    }
+
+    if (!product.variant_id && !product.product_variant_id) {
+      alert("Product variant not available");
+      return;
+    }
+
+    setAdding(true);
+    try {
+      // Use the variant_id from product
+      const variantId = product.variant_id || product.product_variant_id;
+      const success = await addItem(variantId, 1, accessToken);
+
+      if (success) {
+        alert("Added to cart!");
+      } else {
+        alert("Failed to add to cart");
+      }
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      alert("An error occurred");
+    } finally {
+      setAdding(false);
+    }
   };
 
   return (
@@ -22,24 +60,19 @@ const ProductCard = ({ product }) => {
         ) : (
           <div className={styles.placeholder}>No Image</div>
         )}
-
         {product.discount_percentage > 0 && (
           <div className={styles.discount}>-{product.discount_percentage}%</div>
         )}
-
         <div className={styles.wishlist}>
           <WishlistButton productId={product.id} />
         </div>
       </div>
-
       <div className={styles.content} onClick={handleClick}>
         <h3 className={styles.name}>{product.name?.substring(0, 50)}...</h3>
-
         <div className={styles.rating}>
           <span className={styles.stars}>⭐ {product.rating || 0}</span>
           <span className={styles.reviews}>({product.total_reviews || 0})</span>
         </div>
-
         <div className={styles.price}>
           {product.original_price && (
             <span className={styles.original}>
@@ -50,9 +83,12 @@ const ProductCard = ({ product }) => {
             ₦{parseInt(product.price).toLocaleString()}
           </span>
         </div>
-
-        <button className={styles.button} onClick={() => {}}>
-          Add to Cart
+        <button
+          className={styles.button}
+          onClick={handleAddToCart}
+          disabled={adding}
+        >
+          {adding ? "Adding..." : "Add to Cart"}
         </button>
       </div>
     </div>
