@@ -1,6 +1,3 @@
-// ============================================
-// 1. SearchPage.jsx
-// ============================================
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -42,47 +39,6 @@ const SearchPage = () => {
 
   const [showFilters, setShowFilters] = useState(false);
 
-  // Debounced autocomplete
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery.length >= 2) {
-        fetchAutocomplete(searchQuery);
-      } else {
-        setSuggestions({ products: [], categories: [] });
-      }
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Click outside to close autocomplete
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (
-        autocompleteRef.current &&
-        !autocompleteRef.current.contains(event.target)
-      ) {
-        setShowAutocomplete(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Fetch autocomplete suggestions
-  const fetchAutocomplete = async (query) => {
-    try {
-      const response = await axios.get(`${API_URL}/api/search/autocomplete`, {
-        params: { q: query },
-      });
-      setSuggestions(response.data);
-      setShowAutocomplete(true);
-    } catch (error) {
-      console.error("Autocomplete error:", error);
-    }
-  };
-
   // Perform search
   const performSearch = useCallback(async () => {
     setLoading(true);
@@ -116,12 +72,61 @@ const SearchPage = () => {
     }
   }, [searchQuery, filters, setSearchParams]);
 
+  // Debounced autocomplete
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery.length >= 2) {
+        fetchAutocomplete(searchQuery);
+      } else {
+        setSuggestions({ products: [], categories: [] });
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Click outside to close autocomplete
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        autocompleteRef.current &&
+        !autocompleteRef.current.contains(event.target)
+      ) {
+        setShowAutocomplete(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Initial search on mount or when params change
   useEffect(() => {
     if (searchQuery) {
       performSearch();
     }
-  }, []);
+  }, [performSearch]);
+
+  // Fetch autocomplete suggestions
+  const fetchAutocomplete = async (query) => {
+    try {
+      const response = await axios.get(`${API_URL}/api/search/autocomplete`, {
+        params: { q: query },
+      });
+
+      // Validate response data
+      const validatedData = {
+        products: (response.data.products || []).filter((p) => p && p.id),
+        categories: response.data.categories || [],
+      };
+
+      setSuggestions(validatedData);
+      setShowAutocomplete(true);
+    } catch (error) {
+      console.error("Autocomplete error:", error);
+      setSuggestions({ products: [], categories: [] });
+    }
+  };
 
   // Handle search submit
   const handleSearch = (e) => {
@@ -157,9 +162,24 @@ const SearchPage = () => {
   // Handle pagination
   const handlePageChange = (newPage) => {
     setFilters((prev) => ({ ...prev, page: newPage.toString() }));
-    performSearch();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Handle product click with validation
+  const handleProductClick = (productId) => {
+    if (!productId) {
+      console.error("Invalid product ID");
+      return;
+    }
+    navigate(`/product/${productId}`);
+  };
+
+  // Re-run search when filters change
+  useEffect(() => {
+    if (searchQuery) {
+      performSearch();
+    }
+  }, [filters.page]);
 
   return (
     <div className={styles.container}>
@@ -225,11 +245,11 @@ const SearchPage = () => {
                 {suggestions.products.length > 0 && (
                   <div className={styles.autocompleteSection}>
                     <h4>Products</h4>
-                    {suggestions.products.map((product, idx) => (
+                    {suggestions.products.map((product) => (
                       <div
-                        key={idx}
+                        key={product.id}
                         className={styles.autocompleteProduct}
-                        onClick={() => navigate(`/product/${product.id}`)}
+                        onClick={() => handleProductClick(product.id)}
                       >
                         {product.images && product.images[0] && (
                           <img src={product.images[0]} alt={product.name} />
