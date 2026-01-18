@@ -1,44 +1,216 @@
+/* Navigation.module.css */
+
 .nav {
-  background: var(--color-light);
-  border-bottom: 1px solid var(--color-gray-light);
-  padding: var(--spacing-md) 0;
+  background: var(--card-bg, #ffffff);
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+  position: sticky;
+  top: 60px; /* Adjust based on your header height */
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.loading {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+}
+
+.wrapper {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-md);
   display: flex;
-  gap: var(--spacing-lg);
+  gap: 8px;
+  padding: 12px 16px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
 .container::-webkit-scrollbar {
-  height: 4px;
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .link {
-  white-space: nowrap;
-  padding: var(--spacing-md) 0;
-  color: var(--color-dark);
+  flex-shrink: 0;
+  padding: 8px 20px;
+  background: transparent;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 20px;
+  color: var(--text-primary, #1a1a1a);
+  font-size: 14px;
   font-weight: 500;
-  transition: color var(--transition-fast);
-  border-bottom: 2px solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .link:hover {
-  color: var(--color-primary);
-  border-bottom-color: var(--color-primary);
+  background: var(--bg-secondary, #f5f5f5);
+  border-color: var(--primary-color, #ff9500);
+  transform: translateY(-1px);
 }
 
+.link.active {
+  background: var(--primary-color, #ff9500);
+  color: white;
+  border-color: var(--primary-color, #ff9500);
+  font-weight: 600;
+}
+
+.link:active {
+  transform: translateY(0);
+}
+
+/* Scroll Buttons */
+.scrollBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  background: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.scrollBtn:hover {
+  background: var(--primary-color, #ff9500);
+  color: white;
+  border-color: var(--primary-color, #ff9500);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.scrollBtn:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.scrollBtnLeft {
+  left: 8px;
+}
+
+.scrollBtnRight {
+  right: 8px;
+}
+
+/* Dark Mode */
+[data-theme="dark"] .nav,
+.dark .nav {
+  background: var(--card-bg, #2d2d2d);
+  border-bottom-color: var(--border-color, #3a3a3a);
+}
+
+[data-theme="dark"] .link,
+.dark .link {
+  border-color: var(--border-color, #3a3a3a);
+}
+
+[data-theme="dark"] .link:hover,
+.dark .link:hover {
+  background: var(--bg-secondary, #3a3a3a);
+}
+
+[data-theme="dark"] .scrollBtn,
+.dark .scrollBtn {
+  background: var(--card-bg, #2d2d2d);
+  border-color: var(--border-color, #3a3a3a);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+  .nav {
+    top: 56px; /* Adjust for mobile header */
+  }
+
   .container {
-    gap: var(--spacing-md);
-    padding: 0 var(--spacing-sm);
+    padding: 10px 12px;
+    gap: 6px;
   }
 
   .link {
+    padding: 6px 16px;
+    font-size: 13px;
+  }
+
+  .scrollBtn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .scrollBtnLeft {
+    left: 4px;
+  }
+
+  .scrollBtnRight {
+    right: 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  .link {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+
+  .scrollBtn {
+    width: 28px;
+    height: 28px;
     font-size: 14px;
   }
+}
+
+/* Animation for category pills */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.link {
+  animation: slideIn 0.3s ease forwards;
+}
+
+.link:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.link:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.link:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.link:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.link:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.link:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.link:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.link:nth-child(8) {
+  animation-delay: 0.4s;
 }
