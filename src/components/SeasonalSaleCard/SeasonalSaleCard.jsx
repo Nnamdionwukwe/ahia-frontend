@@ -12,6 +12,10 @@ const SeasonalSaleCard = ({ product, sale }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const navigate = useNavigate();
 
+  // Debug: Log the sale object
+  console.log("SeasonalSaleCard - sale object:", sale);
+  console.log("SeasonalSaleCard - product:", product);
+
   const handleBuyNow = (e) => {
     e.stopPropagation();
     if (!accessToken) {
@@ -91,7 +95,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
             className={styles.image}
           />
           <div className={styles.seasonalBadge}>
-            {sale.season} Sale -{discountPercentage}%
+            {product?.season} -{discountPercentage}%
           </div>
         </div>
         <div className={styles.content}>

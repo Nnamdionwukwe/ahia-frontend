@@ -66,19 +66,56 @@ const ProductDetail = () => {
     };
   }, [showExitModal]);
 
+  // // Countdown timer based on actual sale end time
+  // useEffect(() => {
+  //   const calculateTimeLeft = () => {
+  //     const sale = flashSale || seasonalSale;
+  //     if (!sale || !sale.end_time) return;
+
+  //     const difference = new Date(sale.end_time) - new Date();
+
+  //     if (difference > 0) {
+  //       setTimeLeft({
+  //         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+  //         minutes: Math.floor((difference / 1000 / 60) % 60),
+  //         seconds: Math.floor((difference / 1000) % 60),
+  //       });
+  //     }
+  //   };
+
+  //   calculateTimeLeft();
+  //   const timer = setInterval(calculateTimeLeft, 1000);
+
+  //   return () => clearInterval(timer);
+  // }, [flashSale, seasonalSale]);
   // Countdown timer based on actual sale end time
   useEffect(() => {
     const calculateTimeLeft = () => {
       const sale = flashSale || seasonalSale;
-      if (!sale || !sale.end_time) return;
+      if (!sale || !sale.end_time) {
+        setTimeLeft({
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
+        });
+        return;
+      }
 
-      const difference = new Date(sale.end_time) - new Date();
+      const now = new Date().getTime();
+      const end = new Date(sale.end_time).getTime();
+      const difference = end - now;
 
       if (difference > 0) {
         setTimeLeft({
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
           minutes: Math.floor((difference / 1000 / 60) % 60),
           seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setTimeLeft({
+          hours: 0,
+          minutes: 0,
+          seconds: 0,
         });
       }
     };
@@ -592,43 +629,24 @@ const ProductDetail = () => {
           )} */}
 
           {/* Seasonal/Flash Sale Banner */}
-          {activeSale && (flashSale || seasonalSale) && (
+          {/* {activeSale && (
             <div
               className={styles.flashSaleBanner}
               style={
-                seasonalSale?.banner_color
+                activeSale?.banner_color
                   ? {
-                      background: `linear-gradient(90deg, ${seasonalSale.banner_color} 0%, ${seasonalSale.banner_color}dd 100%)`,
-                    }
-                  : flashSale
-                  ? {
-                      background:
-                        "linear-gradient(90deg, #FF6B35 0%, #FF6B35dd 100%)",
+                      background: `linear-gradient(90deg, ${activeSale.banner_color} 0%, ${activeSale.banner_color}dd 100%)`,
                     }
                   : {}
               }
             >
               <div className={styles.saleTag}>
-                {flashSale
-                  ? "⚡ FLASH SALE"
-                  : seasonalSale
-                  ? `🎁 ${seasonalSale.name || "SEASONAL SALE"}`
-                  : ""}
+                {activeSale?.name || activeSale?.title || "SALE"}
               </div>
               <div className={styles.flashSaleContent}>
                 <div className={styles.flashSaleLeft}>
-                  {flashSale && (
-                    <>
-                      <span className={styles.flashIcon}>⚡</span>
-                      <span>Limited time offer</span>
-                    </>
-                  )}
-                  {seasonalSale && (
-                    <>
-                      <span className={styles.flashIcon}>🎁</span>
-                      <span>{seasonalSale.name || "Special sale"}</span>
-                    </>
-                  )}
+                  <span className={styles.flashIcon}>⚡</span>
+                  <span>{flashSale ? "Flash sale" : "Seasonal sale"}</span>
                   <span className={styles.separator}>|</span>
                   <span className={styles.clockIcon}>⏰</span>
                   <span className={styles.endsText}>Ends in</span>
@@ -647,11 +665,52 @@ const ProductDetail = () => {
                   </span>
                 </div>
               </div>
-              {flashSale?.remaining_quantity && (
-                <div className={styles.saleStock}>
-                  Only {flashSale.remaining_quantity} left!
+            </div>
+          )} */}
+
+          {/* Seasonal/Flash Sale Banner */}
+          {activeSale && (
+            <div
+              className={styles.flashSaleBanner}
+              style={
+                seasonalSale?.banner_color
+                  ? {
+                      background: `linear-gradient(90deg, ${seasonalSale.banner_color} 0%, ${seasonalSale.banner_color}dd 100%)`,
+                    }
+                  : {}
+              }
+            >
+              <div className={styles.saleTag}>
+                {flashSale?.title || seasonalSale?.name || "SALE"}
+              </div>
+              <div className={styles.flashSaleContent}>
+                <div className={styles.flashSaleLeft}>
+                  <span className={styles.flashIcon}>⚡</span>
+                  <span>
+                    {flashSale
+                      ? "Flash sale"
+                      : seasonalSale?.season
+                      ? `${seasonalSale.season} sale`
+                      : "Big sale"}
+                  </span>
+                  <span className={styles.separator}>|</span>
+                  <span className={styles.clockIcon}>⏰</span>
+                  <span className={styles.endsText}>Ends in</span>
                 </div>
-              )}
+                <div className={styles.timer}>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.hours).padStart(2, "0")}
+                  </span>
+                  <span className={styles.timerColon}>:</span>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.minutes).padStart(2, "0")}
+                  </span>
+                  <span className={styles.timerColon}>:</span>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
             </div>
           )}
 
