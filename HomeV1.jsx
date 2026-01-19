@@ -38,105 +38,66 @@ const Home = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Starting to fetch all data...");
-
       // Fetch all data in parallel
       const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/flash-sales/active`).catch((err) => {
-          console.error("Flash sales fetch error:", err);
-          return { data: { flashSales: [] } };
-        }),
-        axios.get(`${API_URL}/api/seasonal-sales/active`).catch((err) => {
-          console.error("Seasonal sales fetch error:", err);
-          return { data: { seasonalSales: [] } };
-        }),
-        axios
-          .get(
-            category
-              ? `${API_URL}/api/products?category=${category}`
-              : `${API_URL}/api/products`
-          )
-          .catch((err) => {
-            console.error("Products fetch error:", err);
-            return { data: { products: [] } };
-          }),
+        axios.get(`${API_URL}/api/flash-sales/active`),
+        axios.get(`${API_URL}/api/seasonal-sales/active`),
+        axios.get(
+          category
+            ? `${API_URL}/api/products?category=${category}`
+            : `${API_URL}/api/products`
+        ),
       ]);
 
-      console.log("Flash Sales Response:", flashSalesRes.data);
-      console.log("Seasonal Sales Response:", seasonalSalesRes.data);
-      console.log("Products Response:", productsRes.data);
-
-      // Process Flash Sales - Handle both array and object responses
-      let flashSales = [];
-      if (Array.isArray(flashSalesRes.data)) {
-        flashSales = flashSalesRes.data;
-      } else if (flashSalesRes.data.flashSales) {
-        flashSales = flashSalesRes.data.flashSales;
-      }
-      console.log("Processed flash sales:", flashSales);
+      // Process Flash Sales
+      const flashSales = flashSalesRes.data.flashSales || [];
       setActiveFlashSales(flashSales);
 
       // Fetch products for each flash sale
-      if (flashSales.length > 0) {
-        const flashProductsData = {};
-        await Promise.all(
-          flashSales.map(async (sale) => {
-            try {
-              console.log(`Fetching products for flash sale ${sale.id}...`);
-              const response = await axios.get(
-                `${API_URL}/api/flash-sales/${sale.id}/products`,
-                { params: { limit: 8, sort: "popularity" } }
-              );
-              console.log(`Flash sale ${sale.id} products:`, response.data);
-              flashProductsData[sale.id] = response.data.products || [];
-            } catch (err) {
-              console.error(
-                `Error fetching flash sale ${sale.id} products:`,
-                err
-              );
-              flashProductsData[sale.id] = [];
-            }
-          })
-        );
-        console.log("All flash products data:", flashProductsData);
-        setFlashSaleProducts(flashProductsData);
-      }
+      const flashProductsData = {};
+      await Promise.all(
+        flashSales.map(async (sale) => {
+          try {
+            const response = await axios.get(
+              `${API_URL}/api/flash-sales/${sale.id}/products`,
+              { params: { limit: 8, sort: "popularity" } }
+            );
+            flashProductsData[sale.id] = response.data.products || [];
+          } catch (err) {
+            console.error(
+              `Error fetching flash sale ${sale.id} products:`,
+              err
+            );
+            flashProductsData[sale.id] = [];
+          }
+        })
+      );
+      setFlashSaleProducts(flashProductsData);
 
-      // Process Seasonal Sales - Handle both array and object responses
-      let seasonalSales = [];
-      if (Array.isArray(seasonalSalesRes.data)) {
-        seasonalSales = seasonalSalesRes.data;
-      } else if (seasonalSalesRes.data.seasonalSales) {
-        seasonalSales = seasonalSalesRes.data.seasonalSales;
-      }
-      console.log("Processed seasonal sales:", seasonalSales);
+      // Process Seasonal Sales
+      const seasonalSales = seasonalSalesRes.data.seasonalSales || [];
       setActiveSeasonalSales(seasonalSales);
 
       // Fetch products for each seasonal sale
-      if (seasonalSales.length > 0) {
-        const seasonalProductsData = {};
-        await Promise.all(
-          seasonalSales.map(async (sale) => {
-            try {
-              console.log(`Fetching products for seasonal sale ${sale.id}...`);
-              const response = await axios.get(
-                `${API_URL}/api/seasonal-sales/${sale.id}/products`,
-                { params: { limit: 12 } }
-              );
-              console.log(`Seasonal sale ${sale.id} products:`, response.data);
-              seasonalProductsData[sale.id] = response.data.products || [];
-            } catch (err) {
-              console.error(
-                `Error fetching seasonal sale ${sale.id} products:`,
-                err
-              );
-              seasonalProductsData[sale.id] = [];
-            }
-          })
-        );
-        console.log("All seasonal products data:", seasonalProductsData);
-        setSeasonalSaleProducts(seasonalProductsData);
-      }
+      const seasonalProductsData = {};
+      await Promise.all(
+        seasonalSales.map(async (sale) => {
+          try {
+            const response = await axios.get(
+              `${API_URL}/api/seasonal-sales/${sale.id}/products`,
+              { params: { limit: 12 } }
+            );
+            seasonalProductsData[sale.id] = response.data.products || [];
+          } catch (err) {
+            console.error(
+              `Error fetching seasonal sale ${sale.id} products:`,
+              err
+            );
+            seasonalProductsData[sale.id] = [];
+          }
+        })
+      );
+      setSeasonalSaleProducts(seasonalProductsData);
 
       // Process Regular Products
       let regularProducts = [];
@@ -147,7 +108,6 @@ const Home = () => {
       } else if (productsRes.data.products) {
         regularProducts = productsRes.data.products;
       }
-      console.log("Regular products:", regularProducts);
       setProducts(regularProducts);
     } catch (err) {
       console.error("Error fetching data:", err);
@@ -200,59 +160,21 @@ const Home = () => {
       <Navigation />
 
       <div className={styles.content}>
-        {/* Debug Info - Remove in production */}
-        {/* {process.env.NODE_ENV === "development" && (
-          <div
-            style={{
-              padding: "10px",
-              background: "#f0f0f0",
-              marginBottom: "20px",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          >
-            <strong>Debug Info:</strong>
-            <div>Active Flash Sales: {activeFlashSales.length}</div>
-            <div>
-              Flash Sale Products Keys:{" "}
-              {Object.keys(flashSaleProducts).join(", ") || "none"}
-            </div>
-            <div>Active Seasonal Sales: {activeSeasonalSales.length}</div>
-            <div>Regular Products: {products.length}</div>
-          </div>
-        )} */}
-
         {/* Flash Sales Section */}
-        {activeFlashSales.length > 0 ? (
+        {activeFlashSales.length > 0 && (
           <FlashSaleSection
             activeFlashSales={activeFlashSales}
             flashSaleProducts={flashSaleProducts}
           />
-        ) : (
-          <div
-            style={{
-              padding: "20px",
-              background: "#fff",
-              borderRadius: "12px",
-              marginBottom: "20px",
-            }}
-          >
-            <p style={{ color: "#999", textAlign: "center" }}>
-              No active flash sales at the moment
-            </p>
-          </div>
         )}
 
         {/* Seasonal Sales Section */}
-        {activeSeasonalSales.length > 0 ? (
+        {activeSeasonalSales.length > 0 &&
           activeSeasonalSales.map((sale) => {
-            const saleProducts = seasonalSaleProducts[sale.id] || [];
+            const products = seasonalSaleProducts[sale.id] || [];
 
             // Don't render if no products
-            if (saleProducts.length === 0) {
-              console.log(`Skipping seasonal sale ${sale.id} - no products`);
-              return null;
-            }
+            if (products.length === 0) return null;
 
             return (
               <section key={sale.id} className={styles.seasonalSaleSection}>
@@ -276,7 +198,7 @@ const Home = () => {
                           Up to {sale.discount_percentage}% OFF
                         </span>
                         <span className={styles.productCountBadge}>
-                          {saleProducts.length} products available
+                          {products.length} products available
                         </span>
                       </div>
                     </div>
@@ -295,7 +217,7 @@ const Home = () => {
 
                 {/* Seasonal Sale Products Grid */}
                 <div className={styles.grid}>
-                  {saleProducts.slice(0, 12).map((product) => (
+                  {products.slice(0, 12).map((product) => (
                     <SeasonalSaleCard
                       key={product.id || product._id}
                       product={product}
@@ -305,35 +227,21 @@ const Home = () => {
                 </div>
 
                 {/* View More Button for Seasonal Sale */}
-                {saleProducts.length > 12 && (
+                {products.length > 12 && (
                   <div className={styles.viewMoreContainer}>
                     <button
-                      onClick={() => {
-                        window.location.href = `/seasonal-sales/${sale.id}`;
-                      }}
+                      onClick={() =>
+                        (window.location.href = `/seasonal-sales/${sale.id}`)
+                      }
                       className={styles.viewMoreBtn}
                     >
-                      View All {saleProducts.length} Products
+                      View All {products.length} Products
                     </button>
                   </div>
                 )}
               </section>
             );
-          })
-        ) : (
-          <div
-            style={{
-              padding: "20px",
-              background: "#fff",
-              borderRadius: "12px",
-              marginBottom: "20px",
-            }}
-          >
-            <p style={{ color: "#999", textAlign: "center" }}>
-              No active seasonal sales at the moment
-            </p>
-          </div>
-        )}
+          })}
 
         {/* Featured Products Section */}
         {products.length > 0 && (

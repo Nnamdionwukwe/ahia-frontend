@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useWishlistStore from "../../store/wishlistStore";
 import useAuthStore from "../../store/authStore";
-import ProductCard from "../../components/ProductCard/ProductCard";
+import WishlistItem from "../../components/WishlistItem";
 import styles from "./WishlistPage.module.css";
 
 const WishlistPage = () => {
@@ -10,29 +10,19 @@ const WishlistPage = () => {
   const [loading, setLoading] = useState(true);
   const accessToken = useAuthStore((state) => state.accessToken);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
-
-  // Get the entire store state
-  const wishlistStore = useWishlistStore();
-  const items = wishlistStore.items || [];
-  const fetchWishlist = wishlistStore.fetchWishlist;
+  const { items, fetchWishlist, removeFromWishlist } = useWishlistStore();
 
   useEffect(() => {
+    // Redirect to authentication if the user is not logged in
     if (!isAuthenticated) {
       navigate("/auth");
       return;
     }
 
     const loadWishlist = async () => {
-      if (accessToken && fetchWishlist) {
+      if (accessToken) {
         setLoading(true);
-        try {
-          await fetchWishlist(accessToken);
-        } catch (error) {
-          console.error("Error loading wishlist:", error);
-        } finally {
-          setLoading(false);
-        }
-      } else {
+        await fetchWishlist(accessToken);
         setLoading(false);
       }
     };
@@ -40,6 +30,18 @@ const WishlistPage = () => {
     loadWishlist();
   }, [accessToken, isAuthenticated, navigate, fetchWishlist]);
 
+  const handleRemoveFromWishlist = async (productId) => {
+    setLoading(true);
+    try {
+      await removeFromWishlist(productId, accessToken);
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Display loading indicator
   if (loading) {
     return (
       <div className={styles.container}>
@@ -48,7 +50,8 @@ const WishlistPage = () => {
     );
   }
 
-  if (!items || items.length === 0) {
+  // Check if wishlist is empty
+  if (!items.length) {
     return (
       <div className={styles.container}>
         <div className={styles.empty}>
@@ -70,7 +73,11 @@ const WishlistPage = () => {
       </div>
       <div className={styles.grid}>
         {items.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <WishlistItem
+            key={product.id}
+            product={product}
+            onRemove={handleRemoveFromWishlist}
+          />
         ))}
       </div>
     </div>

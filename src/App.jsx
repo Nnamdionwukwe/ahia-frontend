@@ -9,11 +9,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import useThemeStore from "./store/themeStore";
 import useAuthStore from "./store/authStore";
 
-// Components
-import Header from "./components/Header/Header";
-import Navigation from "./components/Navigation/Navigation";
-import BottomNav from "./components/BottomNav/BottomNav";
-
 // Pages
 import Home from "./pages/Home/Home";
 import Auth from "./pages/Auth/Auth";
@@ -25,6 +20,8 @@ import CartPage from "./pages/Cart/CartPage";
 
 import "./App.css";
 import SearchHeader from "./components/SearchHeader/SearchHeader";
+import FlashSalesList from "./pages/FlashSalesList/FlashSalesList";
+import FlashSaleCard from "./components/FlashSaleCard/FlashSaleCard";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -40,8 +37,6 @@ const App = () => {
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <Router>
         <div className={isDark ? "dark-mode" : ""}>
-          {/* <Header />  */}
-          {/* <Navigation />  */}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route
@@ -53,6 +48,11 @@ const App = () => {
             <Route
               path="/cart"
               element={isAuthenticated ? <CartPage /> : <Navigate to="/auth" />}
+            />
+            <Route path="/flash-sales" element={<FlashSalesList />} />
+            <Route
+              path="/flash-sales/:flashSaleId"
+              element={<FlashSaleCard />}
             />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/searchheader" element={<SearchHeader />} />

@@ -12,12 +12,86 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // Debug log
+  console.log("FlashSaleCard received product:", product);
+
+  // Early return with better error UI if product is invalid
+  if (!product || typeof product !== "object") {
+    console.error("FlashSaleCard: Invalid product data", product);
+    return null; // Return null instead of showing error message
+  }
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (!saleEndTime) return;
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const end = new Date(saleEndTime).getTime();
+      const distance = end - now;
+
+      if (distance < 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      setTimeLeft({
+        hours: Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    };
+
+    updateTimer(); // Initial call
+    const timer = setInterval(updateTimer, 1000);
+    return () => clearInterval(timer);
+  }, [saleEndTime]);
+
+  // Safe extraction with comprehensive fallbacks
+  const productId = product.id || product.product_id;
+  const productName = product.name || product.product_name || "Product";
+  const productImages = product.images || product.image_urls || [];
+  const firstImage = Array.isArray(productImages)
+    ? productImages[0]
+    : productImages;
+
+  // Price calculations
+  const salePrice = parseFloat(product.sale_price || product.price || 0);
+  const originalPrice = parseFloat(
+    product.original_price || product.price || salePrice
+  );
+  const savings = originalPrice - salePrice;
+  const savingsPercent =
+    originalPrice > 0 ? Math.round((savings / originalPrice) * 100) : 0;
+
+  // Stock and quantity
+  const remainingQty = parseInt(
+    product.remaining_quantity || product.stock_quantity || 0
+  );
+  const maxQty = parseInt(product.max_quantity || 100);
+  const soldQty = parseInt(product.sold_quantity || 0);
+  const soldPercentage = maxQty > 0 ? Math.round((soldQty / maxQty) * 100) : 0;
+
+  // Rating
+  const rating = parseFloat(product.rating || product.product_rating || 4.5);
+
+  // Variant ID
+  const variantId =
+    product.variant_id || product.product_variant_id || product.id;
 
   const handleBuyNow = (e) => {
     e.stopPropagation();
 
     if (!accessToken) {
-      alert("Please login to add items to cart");
+      alert("Please login to purchase");
       navigate("/auth");
       return;
     }
@@ -26,7 +100,7 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   };
 
   const handleAddToCart = async (e) => {
-    e.stopPropagation();
+    if (e) e.stopPropagation();
 
     if (!accessToken) {
       alert("Please login to add items to cart");
@@ -34,22 +108,17 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
       return;
     }
 
-    if (!product.variant_id && !product.product_variant_id) {
+    if (!variantId) {
       alert("Product variant not available");
       return;
     }
 
     setAdding(true);
     try {
-      // Use the variant_id from product, or fallback to product_variant_id
-      const variantId = product.variant_id || product.product_variant_id;
       const success = await addItem(variantId, 1, accessToken);
 
       if (success) {
-        // Show success message
         alert("Added to cart!");
-        // Optionally navigate to cart
-        // navigate("/cart");
       } else {
         alert("Failed to add to cart. Please try again.");
       }
@@ -62,47 +131,10 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   };
 
   const handleClick = () => {
-    navigate(`/product/${product.id}`);
+    if (productId) {
+      navigate(`/product/${productId}`);
+    }
   };
-
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const end = new Date(saleEndTime).getTime();
-      const distance = end - now;
-
-      if (distance < 0) {
-        clearInterval(timer);
-        return;
-      }
-
-      setTimeLeft({
-        hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        ),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [saleEndTime]);
-
-  const remainingQty = product.remaining_quantity || 0;
-  const maxQty = product.max_quantity || 1;
-  const soldQty = product.sold_quantity || 0;
-  const soldPercentage = maxQty > 0 ? Math.round((soldQty / maxQty) * 100) : 0;
-  const savings =
-    (product.original_price || product.price) - product.sale_price;
-  const savingsPercent = Math.round(
-    (savings / (product.original_price || product.price)) * 100
-  );
 
   return (
     <>
@@ -110,15 +142,19 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
         <div className={styles.imageWrapper} onClick={handleClick}>
           <img
             src={
-              product.images?.[0] ||
-              "https://via.placeholder.com/300x300?text=Product"
+              firstImage || "https://via.placeholder.com/300x300?text=Product"
             }
-            alt={product.name}
+            alt={productName}
             className={styles.image}
+            onError={(e) => {
+              e.target.src = "https://via.placeholder.com/300x300?text=Product";
+            }}
           />
-          <div className={styles.discountBadge}>
-            <Flame size={16} />-{savingsPercent}%
-          </div>
+          {savingsPercent > 0 && (
+            <div className={styles.discountBadge}>
+              <Flame size={16} />-{savingsPercent}%
+            </div>
+          )}
           {remainingQty < 10 && remainingQty > 0 && (
             <div className={styles.lowStockBadge}>
               Only {remainingQty} left!
@@ -127,20 +163,32 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
         </div>
 
         <div className={styles.content}>
-          <h3 className={styles.productName}>{product.name}</h3>
+          <h3 className={styles.productName} onClick={handleClick}>
+            {productName}
+          </h3>
 
           <div className={styles.rating}>
             <Star className="fill-yellow-400 text-yellow-400" size={16} />
-            <span className={styles.ratingText}>{product.rating || 4.5}</span>
+            <span className={styles.ratingText}>{rating.toFixed(2)}</span>
           </div>
 
           <div className={styles.priceSection}>
             <span className={styles.salePrice}>
-              ₦{product.sale_price?.toLocaleString()}
+              ₦
+              {salePrice.toLocaleString("en-NG", {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </span>
-            <span className={styles.originalPrice}>
-              ₦{(product.original_price || product.price)?.toLocaleString()}
-            </span>
+            {originalPrice > salePrice && (
+              <span className={styles.originalPrice}>
+                ₦
+                {originalPrice.toLocaleString("en-NG", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </span>
+            )}
           </div>
 
           <div className={styles.progressSection} onClick={handleClick}>
@@ -151,29 +199,31 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
             <div className={styles.progressBar}>
               <div
                 className={styles.progressFill}
-                style={{ width: `${soldPercentage}%` }}
+                style={{ width: `${Math.min(soldPercentage, 100)}%` }}
               />
             </div>
           </div>
 
-          <div className={styles.countdown} onClick={handleClick}>
-            <div className={styles.countdownContent}>
-              <Clock size={16} className="text-red-500" />
-              <div className={styles.countdownDigits}>
-                <span className={styles.countdownDigit}>
-                  {String(timeLeft.hours).padStart(2, "0")}
-                </span>
-                <span>:</span>
-                <span className={styles.countdownDigit}>
-                  {String(timeLeft.minutes).padStart(2, "0")}
-                </span>
-                <span>:</span>
-                <span className={styles.countdownDigit}>
-                  {String(timeLeft.seconds).padStart(2, "0")}
-                </span>
+          {saleEndTime && (
+            <div className={styles.countdown} onClick={handleClick}>
+              <div className={styles.countdownContent}>
+                <Clock size={16} className="text-red-500" />
+                <div className={styles.countdownDigits}>
+                  <span className={styles.countdownDigit}>
+                    {String(timeLeft.hours).padStart(2, "0")}
+                  </span>
+                  <span>:</span>
+                  <span className={styles.countdownDigit}>
+                    {String(timeLeft.minutes).padStart(2, "0")}
+                  </span>
+                  <span>:</span>
+                  <span className={styles.countdownDigit}>
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <button
             className={styles.buyNowBtn}
@@ -185,12 +235,14 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
         </div>
       </div>
 
-      <ProductVariantModal
-        isOpen={showVariantModal}
-        onClose={() => setShowVariantModal(false)}
-        product={product}
-        onAddToCart={handleAddToCart}
-      />
+      {showVariantModal && (
+        <ProductVariantModal
+          isOpen={showVariantModal}
+          onClose={() => setShowVariantModal(false)}
+          product={product}
+          onAddToCart={handleAddToCart}
+        />
+      )}
     </>
   );
 };

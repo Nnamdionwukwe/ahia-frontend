@@ -1,381 +1,466 @@
+/* Home.module.css */
+
 .container {
   min-height: 100vh;
-  background-color: var(--bg-primary);
-  transition: background-color 0.3s ease;
+  background: #f5f5f5;
+  padding-bottom: 80px; /* Space for bottom nav */
 }
 
-/* Hero Section */
-.hero {
-  background: linear-gradient(
-    to right,
-    var(--danger-color),
-    var(--warning-color),
-    var(--danger-color)
-  );
-  color: white;
-  padding: 64px 16px;
+.content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Loading State */
+.loadingContainer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+}
+
+.loadingContent {
   text-align: center;
 }
 
-.heroContent h1 {
-  font-size: 48px;
-  margin-bottom: 16px;
-  font-weight: bold;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  color: white;
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #ff6b35;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
 }
 
-.heroContent p {
-  font-size: 20px;
-  margin-bottom: 32px;
-  opacity: 0.9;
-  color: rgba(255, 255, 255, 0.9);
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.heroButtons {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.btnPrimary {
-  background: var(--bg-primary);
-  color: var(--danger-color);
-  padding: 12px 32px;
-  border-radius: 9999px;
-  font-weight: bold;
-  border: none;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btnPrimary:hover {
-  opacity: 0.9;
-  transform: scale(1.05);
-}
-
-.btnSecondary {
-  border: 2px solid white;
-  color: white;
-  padding: 12px 32px;
-  border-radius: 9999px;
-  font-weight: bold;
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btnSecondary:hover {
-  background: white;
-  color: var(--danger-color);
-}
-
-/* Main Content */
-.content {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 32px 16px;
-}
-
-/* Section Headers */
-.sectionHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-
-.sectionTitle {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.iconBox {
-  padding: 12px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.iconBoxRed {
-  background: linear-gradient(
-    to right,
-    var(--danger-color),
-    var(--warning-color)
-  );
-}
-
-.iconBoxBlue {
-  background: var(--primary-color);
-}
-
-.titleText h2 {
-  font-size: 30px;
-  font-weight: bold;
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-
-.titleText p {
-  color: var(--text-secondary);
-  font-size: 14px;
-  transition: color 0.3s ease;
-}
-
-.viewAllBtn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--danger-color);
-  font-weight: 600;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-
-.viewAllBtn:hover {
-  opacity: 0.8;
-}
-
-/* Flash Sale Section */
-.flashSaleSection {
-  margin-bottom: 48px;
-}
-
-/* Seasonal Sale Banner */
-.seasonalBanner {
-  border-radius: 16px;
-  padding: 32px;
-  margin-bottom: 24px;
-  transition: background 0.3s ease;
-}
-
-.seasonalBannerContent {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 24px;
-}
-
-.seasonalInfo h2 {
-  font-size: 36px;
-  font-weight: bold;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  transition: color 0.3s ease;
-}
-
-.seasonalInfo p {
+.loadingText {
   font-size: 18px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
-  transition: color 0.3s ease;
+  color: #666;
+  margin: 0;
 }
 
-.seasonalBadges {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.discountBadge {
-  background: var(--primary-bg);
-  padding: 8px 16px;
-  border-radius: 9999px;
-  font-weight: bold;
-  color: var(--primary-color);
-  transition: background 0.3s ease;
-}
-
-.productCountBadge {
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
-}
-
-.seasonalEndDate {
-  text-align: right;
-}
-
-.seasonalEndDate .label {
-  font-size: 14px;
-  color: var(--text-secondary);
-  margin-bottom: 4px;
-  transition: color 0.3s ease;
-}
-
-.seasonalEndDate .date {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-
-/* Product Grid */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 24px;
-}
-
-/* Loading and Error States */
-.loadingContainer,
+/* Error State */
 .errorContainer {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-primary);
-  transition: background 0.3s ease;
+  padding: 20px;
+  background: #f5f5f5;
 }
 
-.loadingContent,
 .errorContent {
+  background: white;
+  padding: 50px 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   text-align: center;
-  padding: 24px;
-}
-
-.spinner {
-  width: 64px;
-  height: 64px;
-  border: 4px solid var(--border-color);
-  border-top-color: var(--danger-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin: 0 auto 16px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-.loadingText {
-  color: var(--text-secondary);
-  font-weight: 600;
-  transition: color 0.3s ease;
+  max-width: 500px;
+  width: 100%;
 }
 
 .errorIcon {
-  color: var(--danger-color);
-  margin: 0 auto 16px;
+  color: #f74040;
+  margin-bottom: 20px;
 }
 
 .errorTitle {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  transition: color 0.3s ease;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 12px 0;
 }
 
 .errorMessage {
-  color: var(--text-secondary);
-  margin-bottom: 24px;
-  transition: color 0.3s ease;
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 30px 0;
+  line-height: 1.6;
 }
 
 .retryBtn {
-  background: var(--danger-color);
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%);
   color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-weight: 600;
   border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
 }
 
 .retryBtn:hover {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.retryBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+/* Seasonal Sale Section */
+.seasonalSaleSection {
+  margin-bottom: 60px;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.seasonalBanner {
+  border-radius: 16px;
+  padding: 40px;
+  margin-bottom: 30px;
+  position: relative;
+  overflow: hidden;
+}
+
+.seasonalBanner::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.seasonalBannerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+.seasonalInfo h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 12px 0;
+  color: #222;
+}
+
+.seasonalInfo p {
+  font-size: 16px;
+  color: #555;
+  margin: 0 0 20px 0;
+  line-height: 1.5;
+}
+
+.seasonalBadges {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.discountBadge,
+.productCountBadge {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.discountBadge {
+  background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+}
+
+.productCountBadge {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.seasonalEndDate {
+  text-align: right;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  min-width: 150px;
+}
+
+.seasonalEndDate .label {
+  font-size: 12px;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.seasonalEndDate .date {
+  font-size: 18px;
+  font-weight: 700;
+  color: #222;
+}
+
+/* Featured Section */
+.featuredSection {
+  margin-bottom: 60px;
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.iconBox {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.iconBoxRed {
+  background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%);
+}
+
+.iconBoxBlue {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.titleText h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0 0 8px 0;
+  color: #222;
+}
+
+.titleText p {
+  margin: 0;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Grid Layout */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+/* View More / Load More Buttons */
+.viewMoreContainer,
+.loadMoreContainer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.viewMoreBtn,
+.loadMoreBtn {
+  padding: 14px 32px;
+  background: white;
+  color: #ff6b35;
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.viewMoreBtn:hover,
+.loadMoreBtn:hover {
+  background: #ff6b35;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.viewMoreBtn:active,
+.loadMoreBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 /* Empty State */
 .emptyState {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.emptyContent {
   text-align: center;
-  padding: 80px 16px;
-  background: var(--card-bg);
-  border-radius: 12px;
-  transition: background 0.3s ease;
+  max-width: 500px;
+  background: white;
+  padding: 60px 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 }
 
 .emptyIcon {
-  color: var(--border-color);
-  margin: 0 auto 16px;
+  color: #e0e0e0;
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .emptyTitle {
-  font-size: 24px;
-  font-weight: bold;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-  transition: color 0.3s ease;
+  font-size: 28px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 12px 0;
 }
 
 .emptyMessage {
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 30px 0;
+  line-height: 1.6;
 }
 
-/* Featured Products Section */
-.featuredSection {
-  margin-top: 48px;
+.refreshBtn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+}
+
+.refreshBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+}
+
+.refreshBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .heroContent h1 {
-    font-size: 32px;
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 968px) {
+  .content {
+    padding: 15px;
   }
 
-  .heroContent p {
-    font-size: 16px;
+  .seasonalSaleSection,
+  .featuredSection {
+    padding: 20px;
+    margin-bottom: 30px;
   }
 
-  .hero {
-    padding: 48px 16px;
-  }
-
-  .heroButtons {
-    flex-direction: column;
-  }
-
-  .btnPrimary,
-  .btnSecondary {
-    width: 100%;
-  }
-
-  .titleText h2 {
-    font-size: 24px;
-  }
-
-  .seasonalInfo h2 {
-    font-size: 28px;
+  .seasonalBanner {
+    padding: 30px 20px;
   }
 
   .seasonalBannerContent {
     flex-direction: column;
-    align-items: flex-start;
+    text-align: center;
   }
 
   .seasonalEndDate {
-    text-align: left;
+    text-align: center;
+    width: 100%;
+  }
+
+  .sectionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .content {
+    padding: 12px;
+  }
+
+  .seasonalSaleSection,
+  .featuredSection {
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .seasonalBanner {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+  }
+
+  .seasonalInfo h2 {
+    font-size: 1.5rem;
+  }
+
+  .seasonalInfo p {
+    font-size: 14px;
+  }
+
+  .sectionHeader {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+  }
+
+  .iconBox {
+    width: 50px;
+    height: 50px;
+  }
+
+  .titleText h2 {
+    font-size: 1.5rem;
+  }
+
+  .titleText p {
+    font-size: 13px;
   }
 
   .grid {
@@ -383,40 +468,67 @@
     gap: 16px;
   }
 
-  .sectionHeader {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  .errorContent,
+  .emptyContent {
+    padding: 40px 24px;
+  }
+
+  .errorTitle,
+  .emptyTitle {
+    font-size: 22px;
+  }
+
+  .errorMessage,
+  .emptyMessage {
+    font-size: 14px;
   }
 }
 
 @media (max-width: 480px) {
-  .hero {
-    padding: 32px 12px;
-  }
-
-  .heroContent h1 {
-    font-size: 24px;
-  }
-
-  .content {
-    padding: 24px 12px;
-  }
-
   .grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
 
-  .seasonalBanner {
-    padding: 20px;
-  }
-
   .seasonalInfo h2 {
-    font-size: 24px;
+    font-size: 1.3rem;
   }
 
-  .seasonalInfo p {
-    font-size: 16px;
+  .titleText h2 {
+    font-size: 1.3rem;
   }
+
+  .viewMoreBtn,
+  .loadMoreBtn,
+  .retryBtn,
+  .refreshBtn {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+
+  .container {
+    padding-bottom: 70px;
+  }
+}
+
+/* Animation for sections entering */
+.seasonalSaleSection,
+.featuredSection {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.3s ease;
 }

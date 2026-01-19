@@ -1,0 +1,32 @@
+/* src/components/WishlistItem.module.css */
+.card {
+  border: 1px solid #ddd;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+  margin: 8px;
+}
+
+.image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.name {
+  font-size: 1.2em;
+  margin: 8px 0;
+}
+
+.price {
+  color: #555;
+}
+
+.removeBtn {
+  background-color: #ff3333;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
