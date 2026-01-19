@@ -1,6 +1,3 @@
-// ============================================
-// 1. ProductVariantModal.jsx
-// ============================================
 import React, { useState, useEffect } from "react";
 import { FiX, FiMinus, FiPlus, FiCheck } from "react-icons/fi";
 import axios from "axios";
@@ -32,7 +29,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
       );
       setVariants(response.data.variants || []);
 
-      // Auto-select first variant if only one exists
       if (response.data.variants?.length === 1) {
         const variant = response.data.variants[0];
         setSelectedVariant(variant);
@@ -57,7 +53,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
     ...new Set(variants.map((v) => v.size).filter(Boolean)),
   ];
 
-  // Find matching variant based on selected options
   useEffect(() => {
     if (selectedOptions.color || selectedOptions.size) {
       const matchingVariant = variants.find((v) => {
@@ -93,6 +88,7 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
       return;
     }
 
+    // Call the passed in onAddToCart function with variant id and quantity
     onAddToCart(selectedVariant.id, quantity);
     onClose();
   };
@@ -309,42 +305,3 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
 };
 
 export default ProductVariantModal;
-
-// ============================================
-// 2. Update FlashSaleCard.jsx to use modal
-// ============================================
-/*
-
-*/
-
-// ============================================
-// 3. Backend: Add variants endpoint
-// ============================================
-/*
-// In your products controller or create a new variants controller
-exports.getProductVariants = async (req, res) => {
-  try {
-    const { productId } = req.params;
-
-    const variants = await db.query(
-      `SELECT id, product_id, color, size, base_price, 
-              discount_percentage, stock_quantity, sku
-       FROM product_variants
-       WHERE product_id = $1 AND stock_quantity >= 0
-       ORDER BY color, size`,
-      [productId]
-    );
-
-    res.json({
-      variants: variants.rows,
-      count: variants.rows.length
-    });
-  } catch (error) {
-    console.error('Get variants error:', error);
-    res.status(500).json({ error: 'Failed to fetch variants' });
-  }
-};
-
-// Add route in products.js
-router.get('/:productId/variants', productController.getProductVariants);
-*/

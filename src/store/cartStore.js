@@ -15,6 +15,27 @@ const useCartStore = create((set, get) => ({
   error: null,
 
   // Add item to cart (with API)
+  // addItem: async (productVariantId, quantity, token) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${API_URL}/api/cart/add`,
+  //       { product_variant_id: productVariantId, quantity },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+
+  //     if (response.data.success) {
+  //       // Refresh cart after adding
+  //       await get().fetchCart(token);
+  //       return true;
+  //     }
+  //     return false;
+  //   } catch (error) {
+  //     console.error("Add to cart error:", error);
+  //     set({ error: error.response?.data?.error || "Failed to add to cart" });
+  //     return false;
+  //   }
+  // },
+
   addItem: async (productVariantId, quantity, token) => {
     try {
       const response = await axios.post(
@@ -25,7 +46,7 @@ const useCartStore = create((set, get) => ({
 
       if (response.data.success) {
         // Refresh cart after adding
-        await get().fetchCart(token);
+        await get().fetchCart(token); // Ensure this updates the cart items
         return true;
       }
       return false;

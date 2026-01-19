@@ -29,25 +29,21 @@ const ProductCard = ({ product }) => {
     navigate(`/product/${product.id}`);
   };
 
-  const handleAddToCart = async (e) => {
-    e.stopPropagation();
-
+  const handleAddToCart = async (variantId, quantity) => {
     if (!accessToken) {
       alert("Please login to add items to cart");
       navigate("/auth");
       return;
     }
 
-    if (!product.variant_id && !product.product_variant_id) {
+    if (!variantId) {
       alert("Product variant not available");
       return;
     }
 
     setAdding(true);
     try {
-      // Use the variant_id from product
-      const variantId = product.variant_id || product.product_variant_id;
-      const success = await addItem(variantId, 1, accessToken);
+      const success = await addItem(variantId, quantity, accessToken);
 
       if (success) {
         alert("Added to cart!");
@@ -116,7 +112,7 @@ const ProductCard = ({ product }) => {
         isOpen={showVariantModal}
         onClose={() => setShowVariantModal(false)}
         product={product}
-        onAddToCart={handleAddToCart}
+        onAddToCart={handleAddToCart} // Passing the handleAddToCart to the modal
       />
     </>
   );

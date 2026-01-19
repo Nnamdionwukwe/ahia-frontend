@@ -232,25 +232,62 @@ const ProductDetail = () => {
     }
   };
 
+  // const fetchSales = async () => {
+  //   try {
+  //     // Fetch active seasonal sale
+  //     const seasonalRes = await axios.get(
+  //       `${API_URL}/api/seasonal-sales/product/${id}`
+  //     );
+  //     if (seasonalRes.data) {
+  //       setSeasonalSale(seasonalRes.data);
+  //     }
+
+  //     // Fetch active flash sale
+  //     const flashRes = await axios.get(
+  //       `${API_URL}/api/flash-sales/product/${id}`
+  //     );
+  //     if (flashRes.data) {
+  //       setFlashSale(flashRes.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching sales:", error);
+  //   }
+  // };
   const fetchSales = async () => {
     try {
+      // Reset sales for fresh product
+      setSeasonalSale(null);
+      setFlashSale(null);
+
       // Fetch active seasonal sale
-      const seasonalRes = await axios.get(
-        `${API_URL}/api/seasonal-sales/product/${id}`
-      );
-      if (seasonalRes.data) {
-        setSeasonalSale(seasonalRes.data);
+      try {
+        const seasonalRes = await axios.get(
+          `${API_URL}/api/seasonal-sales/product/${id}`
+        );
+        if (seasonalRes.data && Object.keys(seasonalRes.data).length > 0) {
+          setSeasonalSale(seasonalRes.data);
+        }
+      } catch (error) {
+        console.log("No seasonal sale for this product");
+        setSeasonalSale(null);
       }
 
       // Fetch active flash sale
-      const flashRes = await axios.get(
-        `${API_URL}/api/flash-sales/product/${id}`
-      );
-      if (flashRes.data) {
-        setFlashSale(flashRes.data);
+      try {
+        const flashRes = await axios.get(
+          `${API_URL}/api/flash-sales/product/${id}`
+        );
+        if (flashRes.data && Object.keys(flashRes.data).length > 0) {
+          setFlashSale(flashRes.data);
+        }
+      } catch (error) {
+        console.log("No flash sale for this product");
+        setFlashSale(null);
       }
     } catch (error) {
       console.error("Error fetching sales:", error);
+      setSeasonalSale(null);
+      setFlashSale(null);
     }
   };
 
@@ -515,7 +552,7 @@ const ProductDetail = () => {
       {activeTab === "overview" && (
         <div className={styles.content}>
           {/* Seasonal/Flash Sale Banner */}
-          {activeSale && (
+          {/* {activeSale && (
             <div
               className={styles.flashSaleBanner}
               style={
@@ -551,6 +588,70 @@ const ProductDetail = () => {
                   </span>
                 </div>
               </div>
+            </div>
+          )} */}
+
+          {/* Seasonal/Flash Sale Banner */}
+          {activeSale && (flashSale || seasonalSale) && (
+            <div
+              className={styles.flashSaleBanner}
+              style={
+                seasonalSale?.banner_color
+                  ? {
+                      background: `linear-gradient(90deg, ${seasonalSale.banner_color} 0%, ${seasonalSale.banner_color}dd 100%)`,
+                    }
+                  : flashSale
+                  ? {
+                      background:
+                        "linear-gradient(90deg, #FF6B35 0%, #FF6B35dd 100%)",
+                    }
+                  : {}
+              }
+            >
+              <div className={styles.saleTag}>
+                {flashSale
+                  ? "⚡ FLASH SALE"
+                  : seasonalSale
+                  ? `🎁 ${seasonalSale.name || "SEASONAL SALE"}`
+                  : ""}
+              </div>
+              <div className={styles.flashSaleContent}>
+                <div className={styles.flashSaleLeft}>
+                  {flashSale && (
+                    <>
+                      <span className={styles.flashIcon}>⚡</span>
+                      <span>Limited time offer</span>
+                    </>
+                  )}
+                  {seasonalSale && (
+                    <>
+                      <span className={styles.flashIcon}>🎁</span>
+                      <span>{seasonalSale.name || "Special sale"}</span>
+                    </>
+                  )}
+                  <span className={styles.separator}>|</span>
+                  <span className={styles.clockIcon}>⏰</span>
+                  <span className={styles.endsText}>Ends in</span>
+                </div>
+                <div className={styles.timer}>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.hours).padStart(2, "0")}
+                  </span>
+                  <span className={styles.timerColon}>:</span>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.minutes).padStart(2, "0")}
+                  </span>
+                  <span className={styles.timerColon}>:</span>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
+              {flashSale?.remaining_quantity && (
+                <div className={styles.saleStock}>
+                  Only {flashSale.remaining_quantity} left!
+                </div>
+              )}
             </div>
           )}
 

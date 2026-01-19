@@ -38,122 +38,123 @@ const Home = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Starting to fetch all data...");
+      console.log("Fetching from API_URL:", API_URL);
 
       // Fetch all data in parallel
       const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
-        axios.get(`${API_URL}/api/flash-sales/active`).catch((err) => {
-          console.error("Flash sales fetch error:", err);
-          return { data: { flashSales: [] } };
-        }),
-        axios.get(`${API_URL}/api/seasonal-sales/active`).catch((err) => {
-          console.error("Seasonal sales fetch error:", err);
-          return { data: { seasonalSales: [] } };
-        }),
-        axios
-          .get(
-            category
-              ? `${API_URL}/api/products?category=${category}`
-              : `${API_URL}/api/products`
-          )
-          .catch((err) => {
-            console.error("Products fetch error:", err);
-            return { data: { products: [] } };
-          }),
+        axios.get(`${API_URL}/api/flash-sales/active`),
+        axios.get(`${API_URL}/api/seasonal-sales/active`),
+        axios.get(
+          category
+            ? `${API_URL}/api/products?category=${category}`
+            : `${API_URL}/api/products`
+        ),
       ]);
 
       console.log("Flash Sales Response:", flashSalesRes.data);
       console.log("Seasonal Sales Response:", seasonalSalesRes.data);
       console.log("Products Response:", productsRes.data);
 
-      // Process Flash Sales - Handle both array and object responses
+      // Process Flash Sales - Handle both direct array and wrapped response
       let flashSales = [];
       if (Array.isArray(flashSalesRes.data)) {
         flashSales = flashSalesRes.data;
-      } else if (flashSalesRes.data.flashSales) {
+      } else if (flashSalesRes.data?.flashSales) {
         flashSales = flashSalesRes.data.flashSales;
       }
-      console.log("Processed flash sales:", flashSales);
       setActiveFlashSales(flashSales);
 
       // Fetch products for each flash sale
+      const flashProductsData = {};
       if (flashSales.length > 0) {
-        const flashProductsData = {};
         await Promise.all(
           flashSales.map(async (sale) => {
             try {
-              console.log(`Fetching products for flash sale ${sale.id}...`);
               const response = await axios.get(
                 `${API_URL}/api/flash-sales/${sale.id}/products`,
                 { params: { limit: 8, sort: "popularity" } }
               );
-              console.log(`Flash sale ${sale.id} products:`, response.data);
-              flashProductsData[sale.id] = response.data.products || [];
+
+              // Handle response structure from controller
+              let products = [];
+              if (Array.isArray(response.data)) {
+                products = response.data;
+              } else if (response.data?.products) {
+                products = response.data.products;
+              }
+
+              flashProductsData[sale.id] = products;
             } catch (err) {
               console.error(
                 `Error fetching flash sale ${sale.id} products:`,
-                err
+                err.message
               );
               flashProductsData[sale.id] = [];
             }
           })
         );
-        console.log("All flash products data:", flashProductsData);
-        setFlashSaleProducts(flashProductsData);
       }
+      setFlashSaleProducts(flashProductsData);
 
-      // Process Seasonal Sales - Handle both array and object responses
+      // Process Seasonal Sales - Handle both direct array and wrapped response
       let seasonalSales = [];
       if (Array.isArray(seasonalSalesRes.data)) {
         seasonalSales = seasonalSalesRes.data;
-      } else if (seasonalSalesRes.data.seasonalSales) {
+      } else if (seasonalSalesRes.data?.seasonalSales) {
         seasonalSales = seasonalSalesRes.data.seasonalSales;
       }
-      console.log("Processed seasonal sales:", seasonalSales);
       setActiveSeasonalSales(seasonalSales);
 
       // Fetch products for each seasonal sale
+      const seasonalProductsData = {};
       if (seasonalSales.length > 0) {
-        const seasonalProductsData = {};
         await Promise.all(
           seasonalSales.map(async (sale) => {
             try {
-              console.log(`Fetching products for seasonal sale ${sale.id}...`);
               const response = await axios.get(
                 `${API_URL}/api/seasonal-sales/${sale.id}/products`,
                 { params: { limit: 12 } }
               );
-              console.log(`Seasonal sale ${sale.id} products:`, response.data);
-              seasonalProductsData[sale.id] = response.data.products || [];
+
+              // Handle response structure from controller
+              let products = [];
+              if (Array.isArray(response.data)) {
+                products = response.data;
+              } else if (response.data?.products) {
+                products = response.data.products;
+              }
+
+              seasonalProductsData[sale.id] = products;
             } catch (err) {
               console.error(
                 `Error fetching seasonal sale ${sale.id} products:`,
-                err
+                err.message
               );
               seasonalProductsData[sale.id] = [];
             }
           })
         );
-        console.log("All seasonal products data:", seasonalProductsData);
-        setSeasonalSaleProducts(seasonalProductsData);
       }
+      setSeasonalSaleProducts(seasonalProductsData);
 
       // Process Regular Products
       let regularProducts = [];
       if (Array.isArray(productsRes.data)) {
         regularProducts = productsRes.data;
-      } else if (productsRes.data.data) {
+      } else if (productsRes.data?.data) {
         regularProducts = productsRes.data.data;
-      } else if (productsRes.data.products) {
+      } else if (productsRes.data?.products) {
         regularProducts = productsRes.data.products;
       }
-      console.log("Regular products:", regularProducts);
       setProducts(regularProducts);
     } catch (err) {
       console.error("Error fetching data:", err);
-      setError(
-        err.response?.data?.error || err.message || "Failed to load data"
-      );
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.details ||
+        err.message ||
+        "Failed to load data";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -200,59 +201,32 @@ const Home = () => {
       <Navigation />
 
       <div className={styles.content}>
-        {/* Debug Info - Remove in production */}
-        {/* {process.env.NODE_ENV === "development" && (
-          <div
-            style={{
-              padding: "10px",
-              background: "#f0f0f0",
-              marginBottom: "20px",
-              borderRadius: "8px",
-              fontSize: "12px",
-            }}
-          >
-            <strong>Debug Info:</strong>
-            <div>Active Flash Sales: {activeFlashSales.length}</div>
-            <div>
-              Flash Sale Products Keys:{" "}
-              {Object.keys(flashSaleProducts).join(", ") || "none"}
-            </div>
-            <div>Active Seasonal Sales: {activeSeasonalSales.length}</div>
-            <div>Regular Products: {products.length}</div>
-          </div>
-        )} */}
-
         {/* Flash Sales Section */}
-        {activeFlashSales.length > 0 ? (
+        {activeFlashSales.length > 0 && (
           <FlashSaleSection
             activeFlashSales={activeFlashSales}
             flashSaleProducts={flashSaleProducts}
           />
-        ) : (
-          <div
-            style={{
-              padding: "20px",
-              background: "#fff",
-              borderRadius: "12px",
-              marginBottom: "20px",
-            }}
-          >
-            <p style={{ color: "#999", textAlign: "center" }}>
-              No active flash sales at the moment
-            </p>
-          </div>
         )}
 
         {/* Seasonal Sales Section */}
-        {activeSeasonalSales.length > 0 ? (
+        {activeSeasonalSales.length > 0 &&
           activeSeasonalSales.map((sale) => {
             const saleProducts = seasonalSaleProducts[sale.id] || [];
 
             // Don't render if no products
-            if (saleProducts.length === 0) {
-              console.log(`Skipping seasonal sale ${sale.id} - no products`);
-              return null;
-            }
+            if (saleProducts.length === 0) return null;
+
+            // Calculate time remaining
+            const now = new Date();
+            const endTime = new Date(sale.end_time);
+            const timeRemaining = endTime - now;
+            const daysRemaining = Math.ceil(
+              timeRemaining / (1000 * 60 * 60 * 24)
+            );
+            const hoursRemaining = Math.ceil(
+              (timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            );
 
             return (
               <section key={sale.id} className={styles.seasonalSaleSection}>
@@ -268,9 +242,9 @@ const Home = () => {
                   <div className={styles.seasonalBannerContent}>
                     <div className={styles.seasonalInfo}>
                       <h2>
-                        {sale.name} - {sale.season}
+                        {sale.name} {sale.season && `- ${sale.season}`}
                       </h2>
-                      <p>{sale.description}</p>
+                      {sale.description && <p>{sale.description}</p>}
                       <div className={styles.seasonalBadges}>
                         <span className={styles.discountBadge}>
                           Up to {sale.discount_percentage}% OFF
@@ -281,8 +255,13 @@ const Home = () => {
                       </div>
                     </div>
                     <div className={styles.seasonalEndDate}>
-                      <div className={styles.label}>Sale ends</div>
+                      <div className={styles.label}>Sale ends in</div>
                       <div className={styles.date}>
+                        {daysRemaining > 0
+                          ? `${daysRemaining}d ${hoursRemaining}h`
+                          : `${hoursRemaining}h`}
+                      </div>
+                      <div className={styles.endDateFull}>
                         {new Date(sale.end_time).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",
@@ -308,9 +287,9 @@ const Home = () => {
                 {saleProducts.length > 12 && (
                   <div className={styles.viewMoreContainer}>
                     <button
-                      onClick={() => {
-                        window.location.href = `/seasonal-sales/${sale.id}`;
-                      }}
+                      onClick={() =>
+                        (window.location.href = `/seasonal-sales/${sale.id}`)
+                      }
                       className={styles.viewMoreBtn}
                     >
                       View All {saleProducts.length} Products
@@ -319,21 +298,7 @@ const Home = () => {
                 )}
               </section>
             );
-          })
-        ) : (
-          <div
-            style={{
-              padding: "20px",
-              background: "#fff",
-              borderRadius: "12px",
-              marginBottom: "20px",
-            }}
-          >
-            <p style={{ color: "#999", textAlign: "center" }}>
-              No active seasonal sales at the moment
-            </p>
-          </div>
-        )}
+          })}
 
         {/* Featured Products Section */}
         {products.length > 0 && (

@@ -10,37 +10,29 @@ const SeasonalSaleCard = ({ product, sale }) => {
   const [showVariantModal, setShowVariantModal] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
+  const navigate = useNavigate();
 
   const handleBuyNow = (e) => {
     e.stopPropagation();
-
     if (!accessToken) {
       alert("Please login to add items to cart");
       navigate("/auth");
       return;
     }
-
     setShowVariantModal(true);
   };
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
-
     if (!accessToken) {
       alert("Please login to add items to cart");
       return;
     }
-
-    // Assuming product has a default variant
     const success = await addItem(product.variant_id, 1, accessToken);
-
     if (success) {
-      // Show success message
       alert("Added to cart!");
     }
   };
-
-  const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/product/${product.id}`);
@@ -50,6 +42,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
     days: 0,
     hours: 0,
     minutes: 0,
+    seconds: 0,
   });
 
   useEffect(() => {
@@ -57,26 +50,33 @@ const SeasonalSaleCard = ({ product, sale }) => {
       const now = new Date().getTime();
       const end = new Date(sale.end_time).getTime();
       const distance = end - now;
-
       if (distance < 0) {
         clearInterval(timer);
         return;
       }
-
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
         hours: Math.floor(
           (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
         ),
         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, [sale.end_time]);
 
-  const savings = product.price - product.sale_price;
-  const savingsPercent = Math.round((savings / product.price) * 100);
+  // Calculate discount percentage
+  const originalPrice = product.original_price || product.price;
+  const salePrice = product.sale_price || product.price;
+  const discountPercentage =
+    product.discount_percentage ||
+    Math.round(((originalPrice - salePrice) / originalPrice) * 100) ||
+    0;
+
+  // Get rating and review count
+  const rating = parseFloat(product.rating) || 0;
+  const reviewCount = parseInt(product.reviews_count) || 0;
 
   return (
     <>
@@ -91,39 +91,76 @@ const SeasonalSaleCard = ({ product, sale }) => {
             className={styles.image}
           />
           <div className={styles.seasonalBadge}>
-            {sale.season} Sale -{savingsPercent}%
+            {sale.season} Sale -{discountPercentage}%
           </div>
         </div>
-
         <div className={styles.content}>
           <h3 className={styles.productName}>{product.name}</h3>
 
+          {/* Rating and Review Count */}
           <div className={styles.rating}>
-            <Star className="fill-yellow-400 text-yellow-400" size={16} />
-            <span className={styles.ratingText}>{product.rating || 4.5}</span>
+            <div className={styles.starsContainer}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  size={16}
+                  className={
+                    star <= Math.round(rating)
+                      ? styles.starFilled
+                      : styles.starEmpty
+                  }
+                />
+              ))}
+            </div>
+            <span className={styles.ratingValue}>{rating.toFixed(1)}</span>
+            <span className={styles.reviewCount}>({reviewCount} reviews)</span>
           </div>
 
           <div className={styles.priceSection}>
             <span className={styles.salePrice}>
-              ₦{product.sale_price?.toLocaleString()}
+              ₦{salePrice?.toLocaleString()}
             </span>
-            <span className={styles.originalPrice}>
-              ₦{product.price?.toLocaleString()}
-            </span>
+            {originalPrice > salePrice && (
+              <span className={styles.originalPrice}>
+                ₦{originalPrice?.toLocaleString()}
+              </span>
+            )}
           </div>
 
-          {timeLeft.days > 0 && (
+          {(timeLeft.days > 0 ||
+            timeLeft.hours > 0 ||
+            timeLeft.minutes > 0 ||
+            timeLeft.seconds > 0) && (
             <div className={styles.timeLeftBadge}>
-              Ends in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m
+              Ends in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m{" "}
+              {timeLeft.seconds}s
             </div>
           )}
 
+          {/* Sold Count Progress */}
+          {product.max_quantity && (
+            <div className={styles.soldSection}>
+              <div className={styles.soldBar}>
+                <div
+                  className={styles.soldProgress}
+                  style={{
+                    width: `${Math.round(
+                      ((product.sold_quantity || 0) / product.max_quantity) *
+                        100
+                    )}%`,
+                  }}
+                />
+              </div>
+              <span className={styles.soldText}>
+                {product.sold_quantity || 0} sold of {product.max_quantity}
+              </span>
+            </div>
+          )}
           <button className={styles.addToCartBtn} onClick={handleBuyNow}>
             Add to Cart
           </button>
         </div>
       </div>
-
       <ProductVariantModal
         isOpen={showVariantModal}
         onClose={() => setShowVariantModal(false)}
