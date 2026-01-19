@@ -10,6 +10,7 @@ const WishlistPage = () => {
   const [loading, setLoading] = useState(true);
   const accessToken = useAuthStore((state) => state.accessToken);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
+
   const { items, fetchWishlist } = useWishlistStore();
 
   useEffect(() => {
@@ -56,9 +57,6 @@ const WishlistPage = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <button onClick={() => navigate(-1)} className={styles.backBtn}>
-          Back
-        </button>
         <h1>My Wishlist</h1>
         <span className={styles.count}>{items.length} items</span>
       </div>
