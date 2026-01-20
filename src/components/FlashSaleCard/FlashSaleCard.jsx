@@ -186,7 +186,8 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
               <Flame size={16} />-{savingsPercent}%
             </div>
           )}
-          {remainingQty < 10 && remainingQty > 0 && (
+          {/* Only show low stock badge if sale is active (not upcoming) */}
+          {!saleNotStarted && remainingQty < 10 && remainingQty > 0 && (
             <div className={styles.lowStockBadge}>
               Only {remainingQty} left!
             </div>
@@ -222,18 +223,21 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
             )}
           </div>
 
-          <div className={styles.progressSection} onClick={handleClick}>
-            <div className={styles.progressLabels}>
-              <span>Sold: {soldPercentage}%</span>
-              <span>{remainingQty} left</span>
+          {/* Only show progress section if sale is active (not upcoming) */}
+          {!saleNotStarted && (
+            <div className={styles.progressSection} onClick={handleClick}>
+              <div className={styles.progressLabels}>
+                <span>Sold: {soldPercentage}%</span>
+                <span>{remainingQty} left</span>
+              </div>
+              <div className={styles.progressBar}>
+                <div
+                  className={styles.progressFill}
+                  style={{ width: `${Math.min(soldPercentage, 100)}%` }}
+                />
+              </div>
             </div>
-            <div className={styles.progressBar}>
-              <div
-                className={styles.progressFill}
-                style={{ width: `${Math.min(soldPercentage, 100)}%` }}
-              />
-            </div>
-          </div>
+          )}
 
           {saleEndTime && (
             <div className={styles.countdown} onClick={handleClick}>
@@ -268,7 +272,10 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
             className={styles.buyNowBtn}
             onClick={handleBuyNow}
             disabled={
-              adding || remainingQty === 0 || saleEnded || saleNotStarted
+              adding ||
+              saleNotStarted ||
+              saleEnded ||
+              (!saleNotStarted && remainingQty === 0)
             }
           >
             {adding
