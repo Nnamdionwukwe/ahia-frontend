@@ -1,0 +1,222 @@
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Clock, AlertCircle, ArrowLeft } from "lucide-react";
+import styles from "./FlashSaleDetail.module.css";
+import FlashSaleCard from "../components/FlashSaleCard/FlashSaleCard";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+const FlashSaleDetail = () => {
+  const { saleId } = useParams();
+  const navigate = useNavigate();
+
+  const [sale, setSale] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [timeLeft, setTimeLeft] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
+
+  // Countdown timer
+  useEffect(() => {
+    if (!sale || !sale.end_time) return;
+
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const end = new Date(sale.end_time).getTime();
+      const distance = end - now;
+
+      if (distance < 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        return;
+      }
+
+      setTimeLeft({
+        hours: Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000),
+      });
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(timer);
+  }, [sale]);
+
+  // Fetch sale and products
+  useEffect(() => {
+    fetchFlashSaleData();
+  }, [saleId]);
+
+  const fetchFlashSaleData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log(`🔄 Fetching flash sale data for: ${saleId}`);
+
+      // Fetch sale details
+      const saleRes = await axios.get(`${API_URL}/api/flash-sales/${saleId}`);
+      const saleData = saleRes.data?.flashSale || saleRes.data;
+      setSale(saleData);
+
+      console.log("✅ Sale data:", saleData);
+
+      // Fetch products for this sale
+      const productsRes = await axios.get(
+        `${API_URL}/api/flash-sales/${saleId}/products`,
+        { params: { limit: 100, sort: "popularity" } }
+      );
+
+      const productsData = productsRes.data?.products || [];
+      setProducts(productsData);
+
+      console.log(`✅ Loaded ${productsData.length} products`);
+    } catch (err) {
+      console.error("❌ Error fetching flash sale:", err);
+      setError(
+        err.response?.data?.error || err.message || "Failed to load flash sale"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingContent}>
+          <div className={styles.spinner}></div>
+          <p>Loading flash sale...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !sale) {
+    return (
+      <div className={styles.errorContainer}>
+        <div className={styles.errorContent}>
+          <AlertCircle size={48} />
+          <h2>Oops! Something went wrong</h2>
+          <p>{error || "Flash sale not found"}</p>
+          <button onClick={() => navigate("/")} className={styles.backBtn}>
+            ← Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <button onClick={() => navigate("/")} className={styles.backButton}>
+          <ArrowLeft size={24} />
+          Back
+        </button>
+      </div>
+
+      {/* Sale Banner */}
+      <div className={styles.saleBanner}>
+        <div className={styles.bannerContent}>
+          <div className={styles.saleInfo}>
+            <div className={styles.saleTag}>⚡ FLASH SALE</div>
+            <h1 className={styles.saleTitle}>{sale.title}</h1>
+            {sale.description && (
+              <p className={styles.saleDescription}>{sale.description}</p>
+            )}
+
+            <div className={styles.saleBadges}>
+              <span className={styles.discountBadge}>
+                {sale.discount_percentage}% OFF
+              </span>
+              <span className={styles.productBadge}>
+                {products.length} products
+              </span>
+            </div>
+          </div>
+
+          {/* Countdown Timer */}
+          <div className={styles.timerSection}>
+            <div className={styles.timerBox}>
+              <Clock className={styles.timerIcon} size={24} />
+              <div className={styles.timerContent}>
+                <span className={styles.timerLabel}>Ends in</span>
+                <div className={styles.timer}>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.hours).padStart(2, "0")}
+                  </span>
+                  <span>:</span>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.minutes).padStart(2, "0")}
+                  </span>
+                  <span>:</span>
+                  <span className={styles.timerDigit}>
+                    {String(timeLeft.seconds).padStart(2, "0")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Grid */}
+      <div className={styles.content}>
+        <div className={styles.productsSection}>
+          <h2 className={styles.sectionTitle}>Available Products</h2>
+
+          {products.length > 0 ? (
+            <div className={styles.productsGrid}>
+              {products.map((product) => {
+                if (!product || !product.id) {
+                  return null;
+                }
+                return (
+                  <FlashSaleCard
+                    key={product.id}
+                    product={product}
+                    saleEndTime={sale.end_time}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div className={styles.emptyState}>
+              <AlertCircle size={48} />
+              <h3>No Products Available</h3>
+              <p>This flash sale currently has no products.</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sale Info Footer */}
+      <div className={styles.footer}>
+        <div className={styles.footerContent}>
+          <h3>About This Flash Sale</h3>
+          <p>
+            Don't miss out on these amazing deals! Products are limited and
+            available only while the flash sale is active.
+          </p>
+          <button
+            onClick={() => navigate("/")}
+            className={styles.continueShoppingBtn}
+          >
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FlashSaleDetail;

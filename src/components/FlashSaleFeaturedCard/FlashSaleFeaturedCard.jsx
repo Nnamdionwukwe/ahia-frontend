@@ -65,7 +65,7 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
 
       <div className={styles.cardContent}>
         {/* Product Image */}
-        <div className={styles.imageWrapper} onClick={handleProductClick}>
+        <div className={styles.imageWrapper} onClick={handleCardClick}>
           <img
             src={
               featuredProduct.images?.[0] ||
@@ -88,9 +88,9 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
 
         {/* Product Info */}
         <div className={styles.productInfo}>
-          <h3 className={styles.productName} onClick={handleProductClick}>
+          {/* <h3 className={styles.productName} onClick={handleProductClick}>
             {featuredProduct.name}
-          </h3>
+          </h3> */}
 
           {/* Prices */}
           <div className={styles.priceSection}>
@@ -103,7 +103,7 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
           </div>
 
           {/* Countdown Timer */}
-          <div className={styles.countdown}>
+          {/* <div className={styles.countdown}>
             <Clock size={16} />
             <div className={styles.timeDigits}>
               <span className={styles.timeBox}>
@@ -118,13 +118,13 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
                 {String(timeLeft.seconds).padStart(2, "0")}
               </span>
             </div>
-          </div>
+          </div> */}
 
           {/* View All Button */}
-          <button className={styles.viewAllBtn} onClick={handleCardClick}>
+          {/* <button className={styles.viewAllBtn} onClick={handleCardClick}>
             View All Deals
             <ArrowRight size={18} />
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

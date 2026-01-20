@@ -22,6 +22,7 @@ import "./App.css";
 import SearchHeader from "./components/SearchHeader/SearchHeader";
 import FlashSalesList from "./pages/FlashSalesList/FlashSalesList";
 import FlashSaleCard from "./components/FlashSaleCard/FlashSaleCard";
+import FlashSaleDetail from "./pages/FlashSaleDetail";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -50,10 +51,12 @@ const App = () => {
               element={isAuthenticated ? <CartPage /> : <Navigate to="/auth" />}
             />
             <Route path="/flash-sales" element={<FlashSalesList />} />
-            <Route
+            {/* <Route
               path="/flash-sales/:flashSaleId"
               element={<FlashSaleCard />}
-            />
+            /> */}
+
+            <Route path="/flash-sales/:saleId" element={<FlashSaleDetail />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/searchheader" element={<SearchHeader />} />
             <Route path="/product/:id" element={<ProductDetail />} />
