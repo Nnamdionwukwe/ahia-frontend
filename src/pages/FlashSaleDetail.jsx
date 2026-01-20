@@ -190,22 +190,22 @@ const FlashSaleDetail = () => {
           <div className={styles.saleInfo}>
             <div className={styles.saleTag}>⚡ FLASH SALE</div>
             <h1 className={styles.saleTitle}>{sale.title}</h1>
-            {sale.description && (
+            {/* {sale.description && (
               <p className={styles.saleDescription}>{sale.description}</p>
-            )}
+            )} */}
 
-            <div className={styles.saleBadges}>
+            {/* <div className={styles.saleBadges}>
               <span className={styles.discountBadge}>
                 {sale.discount_percentage}% OFF
               </span>
               <span className={styles.productBadge}>
                 {products.length} products
               </span>
-            </div>
+            </div> */}
           </div>
 
           {/* Countdown Timer */}
-          <div className={styles.timerSection}>
+          {/* <div className={styles.timerSection}>
             <div className={styles.timerBox}>
               <Clock className={styles.timerIcon} size={24} />
               <div className={styles.timerContent}>
@@ -237,7 +237,7 @@ const FlashSaleDetail = () => {
                 )}
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
