@@ -13,7 +13,15 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
   const [saleEnded, setSaleEnded] = useState(false);
-  const [saleNotStarted, setSaleNotStarted] = useState(false);
+  const [saleNotStarted, setSaleNotStarted] = useState(() => {
+    // Initialize saleNotStarted state immediately
+    if (saleStartTime) {
+      const now = new Date();
+      const start = new Date(saleStartTime);
+      return start > now;
+    }
+    return false;
+  });
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
     hours: 0,
@@ -23,6 +31,7 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
 
   // Debug log
   console.log("FlashSaleCard received product:", product);
+  console.log("Sale not started:", saleNotStarted);
 
   // Early return with better error UI if product is invalid
   if (!product || typeof product !== "object") {
@@ -41,8 +50,6 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
 
       // If sale hasn't started yet
       if (start && start > now) {
-        setSaleNotStarted(true);
-        setSaleEnded(false);
         const timeDiff = start - now;
 
         const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
@@ -53,6 +60,8 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
         const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
         setTimeLeft({ days, hours, minutes, seconds });
+        setSaleNotStarted(true);
+        setSaleEnded(false);
         return;
       }
 
@@ -68,9 +77,6 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
       }
 
       // Sale is active
-      setSaleEnded(false);
-      setSaleNotStarted(false);
-
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
         (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -79,6 +85,8 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
       const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
 
       setTimeLeft({ days, hours, minutes, seconds });
+      setSaleEnded(false);
+      setSaleNotStarted(false);
     };
 
     updateTimer(); // Initial call
