@@ -12,6 +12,7 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
+  const [saleEnded, setSaleEnded] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
@@ -38,9 +39,11 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
 
       if (distance < 0) {
         setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        setSaleEnded(true);
         return;
       }
 
+      setSaleEnded(false);
       setTimeLeft({
         hours: Math.floor(
           (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -228,9 +231,15 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
           <button
             className={styles.buyNowBtn}
             onClick={handleBuyNow}
-            disabled={adding || remainingQty === 0}
+            disabled={adding || remainingQty === 0 || saleEnded}
           >
-            {adding ? "Adding..." : remainingQty === 0 ? "Sold Out" : "Buy Now"}
+            {adding
+              ? "Adding..."
+              : saleEnded
+              ? "Sale Ended"
+              : remainingQty === 0
+              ? "Sold Out"
+              : "Buy Now"}
           </button>
         </div>
       </div>
