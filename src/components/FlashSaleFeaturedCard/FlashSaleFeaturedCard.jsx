@@ -81,7 +81,7 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
           </div>
 
           {/* Stock Badge */}
-          {remainingQty > 0 && remainingQty <= 10 && (
+          {remainingQty > 0 && remainingQty <= 1 && (
             <div className={styles.stockBadge}>ONLY {remainingQty} LEFT</div>
           )}
         </div>
