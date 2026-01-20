@@ -16,32 +16,34 @@ const FlashSaleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [timeLeft, setTimeLeft] = useState({
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
 
-  // Countdown timer
+  // Countdown timer - using correct calculation
   useEffect(() => {
     if (!sale || !sale.end_time) return;
 
     const calculateTimeLeft = () => {
-      const now = new Date().getTime();
-      const end = new Date(sale.end_time).getTime();
-      const distance = end - now;
+      const now = new Date();
+      const endTime = new Date(sale.end_time);
+      const timeDiff = endTime - now;
 
-      if (distance < 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+      if (timeDiff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
-      setTimeLeft({
-        hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        ),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, minutes, seconds });
     };
 
     calculateTimeLeft();
@@ -166,6 +168,12 @@ const FlashSaleDetail = () => {
     );
   }
 
+  const isExpired =
+    timeLeft.days === 0 &&
+    timeLeft.hours === 0 &&
+    timeLeft.minutes === 0 &&
+    timeLeft.seconds === 0;
+
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -201,20 +209,32 @@ const FlashSaleDetail = () => {
             <div className={styles.timerBox}>
               <Clock className={styles.timerIcon} size={24} />
               <div className={styles.timerContent}>
-                <span className={styles.timerLabel}>Ends in</span>
-                <div className={styles.timer}>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.hours).padStart(2, "0")}
-                  </span>
-                  <span>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.minutes).padStart(2, "0")}
-                  </span>
-                  <span>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.seconds).padStart(2, "0")}
-                  </span>
-                </div>
+                <span className={styles.timerLabel}>
+                  {isExpired ? "Sale Ended" : "Ends in"}
+                </span>
+                {!isExpired && (
+                  <div className={styles.timer}>
+                    {timeLeft.days > 0 && (
+                      <>
+                        <span className={styles.timerDigit}>
+                          {String(timeLeft.days).padStart(2, "0")}
+                        </span>
+                        <span>:</span>
+                      </>
+                    )}
+                    <span className={styles.timerDigit}>
+                      {String(timeLeft.hours).padStart(2, "0")}
+                    </span>
+                    <span>:</span>
+                    <span className={styles.timerDigit}>
+                      {String(timeLeft.minutes).padStart(2, "0")}
+                    </span>
+                    <span>:</span>
+                    <span className={styles.timerDigit}>
+                      {String(timeLeft.seconds).padStart(2, "0")}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -240,6 +260,7 @@ const FlashSaleDetail = () => {
                   <FlashSaleCard
                     key={product.id}
                     product={product}
+                    saleStartTime={sale.start_time}
                     saleEndTime={sale.end_time}
                   />
                 );

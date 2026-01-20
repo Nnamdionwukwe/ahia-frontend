@@ -6,36 +6,52 @@ import styles from "./FlashSaleFeaturedCard.module.css";
 const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState({
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
 
-  // Countdown timer
+  // Countdown timer using the correct calculation method
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date().getTime();
-      const end = new Date(sale.end_time).getTime();
-      const distance = end - now;
+    if (!sale?.end_time) {
+      console.error("Sale end_time is missing:", sale);
+      return;
+    }
 
-      if (distance < 0) {
-        clearInterval(timer);
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const endTime = new Date(sale.end_time);
+      const timeDiff = endTime - now;
+
+      if (timeDiff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
-      setTimeLeft({
-        hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        ),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
-    }, 1000);
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, minutes, seconds });
+    };
+
+    // Calculate immediately on mount
+    calculateTimeLeft();
+
+    // Update every second
+    const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [sale.end_time]);
+  }, [sale?.end_time]);
 
-  if (!featuredProduct) return null;
+  if (!featuredProduct) {
+    console.warn("No featured product provided");
+    return null;
+  }
 
   const handleCardClick = () => {
     navigate(`/flash-sales/${sale.id}`);
@@ -43,7 +59,7 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
 
   const handleProductClick = (e) => {
     e.stopPropagation();
-    navigate(`/product/${featuredProduct.product_id}`);
+    navigate(`/product/${featuredProduct.product_id || featuredProduct.id}`);
   };
 
   const remainingQty = featuredProduct.remaining_quantity || 0;
@@ -51,6 +67,12 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
   const savingsPercent = Math.round(
     (savings / featuredProduct.original_price) * 100
   );
+
+  const isExpired =
+    timeLeft.days === 0 &&
+    timeLeft.hours === 0 &&
+    timeLeft.minutes === 0 &&
+    timeLeft.seconds === 0;
 
   return (
     <div className={styles.card} onClick={handleCardClick}>
@@ -81,17 +103,13 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
           </div>
 
           {/* Stock Badge */}
-          {remainingQty > 0 && remainingQty <= 1 && (
+          {remainingQty > 0 && remainingQty <= 10 && (
             <div className={styles.stockBadge}>ONLY {remainingQty} LEFT</div>
           )}
         </div>
 
         {/* Product Info */}
         <div className={styles.productInfo}>
-          {/* <h3 className={styles.productName} onClick={handleProductClick}>
-            {featuredProduct.name}
-          </h3> */}
-
           {/* Prices */}
           <div className={styles.priceSection}>
             <span className={styles.salePrice}>
@@ -103,28 +121,34 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
           </div>
 
           {/* Countdown Timer */}
-          {/* <div className={styles.countdown}>
+          <div className={styles.countdown}>
             <Clock size={16} />
-            <div className={styles.timeDigits}>
-              <span className={styles.timeBox}>
-                {String(timeLeft.hours).padStart(2, "0")}
-              </span>
-              <span className={styles.separator}>:</span>
-              <span className={styles.timeBox}>
-                {String(timeLeft.minutes).padStart(2, "0")}
-              </span>
-              <span className={styles.separator}>:</span>
-              <span className={styles.timeBox}>
-                {String(timeLeft.seconds).padStart(2, "0")}
-              </span>
-            </div>
-          </div> */}
-
-          {/* View All Button */}
-          {/* <button className={styles.viewAllBtn} onClick={handleCardClick}>
-            View All Deals
-            <ArrowRight size={18} />
-          </button> */}
+            {isExpired ? (
+              <div className={styles.expiredText}>Sale Ended</div>
+            ) : (
+              <div className={styles.timeDigits}>
+                {timeLeft.days > 0 && (
+                  <>
+                    <span className={styles.timeBox}>
+                      {String(timeLeft.days).padStart(2, "0")}
+                    </span>
+                    <span className={styles.separator}>:</span>
+                  </>
+                )}
+                <span className={styles.timeBox}>
+                  {String(timeLeft.hours).padStart(2, "0")}
+                </span>
+                <span className={styles.separator}>:</span>
+                <span className={styles.timeBox}>
+                  {String(timeLeft.minutes).padStart(2, "0")}
+                </span>
+                <span className={styles.separator}>:</span>
+                <span className={styles.timeBox}>
+                  {String(timeLeft.seconds).padStart(2, "0")}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

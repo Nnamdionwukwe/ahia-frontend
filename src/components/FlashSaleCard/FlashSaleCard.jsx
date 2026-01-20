@@ -6,14 +6,16 @@ import useCartStore from "../../store/cartStore";
 import useAuthStore from "../../store/authStore";
 import ProductVariantModal from "../ProductVariantModal/ProductVariantModal";
 
-const FlashSaleCard = ({ product, saleEndTime }) => {
+const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
   const [showVariantModal, setShowVariantModal] = useState(false);
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
   const [saleEnded, setSaleEnded] = useState(false);
+  const [saleNotStarted, setSaleNotStarted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({
+    days: 0,
     hours: 0,
     minutes: 0,
     seconds: 0,
@@ -25,38 +27,64 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
   // Early return with better error UI if product is invalid
   if (!product || typeof product !== "object") {
     console.error("FlashSaleCard: Invalid product data", product);
-    return null; // Return null instead of showing error message
+    return null;
   }
 
-  // Countdown timer effect
+  // Countdown timer effect - using correct calculation
   useEffect(() => {
-    if (!saleEndTime) return;
+    if (!saleEndTime && !saleStartTime) return;
 
     const updateTimer = () => {
-      const now = new Date().getTime();
-      const end = new Date(saleEndTime).getTime();
-      const distance = end - now;
+      const now = new Date();
+      const start = saleStartTime ? new Date(saleStartTime) : null;
+      const end = new Date(saleEndTime);
 
-      if (distance < 0) {
-        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        setSaleEnded(true);
+      // If sale hasn't started yet
+      if (start && start > now) {
+        setSaleNotStarted(true);
+        setSaleEnded(false);
+        const timeDiff = start - now;
+
+        const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor(
+          (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+        setTimeLeft({ days, hours, minutes, seconds });
         return;
       }
 
+      // Calculate time until sale ends
+      const timeDiff = end - now;
+
+      // If sale has ended
+      if (timeDiff <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setSaleEnded(true);
+        setSaleNotStarted(false);
+        return;
+      }
+
+      // Sale is active
       setSaleEnded(false);
-      setTimeLeft({
-        hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        ),
-        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-        seconds: Math.floor((distance % (1000 * 60)) / 1000),
-      });
+      setSaleNotStarted(false);
+
+      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+      );
+      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+      setTimeLeft({ days, hours, minutes, seconds });
     };
 
     updateTimer(); // Initial call
     const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
-  }, [saleEndTime]);
+  }, [saleEndTime, saleStartTime]);
 
   // Safe extraction with comprehensive fallbacks
   const productId = product.id || product.product_id;
@@ -212,6 +240,14 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
               <div className={styles.countdownContent}>
                 <Clock size={16} className="text-red-500" />
                 <div className={styles.countdownDigits}>
+                  {timeLeft.days > 0 && (
+                    <>
+                      <span className={styles.countdownDigit}>
+                        {String(timeLeft.days).padStart(2, "0")}
+                      </span>
+                      <span>:</span>
+                    </>
+                  )}
                   <span className={styles.countdownDigit}>
                     {String(timeLeft.hours).padStart(2, "0")}
                   </span>
@@ -231,10 +267,14 @@ const FlashSaleCard = ({ product, saleEndTime }) => {
           <button
             className={styles.buyNowBtn}
             onClick={handleBuyNow}
-            disabled={adding || remainingQty === 0 || saleEnded}
+            disabled={
+              adding || remainingQty === 0 || saleEnded || saleNotStarted
+            }
           >
             {adding
               ? "Adding..."
+              : saleNotStarted
+              ? "Upcoming"
               : saleEnded
               ? "Sale Ended"
               : remainingQty === 0
