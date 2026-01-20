@@ -95,7 +95,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
             className={styles.image}
           />
           <div className={styles.seasonalBadge}>
-            {product?.season} -{discountPercentage}%
+            {product?.season} Sale-{discountPercentage}%
           </div>
         </div>
         <div className={styles.content}>
