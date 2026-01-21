@@ -208,54 +208,11 @@ const SeasonalSaleDetail = () => {
               >
                 <ArrowLeft size={24} />
               </button>
+
               <div className={styles.titleSection}>
                 <h1 className={styles.saleTitle}>{sale.name}</h1>
                 {sale.season && (
                   <span className={styles.seasonBadge}>{sale.season}</span>
-                )}
-              </div>
-            </div>
-
-            {sale.description && (
-              <p className={styles.saleDescription}>{sale.description}</p>
-            )}
-
-            <div className={styles.saleBadges}>
-              <span className={styles.discountBadge}>
-                Up to {sale.discount_percentage || 30}% OFF
-              </span>
-              <span className={styles.productBadge}>
-                {products.length} products
-              </span>
-            </div>
-          </div>
-
-          {/* Countdown Timer */}
-          <div className={styles.timerSection}>
-            <div className={styles.timerBox}>
-              <Calendar className={styles.timerIcon} size={24} />
-              <div className={styles.timerContent}>
-                <span className={styles.timerLabel}>
-                  {isExpired ? "Sale Ended" : "Ends in"}
-                </span>
-                {!isExpired && (
-                  <div className={styles.timer}>
-                    {timeLeft.days > 0 && (
-                      <>
-                        <span className={styles.timerDigit}>
-                          {String(timeLeft.days).padStart(2, "0")}d
-                        </span>
-                        <span> </span>
-                      </>
-                    )}
-                    <span className={styles.timerDigit}>
-                      {String(timeLeft.hours).padStart(2, "0")}h
-                    </span>
-                    <span> </span>
-                    <span className={styles.timerDigit}>
-                      {String(timeLeft.minutes).padStart(2, "0")}m
-                    </span>
-                  </div>
                 )}
               </div>
             </div>
