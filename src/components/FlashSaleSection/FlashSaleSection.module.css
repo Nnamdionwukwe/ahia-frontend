@@ -346,53 +346,32 @@
 
 @media (max-width: 768px) {
   .flashSaleContainer {
-    padding: 15px;
+    padding: 10px;
     margin-bottom: 30px;
   }
 
   .headerTitle {
-    padding: 20px;
+    padding: 15px;
     flex-direction: column;
     text-align: center;
-  }
-
-  .headerTitle h2 {
-    font-size: 2rem;
-  }
-
-  .headerTitle p {
-    font-size: 14px;
-  }
-
-  /* Display 2 cards on tablets */
-  .featuredGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-  }
-
-  .footerCTA {
-    padding: 20px;
-  }
-
-  .viewAllSalesBtn {
-    font-size: 16px;
-    padding: 14px 24px;
-  }
-}
-
-@media (max-width: 480px) {
-  .flashSaleContainer {
-    padding: 10px;
   }
 
   .headerTitle h2 {
     font-size: 1.5rem;
   }
 
-  /* Display 2 cards on mobile phones */
+  .headerTitle p {
+    font-size: 12px;
+  }
+
+  /* Display 2 cards on tablets */
   .featuredGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 12px;
+  }
+
+  .footerCTA {
+    padding: 15px;
   }
 
   .viewAllSalesBtn {
@@ -400,16 +379,146 @@
     padding: 12px 20px;
   }
 
+  .noSalesContainer {
+    padding: 60px 15px;
+  }
+
+  .noSalesContainer h3 {
+    font-size: 22px;
+  }
+
+  .noSalesContainer p {
+    font-size: 14px;
+  }
+
+  .checkUpcomingBtn {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .flashSaleContainer {
+    padding: 8px;
+  }
+
+  .headerTitle {
+    padding: 12px;
+  }
+
+  .headerTitle h2 {
+    font-size: 1.25rem;
+  }
+
+  .headerTitle p {
+    font-size: 11px;
+  }
+
+  /* Display 2 cards on mobile phones */
+  .featuredGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .viewAllSalesBtn {
+    font-size: 12px;
+    padding: 10px 16px;
+    gap: 8px;
+  }
+
+  .viewAllSalesBtn svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .footerCTA {
-    padding: 15px;
-    margin-top: 20px;
+    padding: 12px;
+    margin-top: 15px;
+  }
+
+  .noSalesContainer {
+    padding: 40px 10px;
+  }
+
+  .noSalesIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .noSalesContainer h3 {
+    font-size: 18px;
+  }
+
+  .noSalesContainer p {
+    font-size: 12px;
+    margin: 0 0 16px 0;
+  }
+
+  .checkUpcomingBtn {
+    font-size: 12px;
+    padding: 10px 20px;
   }
 }
 
 /* Extra small phones */
 @media (max-width: 360px) {
+  .flashSaleContainer {
+    padding: 6px;
+  }
+
+  .headerTitle {
+    padding: 10px;
+  }
+
+  .headerTitle h2 {
+    font-size: 1.1rem;
+  }
+
+  .headerTitle p {
+    font-size: 10px;
+  }
+
   .featuredGrid {
-    gap: 8px;
+    gap: 6px;
+  }
+
+  .viewAllSalesBtn {
+    font-size: 11px;
+    padding: 8px 14px;
+    gap: 6px;
+  }
+
+  .viewAllSalesBtn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .footerCTA {
+    padding: 10px;
+    margin-top: 12px;
+  }
+
+  .noSalesContainer {
+    padding: 30px 8px;
+  }
+
+  .noSalesIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .noSalesContainer h3 {
+    font-size: 16px;
+  }
+
+  .noSalesContainer p {
+    font-size: 11px;
+    margin: 0 0 12px 0;
+  }
+
+  .checkUpcomingBtn {
+    font-size: 11px;
+    padding: 8px 16px;
   }
 }
 
