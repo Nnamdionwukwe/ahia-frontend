@@ -177,19 +177,29 @@ const FlashSaleDetail = () => {
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.header}>
-        <button onClick={() => navigate("/")} className={styles.backButton}>
-          <ArrowLeft size={24} />
-          Back
-        </button>
-      </div>
 
       {/* Sale Banner */}
       <div className={styles.saleBanner}>
         <div className={styles.bannerContent}>
           <div className={styles.saleInfo}>
-            <div className={styles.saleTag}>⚡ FLASH SALE</div>
-            <h1 className={styles.saleTitle}>{sale.title}</h1>
+            <div className={styles.saleTagDiv}>
+              <div className={styles.header1}>
+                <button
+                  onClick={() => navigate(-1)}
+                  className={styles.backButton}
+                >
+                  <ArrowLeft size={24} />
+                </button>
+              </div>
+
+              <div className={styles.saleTagDiv}>
+                <h1 className={styles.saleTitle}>{sale.title}</h1>
+              </div>
+
+              <div className={styles.saleTagDiv}>
+                <div className={styles.saleTag}>⚡ FLASH SALE</div>
+              </div>
+            </div>
             {/* {sale.description && (
               <p className={styles.saleDescription}>{sale.description}</p>
             )} */}
