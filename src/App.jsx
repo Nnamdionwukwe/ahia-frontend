@@ -24,6 +24,7 @@ import FlashSalesList from "./pages/FlashSalesList/FlashSalesList";
 import FlashSaleCard from "./components/FlashSaleCard/FlashSaleCard";
 import FlashSaleDetail from "./pages/FlashSaleDetail";
 import SeasonalSaleDetail from "./pages/SeasonalSaleDetails/SeasonalSaleDetails";
+import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -52,6 +53,8 @@ const App = () => {
               element={isAuthenticated ? <CartPage /> : <Navigate to="/auth" />}
             />
             <Route path="/flash-sales" element={<FlashSalesList />} />
+
+            <Route path="/seasonal-sales" element={<SeasonalSalesList />} />
 
             <Route path="/flash-sales/:saleId" element={<FlashSaleDetail />} />
             <Route

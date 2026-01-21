@@ -1,0 +1,742 @@
+/* SeasonalSalesList.module.css */
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+/* Loading & Error States */
+.loading,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  text-align: center;
+}
+
+.loading p {
+  margin-top: 20px;
+  font-size: 18px;
+  color: #666;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.error p {
+  color: #ef4444;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.error button {
+  padding: 12px 32px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.error button:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  color: white;
+  padding: 50px 40px;
+  border-radius: 20px;
+  margin-bottom: 40px;
+  box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 300px;
+  height: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -30%;
+  left: -5%;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 50%;
+}
+
+.headerContent {
+  position: relative;
+  z-index: 1;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.title h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.icon {
+  font-size: 3rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.headerContent p {
+  font-size: 1.2rem;
+  opacity: 0.95;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 30px;
+  background: white;
+  padding: 8px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow-x: auto;
+}
+
+.tab {
+  flex: 1;
+  min-width: 120px;
+  padding: 14px 24px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #666;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab:hover {
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.activeTab {
+  color: white;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Sales Grid */
+.salesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 28px;
+  margin-bottom: 40px;
+}
+
+@media (max-width: 768px) {
+  .salesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Sale Card */
+.saleCard {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+  border: 2px solid transparent;
+}
+
+.saleCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #10b981, #06b6d4);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.saleCard:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+}
+
+.saleCard:hover::before {
+  opacity: 1;
+}
+
+.activeSale {
+  border-color: #10b981;
+  background: linear-gradient(180deg, #fff 0%, #f0fdf4 100%);
+}
+
+.activeSale::before {
+  opacity: 1;
+}
+
+.endedSale {
+  opacity: 0.65;
+  background: #fafafa;
+}
+
+.endedSale:hover {
+  transform: translateY(-4px);
+}
+
+/* Status Badge */
+.statusBadge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 2;
+}
+
+.statusBadge span {
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+}
+
+.live {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  color: white;
+  animation: liveGlow 2s infinite;
+}
+
+@keyframes liveGlow {
+  0%,
+  100% {
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.6);
+  }
+}
+
+.liveDot {
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.2);
+  }
+}
+
+.upcoming {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+}
+
+.ended {
+  background: #757575;
+  color: white;
+}
+
+/* Sale Info */
+.saleInfo {
+  margin-top: 10px;
+}
+
+.saleInfo h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  padding-right: 100px;
+  color: #222;
+  line-height: 1.3;
+}
+
+.description {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Timer */
+.timer {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  padding: 12px 20px;
+  border-radius: 10px;
+  margin: 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #065f46;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+}
+
+.timer svg {
+  font-size: 18px;
+}
+
+.timer strong {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  font-family: "Courier New", monospace;
+}
+
+.endedInfo {
+  color: #999;
+  font-size: 14px;
+  margin: 16px 0;
+  font-style: italic;
+}
+
+/* Stats */
+.stats {
+  display: flex;
+  gap: 24px;
+  margin: 20px 0;
+  padding: 16px 0;
+  border-top: 1px solid #f0f0f0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.stat svg {
+  font-size: 18px;
+  color: #10b981;
+}
+
+.stat span {
+  font-weight: 600;
+}
+
+/* Progress */
+.progress {
+  margin-top: 20px;
+}
+
+.progressBar {
+  height: 10px;
+  background: #e8e8e8;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #06b6d4 100%);
+  transition: width 0.5s ease;
+  position: relative;
+  border-radius: 10px;
+}
+
+.progressFill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.progressText {
+  margin-top: 8px;
+  font-size: 13px;
+  color: #666;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* View Button */
+.viewButton {
+  width: 100%;
+  padding: 14px 24px;
+  margin-top: 24px;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.viewButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.viewButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.endedSale .viewButton {
+  background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+  box-shadow: 0 4px 12px rgba(117, 117, 117, 0.3);
+}
+
+/* Empty State */
+.empty {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emptyIcon {
+  font-size: 80px;
+  color: #e0e0e0;
+  margin-bottom: 24px;
+  animation: floatEmpty 3s ease-in-out infinite;
+}
+
+@keyframes floatEmpty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.empty h3 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.empty p {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #666;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .salesGrid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 15px;
+  }
+
+  .header {
+    padding: 35px 25px;
+  }
+
+  .title h1 {
+    font-size: 2.2rem;
+  }
+
+  .icon {
+    font-size: 2.2rem;
+  }
+
+  .headerContent p {
+    font-size: 1rem;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab {
+    min-width: 100px;
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+
+  .salesGrid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .saleCard {
+    padding: 20px;
+  }
+
+  .saleInfo h3 {
+    font-size: 1.4rem;
+    padding-right: 80px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .statusBadge {
+    top: 15px;
+    right: 15px;
+  }
+
+  .statusBadge span {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title h1 {
+    font-size: 1.8rem;
+  }
+
+  .icon {
+    font-size: 1.8rem;
+  }
+
+  .saleInfo h3 {
+    font-size: 1.2rem;
+  }
+
+  .timer {
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  .timer strong {
+    font-size: 16px;
+  }
+
+  .viewButton {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Animation delays for staggered entrance */
+.saleCard:nth-child(1) {
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+.saleCard:nth-child(2) {
+  animation: fadeInUp 0.6s ease-out 0.2s both;
+}
+.saleCard:nth-child(3) {
+  animation: fadeInUp 0.6s ease-out 0.3s both;
+}
+.saleCard:nth-child(4) {
+  animation: fadeInUp 0.6s ease-out 0.4s both;
+}
+.saleCard:nth-child(5) {
+  animation: fadeInUp 0.6s ease-out 0.5s both;
+}
+.saleCard:nth-child(6) {
+  animation: fadeInUp 0.6s ease-out 0.6s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background: #1a1a1a;
+  }
+
+  .saleCard {
+    background: #2a2a2a;
+    color: #e0e0e0;
+  }
+
+  .saleInfo h3 {
+    color: #ffffff;
+  }
+
+  .description {
+    color: #b0b0b0;
+  }
+
+  .empty {
+    background: #2a2a2a;
+  }
+
+  .empty h3 {
+    color: #ffffff;
+  }
+
+  .tabs {
+    background: #2a2a2a;
+  }
+
+  .tab {
+    color: #b0b0b0;
+  }
+
+  .tab:hover {
+    background: rgba(16, 185, 129, 0.1);
+  }
+
+  .activeSale {
+    background: linear-gradient(180deg, #2a2a2a 0%, #1f3a2f 100%);
+  }
+}
+
+/* Season Badge Styles */
+.seasonBadge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: white;
+  margin-left: 8px;
+}
+
+.seasonBadge.spring {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+}
+
+.seasonBadge.summer {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+
+.seasonBadge.fall,
+.seasonBadge.autumn {
+  background: linear-gradient(135deg, #f97316 0%, #dc2626 100%);
+}
+
+.seasonBadge.winter {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
