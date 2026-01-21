@@ -364,9 +364,10 @@
     font-size: 14px;
   }
 
+  /* Display 2 cards on tablets */
   .featuredGrid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
   .footerCTA {
@@ -380,43 +381,65 @@
 }
 
 @media (max-width: 480px) {
+  .flashSaleContainer {
+    padding: 10px;
+  }
+
   .headerTitle h2 {
     font-size: 1.5rem;
+  }
+
+  /* Display 2 cards on mobile phones */
+  .featuredGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .viewAllSalesBtn {
     font-size: 14px;
     padding: 12px 20px;
   }
+
+  .footerCTA {
+    padding: 15px;
+    margin-top: 20px;
+  }
+}
+
+/* Extra small phones */
+@media (max-width: 360px) {
+  .featuredGrid {
+    gap: 8px;
+  }
 }
 
 /* Animation for cards entering */
-.grid > * {
+.featuredGrid > * {
   animation: fadeInUp 0.6s ease-out backwards;
 }
 
-.grid > *:nth-child(1) {
+.featuredGrid > *:nth-child(1) {
   animation-delay: 0.1s;
 }
-.grid > *:nth-child(2) {
+.featuredGrid > *:nth-child(2) {
   animation-delay: 0.2s;
 }
-.grid > *:nth-child(3) {
+.featuredGrid > *:nth-child(3) {
   animation-delay: 0.3s;
 }
-.grid > *:nth-child(4) {
+.featuredGrid > *:nth-child(4) {
   animation-delay: 0.4s;
 }
-.grid > *:nth-child(5) {
+.featuredGrid > *:nth-child(5) {
   animation-delay: 0.5s;
 }
-.grid > *:nth-child(6) {
+.featuredGrid > *:nth-child(6) {
   animation-delay: 0.6s;
 }
-.grid > *:nth-child(7) {
+.featuredGrid > *:nth-child(7) {
   animation-delay: 0.7s;
 }
-.grid > *:nth-child(8) {
+.featuredGrid > *:nth-child(8) {
   animation-delay: 0.8s;
 }
 

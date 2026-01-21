@@ -89,6 +89,18 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
               featuredProduct={featuredProduct}
             />
           );
+          // return (
+          //   <div className={styles.flashSaleContainer}>
+          //     <h2 className={styles.saleTitle}>{sale.title}</h2>
+          //     <div className={styles.cardContainer}>
+          //       <FlashSaleFeaturedCard
+          //         key={sale.id}
+          //         sale={sale}
+          //         featuredProduct={featuredProduct}
+          //       />
+          //     </div>
+          //   </div>
+          // );
         })}
       </div>
 

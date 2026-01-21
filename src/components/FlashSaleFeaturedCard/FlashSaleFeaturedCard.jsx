@@ -121,7 +121,7 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
           </div>
 
           {/* Countdown Timer */}
-          <div className={styles.countdown}>
+          {/* <div className={styles.countdown}>
             <Clock size={16} />
             {isExpired ? (
               <div className={styles.expiredText}>Sale Ended</div>
@@ -148,7 +148,7 @@ const FlashSaleFeaturedCard = ({ sale, featuredProduct }) => {
                 </span>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
