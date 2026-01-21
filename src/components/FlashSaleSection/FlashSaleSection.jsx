@@ -15,10 +15,6 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
     navigate("/flash-sales");
   };
 
-  // Debug logs
-  console.log("FlashSaleSection - activeFlashSales:", activeFlashSales);
-  console.log("FlashSaleSection - flashSaleProducts:", flashSaleProducts);
-
   // Handle null or undefined cases
   if (!activeFlashSales || activeFlashSales.length === 0) {
     return (
@@ -89,18 +85,6 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
               featuredProduct={featuredProduct}
             />
           );
-          // return (
-          //   <div className={styles.flashSaleContainer}>
-          //     <h2 className={styles.saleTitle}>{sale.title}</h2>
-          //     <div className={styles.cardContainer}>
-          //       <FlashSaleFeaturedCard
-          //         key={sale.id}
-          //         sale={sale}
-          //         featuredProduct={featuredProduct}
-          //       />
-          //     </div>
-          //   </div>
-          // );
         })}
       </div>
 

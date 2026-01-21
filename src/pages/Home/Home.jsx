@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Tag, AlertCircle } from "lucide-react";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import SeasonalSaleCard from "../../components/SeasonalSaleCard/SeasonalSaleCard";
+import SeasonalSaleSection from "../../components/SeasonalSaleSection/SeasonalSaleSection";
 import FlashSaleSection from "../../components/FlashSaleSection/FlashSaleSection";
 import SearchHeader from "../../components/SearchHeader/SearchHeader";
 import Navigation from "../../components/Navigation/Navigation";
@@ -55,7 +55,7 @@ const Home = () => {
       console.log("Seasonal Sales Response:", seasonalSalesRes.data);
       console.log("Products Response:", productsRes.data);
 
-      // Process Flash Sales - Handle both direct array and wrapped response
+      // Process Flash Sales
       let flashSales = [];
       if (Array.isArray(flashSalesRes.data)) {
         flashSales = flashSalesRes.data;
@@ -75,7 +75,6 @@ const Home = () => {
                 { params: { limit: 8, sort: "popularity" } }
               );
 
-              // Handle response structure from controller
               let products = [];
               if (Array.isArray(response.data)) {
                 products = response.data;
@@ -96,7 +95,7 @@ const Home = () => {
       }
       setFlashSaleProducts(flashProductsData);
 
-      // Process Seasonal Sales - Handle both direct array and wrapped response
+      // Process Seasonal Sales
       let seasonalSales = [];
       if (Array.isArray(seasonalSalesRes.data)) {
         seasonalSales = seasonalSalesRes.data;
@@ -116,7 +115,6 @@ const Home = () => {
                 { params: { limit: 12 } }
               );
 
-              // Handle response structure from controller
               let products = [];
               if (Array.isArray(response.data)) {
                 products = response.data;
@@ -209,96 +207,13 @@ const Home = () => {
           />
         )}
 
-        {/* Seasonal Sales Section */}
-        {activeSeasonalSales.length > 0 &&
-          activeSeasonalSales.map((sale) => {
-            const saleProducts = seasonalSaleProducts[sale.id] || [];
-
-            // Don't render if no products
-            if (saleProducts.length === 0) return null;
-
-            // Calculate time remaining
-            const now = new Date();
-            const endTime = new Date(sale.end_time);
-            const timeRemaining = endTime - now;
-            const daysRemaining = Math.ceil(
-              timeRemaining / (1000 * 60 * 60 * 24)
-            );
-            const hoursRemaining = Math.ceil(
-              (timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            );
-
-            return (
-              <section key={sale.id} className={styles.seasonalSaleSection}>
-                {/* Seasonal Sale Banner */}
-                <div
-                  className={styles.seasonalBanner}
-                  style={{
-                    background: sale.banner_color
-                      ? `linear-gradient(135deg, ${sale.banner_color}20, ${sale.banner_color}40)`
-                      : "linear-gradient(135deg, #10b98120, #06b6d440)",
-                  }}
-                >
-                  <div className={styles.seasonalBannerContent}>
-                    <div className={styles.seasonalInfo}>
-                      <h2>
-                        {sale.name} {sale.season && `- ${sale.season}`}
-                      </h2>
-                      {sale.description && <p>{sale.description}</p>}
-                      <div className={styles.seasonalBadges}>
-                        <span className={styles.discountBadge}>
-                          Up to {sale.discount_percentage}% OFF
-                        </span>
-                        <span className={styles.productCountBadge}>
-                          {saleProducts.length} products available
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles.seasonalEndDate}>
-                      <div className={styles.label}>Sale ends in</div>
-                      <div className={styles.date}>
-                        {daysRemaining > 0
-                          ? `${daysRemaining}d ${hoursRemaining}h`
-                          : `${hoursRemaining}h`}
-                      </div>
-                      <div className={styles.endDateFull}>
-                        {new Date(sale.end_time).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seasonal Sale Products Grid */}
-                <div className={styles.grid}>
-                  {saleProducts.slice(0, 12).map((product) => (
-                    <SeasonalSaleCard
-                      key={product.id || product._id}
-                      product={product}
-                      sale={sale}
-                    />
-                  ))}
-                </div>
-
-                {/* View More Button for Seasonal Sale */}
-                {saleProducts.length > 12 && (
-                  <div className={styles.viewMoreContainer}>
-                    <button
-                      onClick={() =>
-                        (window.location.href = `/seasonal-sales/${sale.id}`)
-                      }
-                      className={styles.viewMoreBtn}
-                    >
-                      View All {saleProducts.length} Products
-                    </button>
-                  </div>
-                )}
-              </section>
-            );
-          })}
+        {/* Seasonal Sales Section - NEW COMPONENT */}
+        {activeSeasonalSales.length > 0 && (
+          <SeasonalSaleSection
+            activeSeasonalSales={activeSeasonalSales}
+            seasonalSaleProducts={seasonalSaleProducts}
+          />
+        )}
 
         {/* Featured Products Section */}
         {products.length > 0 && (
@@ -329,7 +244,6 @@ const Home = () => {
               <div className={styles.loadMoreContainer}>
                 <button
                   onClick={() => {
-                    // Implement load more or pagination logic
                     console.log("Load more products");
                   }}
                   className={styles.loadMoreBtn}
@@ -341,7 +255,7 @@ const Home = () => {
           </section>
         )}
 
-        {/* Empty State - Only show if no content at all */}
+        {/* Empty State */}
         {!hasContent && (
           <div className={styles.emptyState}>
             <div className={styles.emptyContent}>

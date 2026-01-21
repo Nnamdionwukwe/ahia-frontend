@@ -1,0 +1,449 @@
+/* SeasonalSaleSection.module.css */
+
+/* Light Mode (Default) */
+.seasonalSaleContainer {
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --text-primary: #222222;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --banner-overlay: rgba(16, 185, 129, 0.1);
+  --card-shadow: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .seasonalSaleContainer,
+.dark .seasonalSaleContainer {
+  --bg-primary: #2d2d2d;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #3a3a3a;
+  --banner-overlay: rgba(16, 185, 129, 0.2);
+  --card-shadow: rgba(0, 0, 0, 0.3);
+}
+
+.seasonalSaleContainer {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto 60px;
+  padding: 0 20px;
+  transition: background-color 0.3s ease;
+}
+
+.seasonalSaleSection {
+  margin-bottom: 60px;
+}
+
+/* Banner Section */
+.seasonalBanner {
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 20px var(--card-shadow);
+  transition: all 0.3s ease;
+}
+
+.bannerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.seasonalInfo {
+  flex: 1;
+  min-width: 300px;
+}
+
+.saleHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tagIcon {
+  color: rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+}
+
+.saleName {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.seasonBadge {
+  font-size: 1rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.saleDescription {
+  font-size: 16px;
+  margin: 12px 0;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.5;
+}
+
+.saleBadges {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.discountBadge,
+.productCountBadge {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Timer Section */
+.seasonalTimer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 16px;
+  min-width: 200px;
+}
+
+.calendarIcon {
+  color: white;
+  flex-shrink: 0;
+}
+
+.timerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timerLabel {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.timerValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-family: "Courier New", monospace;
+}
+
+.endDate {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Products Grid */
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+/* View All Button */
+.viewAllContainer {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.viewAllBtn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.viewAllBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.viewAllBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* Tablet Responsive */
+@media (max-width: 1024px) {
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .saleName {
+    font-size: 1.75rem;
+  }
+
+  .seasonalBanner {
+    padding: 24px;
+  }
+}
+
+/* Tablet/Mobile */
+@media (max-width: 768px) {
+  .seasonalSaleContainer {
+    padding: 0 15px;
+    margin-bottom: 40px;
+  }
+
+  .seasonalSaleSection {
+    margin-bottom: 40px;
+  }
+
+  .seasonalBanner {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .bannerContent {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .seasonalInfo {
+    min-width: auto;
+  }
+
+  .saleName {
+    font-size: 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .seasonBadge {
+    font-size: 0.875rem;
+  }
+
+  .saleDescription {
+    font-size: 14px;
+  }
+
+  .seasonalTimer {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .timerValue {
+    font-size: 20px;
+  }
+
+  /* Display 2 cards on tablets */
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .viewAllBtn {
+    font-size: 14px;
+    padding: 12px 24px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .seasonalSaleContainer {
+    padding: 0 10px;
+    margin-bottom: 30px;
+  }
+
+  .seasonalSaleSection {
+    margin-bottom: 30px;
+  }
+
+  .seasonalBanner {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 16px;
+  }
+
+  .saleHeader {
+    gap: 8px;
+  }
+
+  .tagIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .saleName {
+    font-size: 1.25rem;
+  }
+
+  .seasonBadge {
+    font-size: 0.75rem;
+    padding: 3px 10px;
+  }
+
+  .saleDescription {
+    font-size: 13px;
+    margin: 8px 0;
+  }
+
+  .saleBadges {
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .discountBadge,
+  .productCountBadge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .discountBadge svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .seasonalTimer {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .calendarIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .timerLabel {
+    font-size: 10px;
+  }
+
+  .timerValue {
+    font-size: 18px;
+  }
+
+  .endDate {
+    font-size: 10px;
+  }
+
+  /* Display 2 cards on mobile */
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .viewAllBtn {
+    font-size: 13px;
+    padding: 10px 20px;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+  .seasonalSaleContainer {
+    padding: 0 8px;
+  }
+
+  .seasonalBanner {
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .saleName {
+    font-size: 1.1rem;
+  }
+
+  .seasonBadge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+  }
+
+  .saleDescription {
+    font-size: 12px;
+  }
+
+  .discountBadge,
+  .productCountBadge {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .seasonalTimer {
+    padding: 10px;
+  }
+
+  .timerValue {
+    font-size: 16px;
+  }
+
+  .productsGrid {
+    gap: 6px;
+  }
+
+  .viewAllBtn {
+    font-size: 12px;
+    padding: 8px 16px;
+  }
+}
+
+/* Animation */
+.productsGrid > * {
+  animation: fadeInUp 0.6s ease-out backwards;
+}
+
+.productsGrid > *:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.productsGrid > *:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.productsGrid > *:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.productsGrid > *:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.productsGrid > *:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.productsGrid > *:nth-child(6) {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

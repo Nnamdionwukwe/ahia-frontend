@@ -1,0 +1,554 @@
+/* SeasonalSaleDetail.module.css */
+
+/* Light Mode (Default) */
+.container {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f5;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-tertiary: #999999;
+  --border-color: #eeeeee;
+  --card-bg: #ffffff;
+  --section-shadow: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .container,
+.dark .container {
+  --bg-primary: #2d2d2d;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --text-tertiary: #808080;
+  --border-color: #3a3a3a;
+  --card-bg: #2d2d2d;
+  --section-shadow: rgba(0, 0, 0, 0.3);
+}
+
+.container {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease;
+}
+
+/* Sale Banner */
+.saleBanner {
+  color: white;
+  padding: 30px 20px;
+}
+
+.bannerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.saleInfo {
+  flex: 1;
+  min-width: 300px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  border: none;
+  cursor: pointer;
+  color: white;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-2px);
+}
+
+.titleSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.saleTitle {
+  font-size: 2rem;
+  font-weight: 800;
+  margin: 0;
+  color: white;
+}
+
+.seasonBadge {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.saleDescription {
+  font-size: 16px;
+  margin: 12px 0;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+.saleBadges {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.discountBadge,
+.productBadge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Timer Section */
+.timerSection {
+  flex-shrink: 0;
+}
+
+.timerBox {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.timerIcon {
+  opacity: 0.9;
+}
+
+.timerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.timerLabel {
+  font-size: 12px;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.timer {
+  font-size: 24px;
+  font-weight: 700;
+  font-family: "Courier New", monospace;
+  letter-spacing: 2px;
+}
+
+.timerDigit {
+  display: inline-block;
+  text-align: center;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 30px 20px;
+}
+
+.productsSection {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 2px 8px var(--section-shadow);
+  transition: background-color 0.3s ease;
+}
+
+/* Products Grid */
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-tertiary);
+  transition: color 0.3s ease;
+}
+
+.emptyState svg {
+  margin-bottom: 16px;
+  opacity: 0.5;
+  color: var(--text-tertiary);
+}
+
+.emptyState h3 {
+  font-size: 20px;
+  margin: 16px 0;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.emptyState p {
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+/* Footer */
+.footer {
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 32px 20px;
+  margin-top: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.footerContent h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.footerContent p {
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
+}
+
+.loadingContent {
+  text-align: center;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top: 4px solid #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+  transition: border-color 0.3s ease;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error State */
+.errorContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
+}
+
+.errorContent {
+  text-align: center;
+  padding: 24px;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px var(--section-shadow);
+  transition: background-color 0.3s ease;
+}
+
+.errorContent svg {
+  color: #10b981;
+  margin-bottom: 16px;
+}
+
+.errorContent h2 {
+  font-size: 24px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  transition: color 0.3s ease;
+}
+
+.errorContent p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  transition: color 0.3s ease;
+}
+
+.backBtn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.backBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .productsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+}
+
+/* Tablet/Mobile */
+@media (max-width: 768px) {
+  .saleBanner {
+    padding: 24px 15px;
+  }
+
+  .bannerContent {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .saleInfo {
+    min-width: auto;
+  }
+
+  .saleTitle {
+    font-size: 1.5rem;
+  }
+
+  .seasonBadge {
+    font-size: 0.8rem;
+  }
+
+  .saleDescription {
+    font-size: 14px;
+  }
+
+  .timerBox {
+    width: 100%;
+    padding: 16px;
+  }
+
+  .timer {
+    font-size: 20px;
+  }
+
+  .content {
+    padding: 20px 15px;
+  }
+
+  .productsSection {
+    padding: 20px 15px;
+  }
+
+  /* Display 2 cards on tablets */
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .saleBanner {
+    padding: 20px 10px;
+  }
+
+  .header {
+    gap: 12px;
+  }
+
+  .backButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .saleTitle {
+    font-size: 1.25rem;
+  }
+
+  .seasonBadge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+
+  .saleDescription {
+    font-size: 13px;
+  }
+
+  .saleBadges {
+    gap: 8px;
+  }
+
+  .discountBadge,
+  .productBadge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .timerBox {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .timerIcon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .timerLabel {
+    font-size: 10px;
+  }
+
+  .timer {
+    font-size: 18px;
+  }
+
+  .content {
+    padding: 16px 10px;
+  }
+
+  .productsSection {
+    padding: 16px 10px;
+    border-radius: 12px;
+  }
+
+  /* Display 2 cards on mobile */
+  .productsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .footer {
+    padding: 20px 10px;
+  }
+
+  .footerContent h3 {
+    font-size: 18px;
+  }
+
+  .footerContent p {
+    font-size: 14px;
+  }
+
+  .backBtn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 360px) {
+  .saleBanner {
+    padding: 16px 8px;
+  }
+
+  .backButton {
+    width: 32px;
+    height: 32px;
+  }
+
+  .saleTitle {
+    font-size: 1.1rem;
+  }
+
+  .seasonBadge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  .saleDescription {
+    font-size: 12px;
+  }
+
+  .discountBadge,
+  .productBadge {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .timerBox {
+    padding: 10px;
+  }
+
+  .timer {
+    font-size: 16px;
+  }
+
+  .content {
+    padding: 12px 8px;
+  }
+
+  .productsSection {
+    padding: 12px 8px;
+  }
+
+  .productsGrid {
+    gap: 6px;
+  }
+
+  .footerContent h3 {
+    font-size: 16px;
+  }
+
+  .footerContent p {
+    font-size: 13px;
+  }
+
+  .backBtn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+}
