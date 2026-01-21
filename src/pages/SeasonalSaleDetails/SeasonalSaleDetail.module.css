@@ -356,6 +356,7 @@
 @media (max-width: 768px) {
   .saleBanner {
     padding: 24px 15px;
+    height: 72px;
   }
 
   .bannerContent {
