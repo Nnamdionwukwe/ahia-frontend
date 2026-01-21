@@ -79,7 +79,7 @@ const SeasonalSaleFeaturedCard = ({ sale, featuredProduct }) => {
 
       <div className={styles.cardContent}>
         {/* Product Image */}
-        <div className={styles.imageWrapper} onClick={handleProductClick}>
+        <div className={styles.imageWrapper} onClick={handleCardClick}>
           <img
             src={
               featuredProduct.images?.[0] ||
