@@ -51,7 +51,6 @@
 .saleTagDiv {
   display: flex;
   justify-items: center;
-  align-items: center;
   flex-wrap: wrap;
   margin: 0 auto;
 }

@@ -254,9 +254,9 @@ const FlashSaleDetail = () => {
       {/* Products Grid */}
       <div className={styles.content}>
         <div className={styles.productsSection}>
-          <h2 className={styles.sectionTitle}>
+          {/* <h2 className={styles.sectionTitle}>
             Available Products ({Array.isArray(products) ? products.length : 0})
-          </h2>
+          </h2> */}
 
           {Array.isArray(products) && products.length > 0 ? (
             <div className={styles.productsGrid}>
