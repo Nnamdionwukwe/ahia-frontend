@@ -2,101 +2,103 @@
 
 /* Light Mode (Default) */
 .card {
-  --bg-primary: #ffffff;
-  --text-primary: #222222;
-  --text-secondary: #666666;
-  --border-color: #e0e0e0;
+  --card-bg: #ffffff;
   --card-shadow: rgba(0, 0, 0, 0.08);
-  --hover-shadow: rgba(0, 0, 0, 0.12);
+  --card-hover-shadow: rgba(16, 185, 129, 0.2);
+  --image-bg: #f5f5f5;
+  --stat-bg: #f8f9fa;
+  --stat-text: #666666;
+  --progress-bg: #e0e0e0;
+  --text-primary: #1a1a1a;
 }
 
 /* Dark Mode */
 [data-theme="dark"] .card,
 .dark .card {
-  --bg-primary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --border-color: #3a3a3a;
+  --card-bg: #2d2d2d;
   --card-shadow: rgba(0, 0, 0, 0.3);
-  --hover-shadow: rgba(0, 0, 0, 0.4);
+  --card-hover-shadow: rgba(16, 185, 129, 0.3);
+  --image-bg: #3a3a3a;
+  --stat-bg: #3a3a3a;
+  --stat-text: #b0b0b0;
+  --progress-bg: #3a3a3a;
+  --text-primary: #ffffff;
 }
 
 .card {
-  background: var(--bg-primary);
-  border-radius: 20px;
+  background: var(--card-bg);
+  border-radius: 16px;
   overflow: hidden;
+  box-shadow: 0 4px 12px var(--card-shadow);
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 20px var(--card-shadow);
-  border: 1px solid var(--border-color);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 12px 32px var(--hover-shadow);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--card-hover-shadow);
 }
 
-/* Sale Tag Header */
+/* Sale Tag */
 .saleTag {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
-  transition: background 0.3s ease;
+  padding: 10px 12px;
+  color: white;
 }
 
 .saleTagContent {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 .tagIcon {
   flex-shrink: 0;
-  opacity: 0.9;
 }
 
 .saleTitle {
   flex: 1;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .seasonBadge {
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(16, 185, 129, 0.15);
-  color: #10b981;
-  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  padding: 2px 8px;
   border-radius: 12px;
-  white-space: nowrap;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .arrowIcon {
   flex-shrink: 0;
-  opacity: 0.7;
-  transition: transform 0.3s ease;
-}
-
-.card:hover .arrowIcon {
-  transform: translateX(4px);
+  opacity: 0.9;
 }
 
 /* Card Content */
 .cardContent {
-  padding: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
 }
 
 /* Image Wrapper */
 .imageWrapper {
   position: relative;
   width: 100%;
-  padding-top: 100%;
+  padding-top: 100%; /* 1:1 aspect ratio */
+  border-radius: 12px;
   overflow: hidden;
-  background: #f5f5f5;
+  background: var(--image-bg);
 }
 
 .productImage {
@@ -106,253 +108,321 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.3s ease;
 }
 
 .card:hover .productImage {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
 
-/* Discount Badge */
+/* Badges */
 .discountBadge {
   position: absolute;
-  top: 16px;
-  left: 16px;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 700;
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  gap: 4px;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  z-index: 2;
 }
 
-/* Stock Badge */
 .stockBadge {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
-  background: rgba(239, 68, 68, 0.95);
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(220, 38, 38, 0.95);
   color: white;
   padding: 6px 12px;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+  animation: pulse 2s infinite;
+  z-index: 2;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
 }
 
 /* Product Info */
 .productInfo {
-  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 /* Price Section */
 .priceSection {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .salePrice {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
   color: #10b981;
 }
 
 .originalPrice {
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--stat-text);
   text-decoration: line-through;
+  font-weight: 800;
 }
 
-/* Countdown Timer */
-.countdown {
+/* Stats Section */
+.statsSection {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.statItem {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-  border-radius: 12px;
-  border: 1px solid #bbf7d0;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--stat-bg);
+  border-radius: 6px;
+  font-size: 12px;
 }
 
-[data-theme="dark"] .countdown,
-.dark .countdown {
-  background: linear-gradient(135deg, #064e3b20 0%, #065f4640 100%);
-  border-color: #065f46;
-}
-
-.countdown svg {
-  flex-shrink: 0;
+.statIcon {
   color: #10b981;
+  flex-shrink: 0;
 }
 
-.timeDigits {
+.statText {
+  color: var(--stat-text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Progress Section */
+.progressSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 6px;
+  background: var(--progress-bg);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 11px;
+  color: var(--stat-text);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Timer Section */
+.timerSection {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-family: "Courier New", monospace;
-  font-weight: 700;
-}
-
-.timeBox {
-  background: white;
   padding: 6px 10px;
+  background: var(--stat-bg);
   border-radius: 8px;
-  font-size: 16px;
-  color: #10b981;
-  min-width: 40px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-[data-theme="dark"] .timeBox,
-.dark .timeBox {
-  background: #1a1a1a;
+.timerIcon {
   color: #10b981;
+  flex-shrink: 0;
 }
 
-.separator {
-  font-size: 16px;
-  color: #10b981;
-  font-weight: 700;
-}
-
-.expiredText {
-  font-size: 14px;
+.timerText {
+  font-size: 12px;
+  color: var(--stat-text);
   font-weight: 600;
-  color: #ef4444;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .saleTag {
-    padding: 12px 16px;
+  .saleTagContent {
+    font-size: 11px;
   }
 
-  .saleTitle {
-    font-size: 16px;
+  .tagIcon,
+  .arrowIcon {
+    width: 15px;
+    height: 15px;
   }
 
   .seasonBadge {
-    font-size: 11px;
-    padding: 3px 10px;
+    font-size: 0.7rem;
+    padding: 2px 6px;
   }
 
-  .productInfo {
-    padding: 16px;
-    gap: 12px;
+  .cardContent {
+    padding: 8px;
+    gap: 8px;
   }
 
   .salePrice {
-    font-size: 20px;
+    font-size: 14px;
   }
 
   .originalPrice {
-    font-size: 14px;
+    font-size: 11px;
   }
 
-  .countdown {
-    padding: 10px 12px;
+  .statsSection {
+    gap: 6px;
   }
 
-  .timeBox {
-    padding: 4px 8px;
-    font-size: 14px;
-    min-width: 35px;
+  .statItem {
+    font-size: 10px;
+    padding: 3px 5px;
+  }
+
+  .statIcon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .progressText {
+    font-size: 10px;
+  }
+
+  .progressBar {
+    height: 5px;
+  }
+
+  .timerSection {
+    padding: 5px 8px;
+  }
+
+  .timerIcon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .timerText {
+    font-size: 10px;
   }
 
   .discountBadge {
-    padding: 6px 12px;
-    font-size: 12px;
-    top: 12px;
-    left: 12px;
+    padding: 4px 8px;
+    font-size: 11px;
+    top: 6px;
+    left: 6px;
+  }
+
+  .discountBadge svg {
+    width: 13px;
+    height: 13px;
   }
 
   .stockBadge {
-    padding: 5px 10px;
-    font-size: 10px;
-    bottom: 12px;
-    right: 12px;
+    font-size: 9px;
+    padding: 4px 8px;
+    bottom: 6px;
   }
 }
 
 @media (max-width: 480px) {
   .saleTag {
-    padding: 10px 12px;
+    padding: 6px 8px;
   }
 
   .saleTagContent {
-    gap: 8px;
-  }
-
-  .tagIcon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .saleTitle {
-    font-size: 14px;
-  }
-
-  .seasonBadge {
     font-size: 10px;
-    padding: 2px 8px;
+    gap: 4px;
   }
 
+  .tagIcon,
   .arrowIcon {
     width: 14px;
     height: 14px;
   }
 
-  .productInfo {
-    padding: 12px;
-    gap: 10px;
+  .seasonBadge {
+    font-size: 0.65rem;
+    padding: 1px 5px;
+  }
+
+  .cardContent {
+    padding: 6px;
+    gap: 6px;
   }
 
   .salePrice {
-    font-size: 18px;
-  }
-
-  .originalPrice {
     font-size: 13px;
   }
 
-  .countdown {
-    padding: 8px 10px;
-    gap: 8px;
+  .originalPrice {
+    font-size: 10px;
   }
 
-  .countdown svg {
-    width: 14px;
-    height: 14px;
+  .statsSection {
+    gap: 4px;
   }
 
-  .timeBox {
-    padding: 3px 6px;
-    font-size: 12px;
-    min-width: 30px;
+  .statItem {
+    font-size: 9px;
+    padding: 2px 4px;
   }
 
-  .separator {
-    font-size: 12px;
+  .statIcon {
+    width: 10px;
+    height: 10px;
+  }
+
+  .progressText {
+    font-size: 9px;
+  }
+
+  .progressBar {
+    height: 4px;
+  }
+
+  .timerSection {
+    padding: 4px 6px;
+  }
+
+  .timerIcon {
+    width: 11px;
+    height: 11px;
+  }
+
+  .timerText {
+    font-size: 9px;
   }
 
   .discountBadge {
-    padding: 4px 10px;
-    font-size: 11px;
-    gap: 4px;
-    top: 10px;
-    left: 10px;
+    padding: 3px 6px;
+    font-size: 10px;
+    top: 4px;
+    left: 4px;
   }
 
   .discountBadge svg {
@@ -361,58 +431,98 @@
   }
 
   .stockBadge {
-    padding: 4px 8px;
-    font-size: 9px;
-    bottom: 10px;
-    right: 10px;
+    font-size: 8px;
+    padding: 3px 6px;
+    bottom: 4px;
   }
 }
 
+/* Extra small screens */
 @media (max-width: 360px) {
   .saleTag {
-    padding: 8px 10px;
+    padding: 5px 6px;
   }
 
-  .saleTitle {
-    font-size: 13px;
+  .saleTagContent {
+    font-size: 9px;
+    gap: 3px;
+  }
+
+  .tagIcon,
+  .arrowIcon {
+    width: 12px;
+    height: 12px;
   }
 
   .seasonBadge {
-    font-size: 9px;
-    padding: 2px 6px;
+    font-size: 0.6rem;
+    padding: 1px 4px;
   }
 
-  .productInfo {
-    padding: 10px;
+  .cardContent {
+    padding: 5px;
+    gap: 5px;
   }
 
   .salePrice {
-    font-size: 16px;
-  }
-
-  .originalPrice {
     font-size: 12px;
   }
 
-  .timeBox {
-    padding: 2px 5px;
-    font-size: 11px;
-    min-width: 28px;
+  .originalPrice {
+    font-size: 9px;
   }
-}
 
-/* Animation */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  .statsSection {
+    flex-direction: column;
+    gap: 3px;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-.card {
-  animation: fadeIn 0.5s ease-out;
+  .statItem {
+    font-size: 8px;
+    padding: 2px 3px;
+  }
+
+  .statIcon {
+    width: 9px;
+    height: 9px;
+  }
+
+  .progressText {
+    font-size: 8px;
+  }
+
+  .progressBar {
+    height: 3px;
+  }
+
+  .timerSection {
+    padding: 3px 5px;
+  }
+
+  .timerIcon {
+    width: 10px;
+    height: 10px;
+  }
+
+  .timerText {
+    font-size: 8px;
+  }
+
+  .discountBadge {
+    padding: 2px 4px;
+    font-size: 9px;
+    top: 3px;
+    left: 3px;
+  }
+
+  .discountBadge svg {
+    width: 10px;
+    height: 10px;
+  }
+
+  .stockBadge {
+    font-size: 7px;
+    padding: 2px 4px;
+    bottom: 3px;
+  }
 }

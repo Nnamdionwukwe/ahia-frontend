@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Clock, Tag, ArrowRight, TrendingUp } from "lucide-react";
+import { Calendar, Tag, ArrowRight, TrendingUp, Package } from "lucide-react";
 import styles from "./SeasonalSaleFeaturedCard.module.css";
 
 const SeasonalSaleFeaturedCard = ({ sale, featuredProduct }) => {
@@ -9,108 +9,77 @@ const SeasonalSaleFeaturedCard = ({ sale, featuredProduct }) => {
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0,
   });
 
-  // Countdown timer using correct calculation
+  // Countdown timer
   useEffect(() => {
-    if (!sale?.end_time) {
-      console.error("Sale end_time is missing:", sale);
-      return;
-    }
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const end = new Date(sale.end_time).getTime();
+      const distance = end - now;
 
-    const calculateTimeLeft = () => {
-      const now = new Date();
-      const endTime = new Date(sale.end_time);
-      const timeDiff = endTime - now;
-
-      if (timeDiff <= 0) {
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      if (distance < 0) {
+        clearInterval(timer);
         return;
       }
 
-      const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor(
-        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-      );
-      const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
-
-      setTimeLeft({ days, hours, minutes, seconds });
-    };
-
-    // Calculate immediately on mount
-    calculateTimeLeft();
-
-    // Update every second
-    const timer = setInterval(calculateTimeLeft, 1000);
+      setTimeLeft({
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor(
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        ),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+      });
+    }, 1000);
 
     return () => clearInterval(timer);
-  }, [sale?.end_time]);
+  }, [sale.end_time]);
 
-  if (!featuredProduct) {
-    console.warn("No featured product provided");
-    return null;
-  }
+  if (!featuredProduct) return null;
 
   const handleCardClick = () => {
-    if (sale?.id) {
-      navigate(`/seasonal-sales/${sale.id}`);
-    } else {
-      console.error("Sale ID is missing:", sale);
-    }
+    navigate(`/seasonal-sales/${sale.id}`);
   };
 
   const handleProductClick = (e) => {
     e.stopPropagation();
-    navigate(`/product/${featuredProduct.product_id || featuredProduct.id}`);
+    navigate(`/product/${featuredProduct.id}`);
   };
 
   const remainingQty = featuredProduct.remaining_quantity || 0;
+  const soldQty = featuredProduct.sold_quantity || 0;
+  const maxQty = featuredProduct.max_quantity || 0;
+  const soldPercentage = featuredProduct.sold_percentage || 0;
+
   const savings = featuredProduct.original_price - featuredProduct.sale_price;
   const savingsPercent = Math.round(
     (savings / featuredProduct.original_price) * 100
   );
 
-  const isExpired =
-    timeLeft.days === 0 &&
-    timeLeft.hours === 0 &&
-    timeLeft.minutes === 0 &&
-    timeLeft.seconds === 0;
-
-  // Get banner color from sale or use default
-  const bannerColor = sale.banner_color || "#10b981";
-
   return (
     <div className={styles.card} onClick={handleCardClick}>
-      {/* Seasonal Sale Header/Tag */}
+      {/* Sale Tag */}
       <div
         className={styles.saleTag}
         style={{
-          background: `linear-gradient(135deg, ${bannerColor}20, ${bannerColor}40)`,
+          background: sale.banner_color
+            ? `linear-gradient(135deg, ${sale.banner_color}dd, ${sale.banner_color}ff)`
+            : "linear-gradient(135deg, #10b981, #06b6d4)",
         }}
       >
         <div className={styles.saleTagContent}>
-          <Tag
-            className={styles.tagIcon}
-            size={20}
-            style={{ color: bannerColor }}
-          />
+          <Tag className={styles.tagIcon} size={20} />
           <span className={styles.saleTitle}>{sale.name}</span>
           {sale.season && (
             <span className={styles.seasonBadge}>{sale.season}</span>
           )}
-          <ArrowRight
-            size={18}
-            className={styles.arrowIcon}
-            style={{ color: bannerColor }}
-          />
+          <ArrowRight size={18} className={styles.arrowIcon} />
         </div>
       </div>
 
       <div className={styles.cardContent}>
         {/* Product Image */}
-        <div className={styles.imageWrapper} onClick={handleCardClick}>
+        <div className={styles.imageWrapper} onClick={handleProductClick}>
           <img
             src={
               featuredProduct.images?.[0] ||
@@ -121,11 +90,9 @@ const SeasonalSaleFeaturedCard = ({ sale, featuredProduct }) => {
           />
 
           {/* Discount Badge */}
-          <div
-            className={styles.discountBadge}
-            style={{ background: bannerColor }}
-          >
-            <TrendingUp size={16} />-{savingsPercent}%
+          <div className={styles.discountBadge}>
+            <TrendingUp size={16} />
+            {savingsPercent}% OFF
           </div>
 
           {/* Stock Badge */}
@@ -146,34 +113,44 @@ const SeasonalSaleFeaturedCard = ({ sale, featuredProduct }) => {
             </span>
           </div>
 
-          {/* Countdown Timer */}
-          <div className={styles.countdown}>
-            <Clock size={16} />
-            {isExpired ? (
-              <div className={styles.expiredText}>Sale Ended</div>
-            ) : (
-              <div className={styles.timeDigits}>
-                {timeLeft.days > 0 && (
-                  <>
-                    <span className={styles.timeBox}>
-                      {String(timeLeft.days).padStart(2, "0")}
-                    </span>
-                    <span className={styles.separator}>:</span>
-                  </>
-                )}
-                <span className={styles.timeBox}>
-                  {String(timeLeft.hours).padStart(2, "0")}
-                </span>
-                <span className={styles.separator}>:</span>
-                <span className={styles.timeBox}>
-                  {String(timeLeft.minutes).padStart(2, "0")}
-                </span>
-                <span className={styles.separator}>:</span>
-                <span className={styles.timeBox}>
-                  {String(timeLeft.seconds).padStart(2, "0")}
-                </span>
-              </div>
-            )}
+          {/* Sales Stats */}
+          <div className={styles.statsSection}>
+            <div className={styles.statItem}>
+              <TrendingUp size={14} className={styles.statIcon} />
+              <span className={styles.statText}>{soldQty} sold</span>
+            </div>
+            <div className={styles.statItem}>
+              <Package size={14} className={styles.statIcon} />
+              <span className={styles.statText}>
+                {remainingQty}/{maxQty} left
+              </span>
+            </div>
+          </div>
+
+          {/* Progress Bar */}
+          <div className={styles.progressSection}>
+            <div className={styles.progressBar}>
+              <div
+                className={styles.progressFill}
+                style={{
+                  width: `${soldPercentage}%`,
+                  background: sale.banner_color
+                    ? `linear-gradient(90deg, ${sale.banner_color}dd, ${sale.banner_color}ff)`
+                    : "linear-gradient(90deg, #10b981, #06b6d4)",
+                }}
+              />
+            </div>
+            <span className={styles.progressText}>{soldPercentage}% sold</span>
+          </div>
+
+          {/* Timer */}
+          <div className={styles.timerSection}>
+            <Calendar size={14} className={styles.timerIcon} />
+            <span className={styles.timerText}>
+              {timeLeft.days > 0
+                ? `${timeLeft.days}d ${timeLeft.hours}h left`
+                : `${timeLeft.hours}h ${timeLeft.minutes}m left`}
+            </span>
           </div>
         </div>
       </div>

@@ -35,6 +35,14 @@
   margin-bottom: 60px;
 }
 
+/* Featured Grid - Shows one product per seasonal sale */
+.featuredGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
 /* Banner Section */
 .seasonalBanner {
   border-radius: 20px;
@@ -176,6 +184,9 @@
 }
 
 .viewAllBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   padding: 14px 32px;
   background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
   color: white;
@@ -200,6 +211,10 @@
 
 /* Tablet Responsive */
 @media (max-width: 1024px) {
+  .featuredGrid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  }
+
   .productsGrid {
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
@@ -223,6 +238,12 @@
 
   .seasonalSaleSection {
     margin-bottom: 40px;
+  }
+
+  /* Display 2 cards on tablets for featured grid */
+  .featuredGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
   }
 
   .seasonalBanner {
@@ -263,7 +284,7 @@
     font-size: 20px;
   }
 
-  /* Display 2 cards on tablets */
+  /* Display 2 cards on tablets for products grid */
   .productsGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
@@ -284,6 +305,12 @@
 
   .seasonalSaleSection {
     margin-bottom: 30px;
+  }
+
+  /* Display 2 cards on mobile for featured grid */
+  .featuredGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 
   .seasonalBanner {
@@ -353,7 +380,7 @@
     font-size: 10px;
   }
 
-  /* Display 2 cards on mobile */
+  /* Display 2 cards on mobile for products grid */
   .productsGrid {
     grid-template-columns: repeat(2, 1fr);
     gap: 8px;
@@ -369,6 +396,11 @@
 @media (max-width: 360px) {
   .seasonalSaleContainer {
     padding: 0 8px;
+  }
+
+  /* Display 2 cards on extra small phones for featured grid */
+  .featuredGrid {
+    gap: 6px;
   }
 
   .seasonalBanner {
