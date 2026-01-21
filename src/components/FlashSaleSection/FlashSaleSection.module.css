@@ -1,10 +1,36 @@
 /* FlashSaleSection.module.css */
 
+/* Light Mode (Default) */
+.flashSaleContainer {
+  --bg-primary: #ffffff;
+  --bg-secondary: #fafafa;
+  --text-primary: #222222;
+  --text-secondary: #666666;
+  --border-color: #f0f0f0;
+  --no-sales-bg: #ffffff;
+  --no-sales-icon: #e0e0e0;
+  --section-shadow: rgba(0, 0, 0, 0.06);
+}
+
+/* Dark Mode */
+[data-theme="dark"] .flashSaleContainer,
+.dark .flashSaleContainer {
+  --bg-primary: #2d2d2d;
+  --bg-secondary: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #3a3a3a;
+  --no-sales-bg: #2d2d2d;
+  --no-sales-icon: #3a3a3a;
+  --section-shadow: rgba(0, 0, 0, 0.3);
+}
+
 .flashSaleContainer {
   width: 100%;
   max-width: 1400px;
   margin: 0 auto 60px;
   padding: 20px;
+  transition: background-color 0.3s ease;
 }
 
 /* Section Header Main */
@@ -63,10 +89,14 @@
 /* Flash Sale Section */
 .flashSaleSection {
   margin-bottom: 60px;
-  background: linear-gradient(180deg, #fff 0%, #fafafa 100%);
+  background: linear-gradient(
+    180deg,
+    var(--bg-primary) 0%,
+    var(--bg-secondary) 100%
+  );
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px var(--section-shadow);
 }
 
 /* Section Header */
@@ -76,7 +106,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .sectionTitle {
@@ -147,7 +177,7 @@
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 8px 0;
-  color: #222;
+  color: var(--text-primary);
   background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -156,7 +186,7 @@
 
 .titleText p {
   margin: 0;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -278,15 +308,15 @@
 .noSalesContainer {
   text-align: center;
   padding: 80px 20px;
-  background: white;
+  background: var(--no-sales-bg);
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px var(--section-shadow);
   margin: 40px auto;
   max-width: 600px;
 }
 
 .noSalesIcon {
-  color: #e0e0e0;
+  color: var(--no-sales-icon);
   margin-bottom: 20px;
   animation: float 3s ease-in-out infinite;
 }
@@ -305,12 +335,12 @@
   font-size: 28px;
   font-weight: 700;
   margin: 0 0 12px 0;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .noSalesContainer p {
   font-size: 16px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0 0 24px 0;
 }
 

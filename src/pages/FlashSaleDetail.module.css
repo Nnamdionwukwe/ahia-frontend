@@ -1,5 +1,5 @@
 /* Light Mode (Default) */
-:root {
+.container {
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f5;
   --text-primary: #333333;
@@ -11,8 +11,8 @@
 }
 
 /* Dark Mode */
-[data-theme="dark"],
-.dark {
+[data-theme="dark"] .container,
+.dark .container {
   --bg-primary: #2d2d2d;
   --bg-secondary: #1a1a1a;
   --text-primary: #ffffff;
@@ -28,6 +28,7 @@
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .header {
@@ -174,6 +175,7 @@
   border-radius: 12px;
   padding: 24px;
   box-shadow: 0 2px 8px var(--section-shadow);
+  transition: background-color 0.3s ease;
 }
 
 .sectionTitle {
@@ -181,6 +183,7 @@
   font-weight: 700;
   margin-bottom: 20px;
   color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .productsGrid {
@@ -291,22 +294,26 @@
   text-align: center;
   padding: 60px 20px;
   color: var(--text-tertiary);
+  transition: color 0.3s ease;
 }
 
 .emptyState svg {
   margin-bottom: 16px;
   opacity: 0.5;
   color: var(--text-tertiary);
+  transition: color 0.3s ease;
 }
 
 .emptyState h3 {
   font-size: 20px;
   margin: 16px 0;
   color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .emptyState p {
   color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 .footer {
@@ -314,6 +321,7 @@
   border-top: 1px solid var(--border-color);
   padding: 32px 16px;
   margin-top: auto;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .footerContent {
@@ -326,6 +334,7 @@
   font-size: 20px;
   margin-bottom: 12px;
   color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .footerContent p {
@@ -334,6 +343,7 @@
   max-width: 600px;
   margin-left: auto;
   margin-right: auto;
+  transition: color 0.3s ease;
 }
 
 .continueShoppingBtn {
@@ -359,11 +369,13 @@
   align-items: center;
   min-height: 100vh;
   background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 .loadingContent {
   text-align: center;
   color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .spinner {
@@ -374,6 +386,7 @@
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 16px;
+  transition: border-color 0.3s ease;
 }
 
 @keyframes spin {
@@ -391,6 +404,7 @@
   align-items: center;
   min-height: 100vh;
   background: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 .errorContent {
@@ -399,6 +413,7 @@
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px var(--section-shadow);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .errorContent svg {
@@ -410,11 +425,13 @@
   font-size: 24px;
   color: var(--text-primary);
   margin-bottom: 8px;
+  transition: color 0.3s ease;
 }
 
 .errorContent p {
   color: var(--text-secondary);
   margin-bottom: 24px;
+  transition: color 0.3s ease;
 }
 
 .backBtn {
