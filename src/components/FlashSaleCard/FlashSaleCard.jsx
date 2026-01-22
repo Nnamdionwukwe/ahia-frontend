@@ -277,7 +277,9 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
           )}
 
           <button
-            className={styles.buyNowBtn}
+            className={`${styles.buyNowBtn} ${
+              saleEnded ? styles.disabled : ""
+            }`}
             onClick={handleBuyNow}
             disabled={
               adding ||
@@ -296,6 +298,27 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
               ? "Sold Out"
               : "Buy Now"}
           </button>
+
+          {/* <button
+            className={styles.buyNowBtn}
+            onClick={handleBuyNow}
+            disabled={
+              adding ||
+              saleNotStarted ||
+              saleEnded ||
+              (!saleNotStarted && remainingQty === 0)
+            }
+          >
+            {adding
+              ? "Adding..."
+              : saleNotStarted
+              ? "Upcoming"
+              : saleEnded
+              ? "Sale Ended"
+              : remainingQty === 0
+              ? "Sold Out"
+              : "Buy Now"}
+          </button> */}
         </div>
       </div>
 

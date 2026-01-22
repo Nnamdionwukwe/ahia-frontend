@@ -8,6 +8,7 @@ import ProductVariantModal from "../ProductVariantModal/ProductVariantModal";
 
 const SeasonalSaleCard = ({ product, sale }) => {
   const [showVariantModal, setShowVariantModal] = useState(false);
+  const [saleEnded, setSaleEnded] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
   const accessToken = useAuthStore((state) => state.accessToken);
   const navigate = useNavigate();
@@ -54,10 +55,14 @@ const SeasonalSaleCard = ({ product, sale }) => {
       const now = new Date().getTime();
       const end = new Date(sale.end_time).getTime();
       const distance = end - now;
+
       if (distance < 0) {
         clearInterval(timer);
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setSaleEnded(true);
         return;
       }
+
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
         hours: Math.floor(
@@ -66,6 +71,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((distance % (1000 * 60)) / 1000),
       });
+      setSaleEnded(false);
     }, 1000);
     return () => clearInterval(timer);
   }, [sale.end_time]);
@@ -160,8 +166,12 @@ const SeasonalSaleCard = ({ product, sale }) => {
               </span>
             </div>
           )}
-          <button className={styles.addToCartBtn} onClick={handleBuyNow}>
-            Add to Cart
+          <button
+            className={styles.addToCartBtn}
+            onClick={handleBuyNow}
+            disabled={saleEnded}
+          >
+            {saleEnded ? "Sale Ended" : "Add to Cart"}
           </button>
         </div>
       </div>

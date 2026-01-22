@@ -428,3 +428,22 @@
 .card {
   animation: fadeIn 0.5s ease-out;
 }
+
+.buyNowBtn.disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.buyNowBtn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.buyNowBtn:disabled {
+  background: #9ca3af !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  opacity: 0.6 !important;
+}

@@ -376,3 +376,14 @@
   transition: all 0.3s ease;
   margin: 8px 0;
 }
+
+.addToCartBtn:disabled {
+  background: #9ca3af !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+.addToCartBtn:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
