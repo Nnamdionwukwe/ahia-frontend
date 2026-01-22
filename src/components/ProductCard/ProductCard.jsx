@@ -89,14 +89,15 @@ const ProductCard = ({ product }) => {
             </span>
           </div>
           <div className={styles.price}>
+            <span className={styles.current}>
+              ₦{parseInt(product.price).toLocaleString()}
+            </span>
+
             {product.original_price && (
               <span className={styles.original}>
                 ₦{parseInt(product.original_price).toLocaleString()}
               </span>
             )}
-            <span className={styles.current}>
-              ₦{parseInt(product.price).toLocaleString()}
-            </span>
           </div>
           <button
             className={styles.button}
