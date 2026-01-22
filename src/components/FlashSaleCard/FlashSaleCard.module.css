@@ -108,6 +108,7 @@
   font-weight: 600;
   color: #222;
   margin: 0;
+  margin-top: -6px;
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -122,6 +123,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-top: -30px;
 }
 
 .ratingText {
@@ -136,19 +138,21 @@
   align-items: center;
   gap: 10px;
   flex-wrap: wrap;
+  margin-top: -12px;
+  margin-bottom: -12px;
 }
 
 .salePrice {
-  font-size: 22px;
+  font-size: 13px;
   font-weight: 800;
   color: #ff6b35;
 }
 
 .originalPrice {
-  font-size: 16px;
-  color: #999;
+  font-size: 13px;
+  color: var(--text-secondary);
   text-decoration: line-through;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 /* Progress Section */
@@ -307,11 +311,11 @@
   }
 
   .salePrice {
-    font-size: 18px;
+    font-size: 13px;
   }
 
   .originalPrice {
-    font-size: 14px;
+    font-size: 11px;
   }
 
   .progressSection {

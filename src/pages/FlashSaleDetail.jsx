@@ -260,7 +260,7 @@ const FlashSaleDetail = () => {
 
           {Array.isArray(products) && products.length > 0 ? (
             <div className={styles.productsGrid}>
-              {products.map((product) => {
+              {products.slice(0, 10000).map((product) => {
                 // Double-check product validity
                 if (!product || !product.id) {
                   return null;

@@ -195,7 +195,7 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
             </div>
           )}
           {/* Only show low stock badge if sale is active (not upcoming) */}
-          {!saleNotStarted && remainingQty > 0 && remainingQty > 0 && (
+          {!saleNotStarted && remainingQty < 10 && remainingQty > 0 && (
             <div className={styles.lowStockBadge}>
               Only {remainingQty} left!
             </div>
@@ -204,7 +204,7 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
 
         <div className={styles.content}>
           <h3 className={styles.productName} onClick={handleClick}>
-            {productName}
+            {productName?.substring(0, 20)}...
           </h3>
 
           <div className={styles.rating}>

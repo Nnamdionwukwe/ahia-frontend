@@ -222,7 +222,7 @@ const Home = () => {
             <ProductCardNavigation />
 
             <div className={styles.grid}>
-              {products.slice(0, 20).map((product) => (
+              {products.slice(0, 10000).map((product) => (
                 <ProductCard
                   key={product.id || product._id}
                   product={product}
