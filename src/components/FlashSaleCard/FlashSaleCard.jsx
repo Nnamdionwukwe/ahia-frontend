@@ -248,7 +248,7 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
           )}
 
           {saleEndTime && (
-            <div className={styles.countdown} onClick={handleClick}>
+            <div className={styles.countdown1} onClick={handleClick}>
               <div className={styles.countdownContent}>
                 <Clock size={16} className="text-red-500" />
                 <div className={styles.countdownDigits}>

@@ -246,8 +246,8 @@
   align-items: center;
   gap: 4px;
   font-family: "Courier New", monospace;
-  font-weight: 700;
-  font-size: 18px;
+  font-weight: bold;
+  font-size: 10px;
   color: #e65100;
 }
 
@@ -257,6 +257,7 @@
   border-radius: 6px;
   min-width: 32px;
   text-align: center;
+  font-weight: bold;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -335,12 +336,13 @@
   }
 
   .countdownDigits {
-    font-size: 16px;
+    font-size: 10px;
   }
 
   .countdownDigit {
     min-width: 28px;
     padding: 3px 6px;
+    font-weight: bold;
   }
 
   .buyNowBtn {
@@ -378,12 +380,14 @@
   }
 
   .countdownDigits {
-    font-size: 14px;
+    font-size: 10px;
+    font-weight: bold;
   }
 
   .countdownDigit {
     min-width: 24px;
     padding: 2px 4px;
+    font-weight: bold;
   }
 }
 
