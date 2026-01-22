@@ -270,7 +270,7 @@
 
 /* Footer CTA */
 .footerCTA {
-  margin-top: 40px;
+  /* margin-top: 40px; */
   text-align: center;
   /* padding: 30px; */
   /* background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%); */
@@ -292,7 +292,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-  margin-top: -15px;
+  margin-top: -25px;
 }
 
 .viewAllSalesBtn:hover {
@@ -457,7 +457,6 @@
     font-size: 12px;
     padding: 10px 16px;
     /* gap: 8px; */
-    background-color: red;
   }
 
   .viewAllSalesBtn svg {
@@ -520,7 +519,6 @@
     font-size: 11px;
     padding: 8px 14px;
     gap: 6px;
-    background-color: blue;
   }
 
   .viewAllSalesBtn svg {
@@ -530,7 +528,7 @@
 
   .footerCTA {
     padding: 10px;
-    margin-top: 12px;
+    margin-top: -25px;
   }
 
   .noSalesContainer {
