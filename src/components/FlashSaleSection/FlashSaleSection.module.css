@@ -272,9 +272,7 @@
 .footerCTA {
   margin-top: 40px;
   text-align: center;
-  margin-top: -40px;
-  margin-bottom: -40px;
-  /* padding: 30px;
+  /* padding: 30px; */
   /* background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%); */
   /* border-radius: 20px; */
   /* box-shadow: 0 8px 32px rgba(255, 107, 53, 0.3); */
@@ -294,6 +292,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin-top: -15px;
 }
 
 .viewAllSalesBtn:hover {
