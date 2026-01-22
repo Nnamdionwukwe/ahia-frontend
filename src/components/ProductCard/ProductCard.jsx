@@ -81,7 +81,7 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
         <div className={styles.content} onClick={handleClick}>
-          <h3 className={styles.name}>{product.name?.substring(0, 50)}...</h3>
+          <h3 className={styles.name}>{product.name?.substring(0, 20)}...</h3>
           <div className={styles.rating}>
             <span className={styles.stars}>⭐ {product.rating || 0}</span>
             <span className={styles.reviews}>
