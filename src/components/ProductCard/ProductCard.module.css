@@ -125,15 +125,6 @@
 }
 
 .button {
-  /* width: 100%; */
-  /* padding: var(--spacing-md);
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--border-radius-md);
-  font-weight: 600;
-  font-size: 14px; */
-  /* margin-left: -5px; */
   padding: 5px 12px 2px 10px;
   border-radius: 35%;
   border: 1px solid var(--color-primary);
