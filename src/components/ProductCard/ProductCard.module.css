@@ -114,11 +114,11 @@
 .original {
   text-decoration: line-through;
   color: var(--text-secondary);
-  font-size: 12px;
+  font-size: 9px;
 }
 
 .current {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: bold;
   color: var(--color-primary);
   margin-right: 5px;
