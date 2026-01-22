@@ -23,7 +23,6 @@ import RecommendedTab from "./RecommendedTab/RecommendedTab";
 import GalleryTab from "./GalleryTab/GalleryTab";
 import FixedBottomBar from "./FixedBottomBar/FixedBottomBar";
 import StickyCartAlert from "./StickyCartAlert/StickyCartAlert";
-import { FullscreenIcon } from "lucide-react";
 import FullscreenImageViewer from "./FullscreenImageViewer/FullscreenImageViewer";
 
 const ProductDetail = () => {
@@ -50,7 +49,6 @@ const ProductDetail = () => {
   const [fullscreenImageIndex, setFullscreenImageIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  const fullscreenImageRef = useRef(null);
 
   // Add these state variables at the top with other useState:
   const [allFlashSales, setAllFlashSales] = useState([]);
@@ -93,28 +91,6 @@ const ProductDetail = () => {
     };
   }, [showExitModal]);
 
-  // // Countdown timer based on actual sale end time
-  // useEffect(() => {
-  //   const calculateTimeLeft = () => {
-  //     const sale = flashSale || seasonalSale;
-  //     if (!sale || !sale.end_time) return;
-
-  //     const difference = new Date(sale.end_time) - new Date();
-
-  //     if (difference > 0) {
-  //       setTimeLeft({
-  //         hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-  //         minutes: Math.floor((difference / 1000 / 60) % 60),
-  //         seconds: Math.floor((difference / 1000) % 60),
-  //       });
-  //     }
-  //   };
-
-  //   calculateTimeLeft();
-  //   const timer = setInterval(calculateTimeLeft, 1000);
-
-  //   return () => clearInterval(timer);
-  // }, [flashSale, seasonalSale]);
   // Countdown timer based on actual sale end time
   useEffect(() => {
     const calculateTimeLeft = () => {

@@ -27,7 +27,7 @@ const ProductDetailHeader = ({ activeTab, setActiveTab, displayImages }) => {
         >
           Reviews
         </button>
-        {displayImages.length > 4 && (
+        {displayImages.length > 2 && (
           <button
             className={`${styles.tab} ${
               activeTab === "gallery" ? styles.activeTab : ""
@@ -37,6 +37,14 @@ const ProductDetailHeader = ({ activeTab, setActiveTab, displayImages }) => {
             Gallery
           </button>
         )}
+        <button
+          className={`${styles.tab} ${
+            activeTab === "recommended" ? styles.activeTab : ""
+          }`}
+          onClick={() => setActiveTab("recommended")}
+        >
+          Recommended
+        </button>
       </div>
       <div className={styles.headerActions}>
         <button className={styles.iconButton}>🔍</button>
