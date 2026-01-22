@@ -27,7 +27,7 @@ const ProductDetailHeader = ({ activeTab, setActiveTab, displayImages }) => {
         >
           Reviews
         </button>
-        {displayImages.length > 2 && (
+        {/* {displayImages.length > 2 && (
           <button
             className={`${styles.tab} ${
               activeTab === "gallery" ? styles.activeTab : ""
@@ -36,7 +36,7 @@ const ProductDetailHeader = ({ activeTab, setActiveTab, displayImages }) => {
           >
             Gallery
           </button>
-        )}
+        )} */}
         <button
           className={`${styles.tab} ${
             activeTab === "recommended" ? styles.activeTab : ""
