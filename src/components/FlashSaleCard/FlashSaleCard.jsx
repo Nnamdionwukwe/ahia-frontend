@@ -208,7 +208,7 @@ const FlashSaleCard = ({ product, saleEndTime, saleStartTime }) => {
           </h3>
 
           <div className={styles.rating}>
-            <Star className="fill-yellow-400 text-yellow-400" size={16} />
+            <Star className="fill-yellow-400 text-yellow-400" size={13} />
             <span className={styles.ratingText}>{rating.toFixed(2)}</span>
           </div>
 
