@@ -270,7 +270,7 @@
 
 /* Footer CTA */
 .footerCTA {
-  /* margin-top: 40px; */
+  margin-top: -14px;
   text-align: center;
   /* padding: 30px; */
   /* background: linear-gradient(135deg, #ff6b35 0%, #f74040 100%); */
@@ -404,8 +404,7 @@
   }
 
   .footerCTA {
-    /* padding: 15px; */
-    margin-top: -10px;
+    margin-top: -19px;
   }
 
   .viewAllSalesBtn {
@@ -467,7 +466,7 @@
 
   .footerCTA {
     padding: 12px;
-    margin-top: -25px;
+    margin-top: -38px;
   }
 
   .noSalesContainer {
@@ -529,7 +528,7 @@
 
   .footerCTA {
     padding: 10px;
-    margin-top: -25px;
+    margin-top: -39px;
   }
 
   .noSalesContainer {
