@@ -79,16 +79,18 @@ const ProductCardNavigation = () => {
         // Use hardcoded fallback based on your database
         setCategories([
           { id: "all", name: "All", slug: "" },
-          { id: "electronics", name: "Electronics", slug: "electronics" },
-          { id: "fashion", name: "Fashion", slug: "fashion" },
+          { id: "deals", name: "Deals", slug: "deals" },
           {
-            id: "home-kitchen",
-            name: "Home & Kitchen",
-            slug: "home & kitchen",
+            id: "best-sellimg items",
+            name: "Best-Sellimg Items",
+            slug: "best-sellimg items",
           },
-          { id: "sports", name: "Sports", slug: "sports" },
-          { id: "clothing", name: "Clothing", slug: "clothing" },
-          { id: "beauty", name: "Beauty", slug: "beauty" },
+          {
+            id: "5-star rated",
+            name: "5-Star Rated",
+            slug: "5-star rated",
+          },
+          { id: "new in", name: "New In", slug: "new in" },
         ]);
       }
     } finally {
@@ -137,7 +139,7 @@ const ProductCardNavigation = () => {
   }
 
   return (
-    <nav className={styles.nav}>
+    <nav className={styles.nav1}>
       <div className={styles.wrapper}>
         {/* Scroll Left Button */}
         {canScrollLeft && (
