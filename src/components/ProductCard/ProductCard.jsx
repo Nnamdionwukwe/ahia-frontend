@@ -109,7 +109,7 @@ const ProductCard = ({ product }) => {
                 disabled={adding}
               >
                 {/* {adding ? "Adding..." : "Add to Cart"} */}
-                <FiShoppingCart size={16} />
+                <FiShoppingCart color=" var(--color-primary)" size={16} />
               </button>
             </div>
           </div>
