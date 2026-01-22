@@ -57,6 +57,7 @@ const App = () => {
             <Route path="/seasonal-sales" element={<SeasonalSalesList />} />
 
             <Route path="/flash-sales/:saleId" element={<FlashSaleDetail />} />
+
             <Route
               path="/seasonal-sales/:id"
               element={<SeasonalSaleDetail />}
