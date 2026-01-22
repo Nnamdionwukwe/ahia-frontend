@@ -218,17 +218,7 @@ const Home = () => {
         {/* Featured Products Section */}
         {products.length > 0 && (
           <section className={styles.featuredSection}>
-            <div className={styles.sectionHeader}>
-              <div className={styles.sectionTitle}>
-                <div className={`${styles.iconBox} ${styles.iconBoxBlue}`}>
-                  <Tag className="text-white" size={28} />
-                </div>
-                <div className={styles.titleText}>
-                  <h2>Featured Products</h2>
-                  <p>Handpicked items just for you</p>
-                </div>
-              </div>
-            </div>
+            <Navigation />
 
             <div className={styles.grid}>
               {products.slice(0, 20).map((product) => (
