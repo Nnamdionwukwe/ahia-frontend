@@ -404,12 +404,12 @@
   }
 
   .footerCTA {
-    padding: 15px;
+    /* padding: 15px; */
   }
 
   .viewAllSalesBtn {
     font-size: 14px;
-    padding: 12px 20px;
+    /* padding: 12px 20px; */
   }
 
   .noSalesContainer {
