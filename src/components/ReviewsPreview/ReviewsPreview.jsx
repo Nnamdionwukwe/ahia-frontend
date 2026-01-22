@@ -7,10 +7,9 @@ const ReviewsPreview = ({ reviews, reviewSummary, onViewAllReviews }) => {
   return (
     <div className={styles.reviewsPreviewSection}>
       <div className={styles.reviewsHeader}>
-        <h3 className={styles.reviewsTitle}>Customer Reviews</h3>
-        <button className={styles.viewAllButton} onClick={onViewAllReviews}>
-          View all reviews ›
-        </button>
+        <h3 className={styles.reviewsTitle}>
+          All reviews are from verified purchases{" "}
+        </h3>
       </div>
 
       {reviewSummary && (
@@ -24,6 +23,10 @@ const ReviewsPreview = ({ reviews, reviewSummary, onViewAllReviews }) => {
               ({reviewSummary.total.toLocaleString()})
             </div>
           </div>
+
+          <button className={styles.viewAllButton} onClick={onViewAllReviews}>
+            View all reviews ›
+          </button>
         </div>
       )}
 
