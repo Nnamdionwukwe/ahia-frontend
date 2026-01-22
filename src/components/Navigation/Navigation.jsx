@@ -168,9 +168,9 @@ const Navigation = () => {
               }`}
             >
               {cat.name}
-              {cat.count !== null && cat.count !== undefined && (
+              {/* {cat.count !== null && cat.count !== undefined && (
                 <span className={styles.count}> ({cat.count})</span>
-              )}
+              )} */}
             </button>
           ))}
         </div>
