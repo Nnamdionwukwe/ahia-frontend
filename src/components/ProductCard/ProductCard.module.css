@@ -105,6 +105,7 @@
 .price {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--spacing-sm);
   margin-top: -15px;
   margin-bottom: 2px;
@@ -124,13 +125,17 @@
 
 .button {
   /* width: 100%; */
-  padding: var(--spacing-md);
+  /* padding: var(--spacing-md);
   background: var(--color-primary);
   color: white;
   border: none;
   border-radius: var(--border-radius-md);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 14px; */
+  /* margin-left: -5px; */
+  padding: 5px 12px 2px 10px;
+  border-radius: 45%;
+  border: 1px solid grey;
   cursor: pointer;
   transition: background var(--transition-fast);
 }

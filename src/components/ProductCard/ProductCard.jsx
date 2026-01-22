@@ -90,24 +90,28 @@ const ProductCard = ({ product }) => {
             </span>
           </div>
           <div className={styles.price}>
-            <span className={styles.current}>
-              ₦{parseInt(product.price).toLocaleString()}
-            </span>
-
-            {product.original_price && (
-              <span className={styles.original}>
-                ₦{parseInt(product.original_price).toLocaleString()}
+            <div>
+              <span className={styles.current}>
+                ₦{parseInt(product.price).toLocaleString()}
               </span>
-            )}
 
-            <button
-              className={styles.button1}
-              onClick={handleBuyNow}
-              disabled={adding}
-            >
-              {/* {adding ? "Adding..." : "Add to Cart"} */}
-              <FiShoppingCart size={20} />
-            </button>
+              {product.original_price && (
+                <span className={styles.original}>
+                  ₦{parseInt(product.original_price).toLocaleString()}
+                </span>
+              )}
+            </div>
+
+            <div>
+              <button
+                className={styles.button}
+                onClick={handleBuyNow}
+                disabled={adding}
+              >
+                {/* {adding ? "Adding..." : "Add to Cart"} */}
+                <FiShoppingCart size={16} />
+              </button>
+            </div>
           </div>
 
           {/* <button
