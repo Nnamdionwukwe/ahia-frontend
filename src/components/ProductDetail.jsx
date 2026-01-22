@@ -24,6 +24,7 @@ import GalleryTab from "./GalleryTab/GalleryTab";
 import FixedBottomBar from "./FixedBottomBar/FixedBottomBar";
 import StickyCartAlert from "./StickyCartAlert/StickyCartAlert";
 import FullscreenImageViewer from "./FullscreenImageViewer/FullscreenImageViewer";
+import ReviewsPreview from "./ReviewsPreview/ReviewsPreview";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -598,6 +599,13 @@ const ProductDetail = () => {
 
           {/* Order Guarantee */}
           <PaymentGuarantee />
+
+          {/* Reviews Preview */}
+          <ReviewsPreview
+            reviews={reviews}
+            reviewSummary={reviewSummary}
+            onViewAllReviews={() => setActiveTab("reviews")}
+          />
 
           {/* Product Specs/Attributes */}
           <ProductSpecs attributes={attributes} />

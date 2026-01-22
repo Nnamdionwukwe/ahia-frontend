@@ -1,0 +1,171 @@
+/* Reviews Preview Section */
+.reviewsPreviewSection {
+  margin: 30px 0;
+  padding: 20px 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.reviewsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.reviewsTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.viewAllButton {
+  background: none;
+  border: none;
+  color: #ff6b35;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: opacity 0.2s;
+}
+
+.viewAllButton:hover {
+  opacity: 0.8;
+}
+
+.ratingOverview {
+  background: var(--card-bg);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.ratingScore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bigRating {
+  font-size: 48px;
+  font-weight: 700;
+}
+
+.ratingStars {
+  color: #ffc107;
+  font-size: 20px;
+}
+
+.ratingCount {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.reviewCard {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card-bg);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.reviewerInfo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.reviewerAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3498db;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.reviewerName {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.reviewTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.reviewText {
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+}
+
+.reviewImages {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.reviewImages img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.reviewActions {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+}
+
+.helpfulButton {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.helpfulButton:hover {
+  color: var(--text-primary);
+}
+
+/* Dark Mode Specific Overrides */
+[data-theme="dark"] .reviewCard,
+.dark .reviewCard {
+  border-color: var(--border-color);
+  background: var(--card-bg);
+}
