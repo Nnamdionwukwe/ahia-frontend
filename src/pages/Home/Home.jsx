@@ -8,6 +8,7 @@ import SearchHeader from "../../components/SearchHeader/SearchHeader";
 import Navigation from "../../components/Navigation/Navigation";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import styles from "./Home.module.css";
+import ProductCardNavigation from "../../components/Navigation/ProductCardNavigation";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -218,7 +219,7 @@ const Home = () => {
         {/* Featured Products Section */}
         {products.length > 0 && (
           <section className={styles.featuredSection}>
-            <Navigation />
+            <ProductCardNavigation />
 
             <div className={styles.grid}>
               {products.slice(0, 20).map((product) => (
