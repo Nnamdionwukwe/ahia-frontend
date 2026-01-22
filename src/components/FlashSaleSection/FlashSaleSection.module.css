@@ -456,7 +456,8 @@
   .viewAllSalesBtn {
     font-size: 12px;
     padding: 10px 16px;
-    gap: 8px;
+    /* gap: 8px; */
+    background-color: red;
   }
 
   .viewAllSalesBtn svg {
@@ -466,7 +467,7 @@
 
   .footerCTA {
     padding: 12px;
-    margin-top: 15px;
+    margin-top: -25px;
   }
 
   .noSalesContainer {
@@ -519,6 +520,7 @@
     font-size: 11px;
     padding: 8px 14px;
     gap: 6px;
+    background-color: blue;
   }
 
   .viewAllSalesBtn svg {
