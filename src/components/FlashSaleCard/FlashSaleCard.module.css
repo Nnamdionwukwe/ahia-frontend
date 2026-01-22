@@ -149,7 +149,7 @@
 }
 
 .originalPrice {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--text-secondary);
   text-decoration: line-through;
   font-weight: bold;
@@ -372,11 +372,11 @@
   }
 
   .salePrice {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   .originalPrice {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .countdownDigits {
