@@ -5,6 +5,7 @@ import useCartStore from "../../store/cartStore";
 import useAuthStore from "../../store/authStore";
 import styles from "./ProductCard.module.css";
 import ProductVariantModal from "../ProductVariantModal/ProductVariantModal";
+import { FiShoppingCart } from "react-icons/fi";
 
 const ProductCard = ({ product }) => {
   const [showVariantModal, setShowVariantModal] = useState(false);
@@ -98,14 +99,25 @@ const ProductCard = ({ product }) => {
                 ₦{parseInt(product.original_price).toLocaleString()}
               </span>
             )}
+
+            <button
+              className={styles.button1}
+              onClick={handleBuyNow}
+              disabled={adding}
+            >
+              {/* {adding ? "Adding..." : "Add to Cart"} */}
+              <FiShoppingCart size={20} />
+            </button>
           </div>
-          <button
+
+          {/* <button
             className={styles.button}
             onClick={handleBuyNow}
             disabled={adding}
           >
             {adding ? "Adding..." : "Add to Cart"}
-          </button>
+            <FiShoppingCart size={20} />
+          </button> */}
         </div>
       </div>
 
