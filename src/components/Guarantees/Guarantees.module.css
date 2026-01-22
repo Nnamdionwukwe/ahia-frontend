@@ -1,0 +1,180 @@
+/* Guarantees */
+.guaranteeSection {
+  background: #e8f5e9;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.guaranteeItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.shippingIcon {
+  font-size: 18px;
+}
+
+.freeShippingText {
+  color: #2e7d32;
+  font-weight: 700;
+}
+
+.benefitsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+/* Delivery Details */
+.deliveryDetails {
+  background: var(--card-bg);
+  padding: 14px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.deliveryRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.deliveryRow:last-child {
+  margin-bottom: 0;
+}
+
+.deliveryLabel {
+  font-weight: 600;
+  min-width: 90px;
+}
+
+.deliveryValue {
+  color: var(--text-secondary);
+}
+
+.clickCollect {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #3498db;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.courierLogos {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.courierBadge {
+  background: #ff6b35;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Safe Payments & Guarantee */
+.safePayments,
+.orderGuarantee {
+  background: var(--card-bg);
+  padding: 14px;
+  border-radius: 8px;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.shieldIcon,
+.guaranteeIcon {
+  font-size: 18px;
+}
+
+.arrowRight {
+  margin-left: auto;
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.orderGuarantee {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.guaranteeHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.moreLink {
+  margin-left: auto;
+  color: #3498db;
+  font-size: 14px;
+}
+
+.guaranteePoints {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  font-size: 13px;
+}
+
+.guaranteePoint {
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .benefitsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .guaranteePoints {
+    grid-template-columns: 1fr;
+  }
+}
+
+.benefitsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .benefitsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,34 @@
+/* Product Info */
+.productName {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 16px 0 12px;
+  line-height: 1.4;
+}
+
+.productMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.soldCount {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fireIcon {
+  font-size: 16px;
+}
+
+.separator {
+  color: var(--text-secondary);
+}
+
+.storeName {
+  color: var(--text-secondary);
+}

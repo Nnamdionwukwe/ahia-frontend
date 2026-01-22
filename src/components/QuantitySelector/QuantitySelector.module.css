@@ -1,0 +1,45 @@
+/* Quantity Selector */
+.quantityRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.quantityLabel {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.quantitySelector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--card-bg, #f8f9fa);
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+}
+
+.quantityButton {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.quantityValue {
+  min-width: 30px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.stockInfo {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-left: 12px;
+}

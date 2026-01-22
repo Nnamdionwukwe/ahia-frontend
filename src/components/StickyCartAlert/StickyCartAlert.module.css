@@ -1,0 +1,47 @@
+/* Cart Alert */
+.cartAlert {
+  background: #fff3e0;
+  border: 2px solid #ff6b35;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cartAlertContent {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cartIcon {
+  font-size: 20px;
+}
+
+.viewCartButton {
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.4;
+  transition: background 0.2s;
+}
+
+.viewCartButton:hover {
+  background: #ff5520;
+}
+
+/* Dark Mode Specific Overrides */
+[data-theme="dark"] .cartAlert,
+.dark .cartAlert {
+  background: rgba(255, 152, 0, 0.15);
+  border-color: #ff8a65;
+}

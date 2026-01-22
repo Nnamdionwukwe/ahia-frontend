@@ -1,0 +1,70 @@
+/* Price Section */
+.priceSection {
+  margin: 20px 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.priceRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.originalPrice {
+  font-size: 15px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.discountBadge {
+  background: #ff6b35;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.currentPriceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.currentPrice {
+  display: flex;
+  align-items: baseline;
+}
+
+.currency {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+.priceAmount {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ff6b35;
+}
+
+.estimate {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.afterPromo {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.variantInfo {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  font-weight: 500;
+}

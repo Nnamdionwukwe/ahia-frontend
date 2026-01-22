@@ -1,0 +1,95 @@
+/* Bottom Bar */
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  padding: 12px 16px;
+  display: flex;
+  gap: 12px;
+  z-index: 100;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.addToCartButton {
+  flex: 1;
+  background: #ff6b35;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1.4;
+  transition: background 0.2s;
+}
+
+.addToCartButton:hover:not(:disabled) {
+  background: #ff5520;
+}
+
+.addToCartButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.deliverySubtext {
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.cartFloatingButton {
+  width: 60px;
+  height: 60px;
+  background: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.cartFloatingButton:hover {
+  background: #45a049;
+}
+
+.cartBadge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff6b35;
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cartFreeShipping {
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: #4caf50;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* Dark Mode Specific Overrides */
+[data-theme="dark"] .bottomBar,
+.dark .bottomBar {
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+}

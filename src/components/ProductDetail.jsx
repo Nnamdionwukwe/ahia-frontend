@@ -2,6 +2,29 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import styles from "./ProductDetail.module.css";
+import ProductDetailHeader from "./ProductDetailHeader/ProductDetailHeader";
+import ProductImageGallery from "./ProductImageGallery/ProductImageGallery";
+import SeasonalFlashSaleBanner from "./SeasonalFlashSaleBanner/SeasonalFlashSaleBanner";
+import ShippingDeliveryInfo from "./ShippingDeliveryInfo/ShippingDeliveryInfo";
+import SoldCountProductTitle from "./SoldCountProductTitle/SoldCountProductTitle";
+import PriceSection from "./PriceSection/PriceSection";
+import ColorVariants from "./ColorVariants/ColorVariants";
+import QuantitySelector from "./QuantitySelector/QuantitySelector";
+import Guarantees from "./Guarantees/Guarantees";
+import DeliveryDetails from "./DeliveryDetails/DeliveryDetails";
+import PaymentGuarantee from "./PaymentGuarantee/PaymentGuarantee";
+import ProductSpecs from "./ProductSpecs/ProductSpecs";
+import ProductFeatures from "./ProductFeatures/ProductFeatures";
+import ProductDescription from "./ProductDescription/ProductDescription";
+import ProductImageGalleryGrid from "./ProductImageGalleryGrid/ProductImageGalleryGrid";
+import ExitIntentModal from "./ExitIntentModal/ExitIntentModal";
+import ReviewsTab from "./ReviewsTab/ReviewsTab";
+import RecommendedTab from "./RecommendedTab/RecommendedTab";
+import GalleryTab from "./GalleryTab/GalleryTab";
+import FixedBottomBar from "./FixedBottomBar/FixedBottomBar";
+import StickyCartAlert from "./StickyCartAlert/StickyCartAlert";
+import { FullscreenIcon } from "lucide-react";
+import FullscreenImageViewer from "./FullscreenImageViewer/FullscreenImageViewer";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -28,6 +51,10 @@ const ProductDetail = () => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const fullscreenImageRef = useRef(null);
+
+  // Add these state variables at the top with other useState:
+  const [allFlashSales, setAllFlashSales] = useState([]);
+  const [allSeasonalSales, setAllSeasonalSales] = useState([]);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -290,41 +317,151 @@ const ProductDetail = () => {
   //     console.error("Error fetching sales:", error);
   //   }
   // };
+  // const fetchSales = async () => {
+  //   try {
+  //     // Reset sales for fresh product
+  //     setSeasonalSale(null);
+  //     setFlashSale(null);
+
+  //     // Fetch active seasonal sale
+  //     try {
+  //       const seasonalRes = await axios.get(
+  //         `${API_URL}/api/seasonal-sales/product/${id}`
+  //       );
+  //       if (seasonalRes.data && Object.keys(seasonalRes.data).length > 0) {
+  //         setSeasonalSale(seasonalRes.data);
+  //       }
+  //     } catch (error) {
+  //       console.log("No seasonal sale for this product");
+  //       setSeasonalSale(null);
+  //     }
+
+  //     // Fetch active flash sale
+  //     try {
+  //       const flashRes = await axios.get(
+  //         `${API_URL}/api/flash-sales/product/${id}`
+  //       );
+  //       if (flashRes.data && Object.keys(flashRes.data).length > 0) {
+  //         setFlashSale(flashRes.data);
+  //       }
+  //     } catch (error) {
+  //       console.log("No flash sale for this product");
+  //       setFlashSale(null);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching sales:", error);
+  //     setSeasonalSale(null);
+  //     setFlashSale(null);
+  //   }
+  // };
+
+  // Replace the existing fetchSales function with this:
   const fetchSales = async () => {
     try {
-      // Reset sales for fresh product
       setSeasonalSale(null);
       setFlashSale(null);
+      setAllFlashSales([]);
+      setAllSeasonalSales([]);
 
-      // Fetch active seasonal sale
+      // Fetch ALL active seasonal sales for this product
       try {
         const seasonalRes = await axios.get(
-          `${API_URL}/api/seasonal-sales/product/${id}`
+          `${API_URL}/api/seasonal-sales/product/${id}/all`
         );
-        if (seasonalRes.data && Object.keys(seasonalRes.data).length > 0) {
+
+        if (
+          seasonalRes.data &&
+          Array.isArray(seasonalRes.data) &&
+          seasonalRes.data.length > 0
+        ) {
+          console.log("✅ Multiple seasonal sales found:", seasonalRes.data);
+          setAllSeasonalSales(seasonalRes.data);
+          setSeasonalSale(seasonalRes.data[0]);
+        } else if (
+          seasonalRes.data &&
+          !Array.isArray(seasonalRes.data) &&
+          Object.keys(seasonalRes.data).length > 0
+        ) {
+          console.log("✅ Single seasonal sale found:", seasonalRes.data);
+          setAllSeasonalSales([seasonalRes.data]);
           setSeasonalSale(seasonalRes.data);
         }
       } catch (error) {
-        console.log("No seasonal sale for this product");
-        setSeasonalSale(null);
+        console.log("No seasonal sales endpoint, trying single seasonal sale");
+        try {
+          const singleSeasonalRes = await axios.get(
+            `${API_URL}/api/seasonal-sales/product/${id}`
+          );
+          if (
+            singleSeasonalRes.data &&
+            Object.keys(singleSeasonalRes.data).length > 0
+          ) {
+            console.log(
+              "✅ Single seasonal sale (fallback):",
+              singleSeasonalRes.data
+            );
+            setAllSeasonalSales([singleSeasonalRes.data]);
+            setSeasonalSale(singleSeasonalRes.data);
+          }
+        } catch (err) {
+          console.log("No seasonal sales for this product");
+          setSeasonalSale(null);
+          setAllSeasonalSales([]);
+        }
       }
 
-      // Fetch active flash sale
+      // Fetch ALL active flash sales for this product
       try {
         const flashRes = await axios.get(
-          `${API_URL}/api/flash-sales/product/${id}`
+          `${API_URL}/api/flash-sales/product/${id}/all`
         );
-        if (flashRes.data && Object.keys(flashRes.data).length > 0) {
+
+        if (
+          flashRes.data &&
+          Array.isArray(flashRes.data) &&
+          flashRes.data.length > 0
+        ) {
+          console.log("✅ Multiple flash sales found:", flashRes.data);
+          setAllFlashSales(flashRes.data);
+          setFlashSale(flashRes.data[0]);
+        } else if (
+          flashRes.data &&
+          !Array.isArray(flashRes.data) &&
+          Object.keys(flashRes.data).length > 0
+        ) {
+          console.log("✅ Single flash sale found:", flashRes.data);
+          setAllFlashSales([flashRes.data]);
           setFlashSale(flashRes.data);
         }
       } catch (error) {
-        console.log("No flash sale for this product");
-        setFlashSale(null);
+        console.log("No flash sales endpoint, trying single flash sale");
+        try {
+          const singleFlashRes = await axios.get(
+            `${API_URL}/api/flash-sales/product/${id}`
+          );
+          if (
+            singleFlashRes.data &&
+            Object.keys(singleFlashRes.data).length > 0
+          ) {
+            console.log(
+              "✅ Single flash sale (fallback):",
+              singleFlashRes.data
+            );
+            setAllFlashSales([singleFlashRes.data]);
+            setFlashSale(singleFlashRes.data);
+          }
+        } catch (err) {
+          console.log("No flash sales for this product");
+          setFlashSale(null);
+          setAllFlashSales([]);
+        }
       }
     } catch (error) {
       console.error("Error fetching sales:", error);
       setSeasonalSale(null);
       setFlashSale(null);
+      setAllFlashSales([]);
+      setAllSeasonalSales([]);
     }
   };
 
@@ -395,865 +532,148 @@ const ProductDetail = () => {
   return (
     <div className={styles.container}>
       {/* Fullscreen Image Viewer */}
-      {showFullscreenImage && displayImages.length > 0 && (
-        <div
-          className={styles.fullscreenImageOverlay}
-          onClick={() => setShowFullscreenImage(false)}
-          onTouchStart={handleTouchStart}
-          onTouchEnd={handleTouchEnd}
-          onTouchMove={handleTouchMove}
-          style={{
-            opacity: 1 - fullscreenSwipeProgress * 0.3,
-            backgroundColor: `rgba(0, 0, 0, ${
-              0.9 - fullscreenSwipeProgress * 0.3
-            })`,
-          }}
-        >
-          <div
-            className={styles.fullscreenImageContainer}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              transform: `translateY(${
-                fullscreenSwipeProgress * 100
-              }px) scale(${1 - fullscreenSwipeProgress * 0.05})`,
-              opacity: 1 - fullscreenSwipeProgress * 0.2,
-              transition:
-                fullscreenSwipeProgress === 0
-                  ? "transform 0.3s ease-out, opacity 0.3s ease-out"
-                  : "none",
-            }}
-          >
-            <img
-              ref={fullscreenImageRef}
-              src={displayImages[fullscreenImageIndex]?.image_url}
-              alt={`Product image ${fullscreenImageIndex + 1}`}
-              className={styles.fullscreenImage}
-            />
-
-            {/* Image Counter */}
-            <div className={styles.fullscreenCounter}>
-              {fullscreenImageIndex + 1} / {displayImages.length}
-            </div>
-
-            {/* Navigation Arrows */}
-            {displayImages.length > 1 && (
-              <>
-                <button
-                  className={styles.fullscreenArrowLeft}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFullscreenImageIndex(
-                      (prev) =>
-                        (prev - 1 + displayImages.length) % displayImages.length
-                    );
-                  }}
-                  style={{ display: "none" }}
-                >
-                  ‹
-                </button>
-                <button
-                  className={styles.fullscreenArrowRight}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setFullscreenImageIndex(
-                      (prev) => (prev + 1) % displayImages.length
-                    );
-                  }}
-                  style={{ display: "none" }}
-                >
-                  ›
-                </button>
-              </>
-            )}
-
-            {/* Thumbnails Strip */}
-            {displayImages.length > 1 && (
-              <div className={styles.fullscreenThumbnails}>
-                {displayImages.map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={img.image_url}
-                    alt={`Thumbnail ${idx + 1}`}
-                    className={`${styles.fullscreenThumbnail} ${
-                      idx === fullscreenImageIndex
-                        ? styles.fullscreenThumbnailActive
-                        : ""
-                    }`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setFullscreenImageIndex(idx);
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Touch/Swipe Hint */}
-          <div className={styles.fullscreenHint}>
-            Swipe to navigate • Press ESC to close
-          </div>
-        </div>
-      )}
+      <FullscreenImageViewer
+        showFullscreenImage={showFullscreenImage}
+        displayImages={displayImages}
+        fullscreenImageIndex={fullscreenImageIndex}
+        setFullscreenImageIndex={setFullscreenImageIndex}
+        setShowFullscreenImage={setShowFullscreenImage}
+        handleTouchStart={handleTouchStart}
+        handleTouchEnd={handleTouchEnd}
+        handleTouchMove={handleTouchMove}
+        fullscreenSwipeProgress={fullscreenSwipeProgress}
+      />
 
       {/* Header */}
-      <div className={styles.header}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          ←
-        </button>
-        <div className={styles.headerTabs}>
-          <button
-            className={`${styles.tab} ${
-              activeTab === "overview" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("overview")}
-          >
-            Overview
-          </button>
-          <button
-            className={`${styles.tab} ${
-              activeTab === "reviews" ? styles.activeTab : ""
-            }`}
-            onClick={() => setActiveTab("reviews")}
-          >
-            Reviews
-          </button>
-          {displayImages.length > 4 && (
-            <button
-              className={`${styles.tab} ${
-                activeTab === "gallery" ? styles.activeTab : ""
-              }`}
-              onClick={() => setActiveTab("gallery")}
-            >
-              Gallery
-            </button>
-          )}
-        </div>
-        <div className={styles.headerActions}>
-          <button className={styles.iconButton}>🔍</button>
-          <button className={styles.iconButton}>📤</button>
-        </div>
-      </div>
+      <ProductDetailHeader
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        displayImages={displayImages}
+      />
 
       {/* Image Gallery */}
-      {displayImages.length > 0 && (
-        <div className={styles.imageSection}>
-          <div
-            className={styles.mainImage}
-            onClick={() => {
-              setFullscreenImageIndex(selectedImage);
-              setShowFullscreenImage(true);
-            }}
-          >
-            <img
-              src={displayImages[selectedImage]?.image_url}
-              alt={displayImages[selectedImage]?.alt_text || productData.name}
-            />
-            <div className={styles.imageCounter}>
-              {selectedImage + 1}/{displayImages.length}
-            </div>
-            <button
-              className={styles.fullScreenButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setFullscreenImageIndex(selectedImage);
-                setShowFullscreenImage(true);
-              }}
-            >
-              ⛶
-            </button>
-          </div>
-
-          {displayImages.length > 1 && (
-            <div className={styles.thumbnails}>
-              {displayImages.map((img, idx) => (
-                <div
-                  key={idx}
-                  className={`${styles.thumbnail} ${
-                    selectedImage === idx ? styles.activeThumbnail : ""
-                  }`}
-                  onClick={() => setSelectedImage(idx)}
-                >
-                  <img
-                    src={img.image_url}
-                    alt={img.alt_text || `View ${idx + 1}`}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      <ProductImageGallery
+        displayImages={displayImages}
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+        setFullscreenImageIndex={setFullscreenImageIndex}
+        setShowFullscreenImage={setShowFullscreenImage}
+        productData={productData}
+      />
 
       {/* Tab Content */}
       {activeTab === "overview" && (
         <div className={styles.content}>
           {/* Seasonal/Flash Sale Banner */}
-          {/* {activeSale && (
-            <div
-              className={styles.flashSaleBanner}
-              style={
-                seasonalSale?.banner_color
-                  ? {
-                      background: `linear-gradient(90deg, ${seasonalSale.banner_color} 0%, ${seasonalSale.banner_color}dd 100%)`,
-                    }
-                  : {}
-              }
-            >
-              <div className={styles.saleTag}>
-                {seasonalSale?.name || flashSale?.title || "SALE"}
-              </div>
-              <div className={styles.flashSaleContent}>
-                <div className={styles.flashSaleLeft}>
-                  <span className={styles.flashIcon}>⚡</span>
-                  <span>{flashSale ? "Flash sale" : "Big sale"}</span>
-                  <span className={styles.separator}>|</span>
-                  <span className={styles.clockIcon}>⏰</span>
-                  <span className={styles.endsText}>Ends in</span>
-                </div>
-                <div className={styles.timer}>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.hours).padStart(2, "0")}
-                  </span>
-                  <span className={styles.timerColon}>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.minutes).padStart(2, "0")}
-                  </span>
-                  <span className={styles.timerColon}>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.seconds).padStart(2, "0")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )} */}
-
-          {/* Seasonal/Flash Sale Banner */}
-          {/* {activeSale && (
-            <div
-              className={styles.flashSaleBanner}
-              style={
-                activeSale?.banner_color
-                  ? {
-                      background: `linear-gradient(90deg, ${activeSale.banner_color} 0%, ${activeSale.banner_color}dd 100%)`,
-                    }
-                  : {}
-              }
-            >
-              <div className={styles.saleTag}>
-                {activeSale?.name || activeSale?.title || "SALE"}
-              </div>
-              <div className={styles.flashSaleContent}>
-                <div className={styles.flashSaleLeft}>
-                  <span className={styles.flashIcon}>⚡</span>
-                  <span>{flashSale ? "Flash sale" : "Seasonal sale"}</span>
-                  <span className={styles.separator}>|</span>
-                  <span className={styles.clockIcon}>⏰</span>
-                  <span className={styles.endsText}>Ends in</span>
-                </div>
-                <div className={styles.timer}>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.hours).padStart(2, "0")}
-                  </span>
-                  <span className={styles.timerColon}>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.minutes).padStart(2, "0")}
-                  </span>
-                  <span className={styles.timerColon}>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.seconds).padStart(2, "0")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )} */}
-
-          {/* Seasonal/Flash Sale Banner */}
-          {activeSale && (
-            <div
-              className={styles.flashSaleBanner}
-              style={
-                seasonalSale?.banner_color
-                  ? {
-                      background: `linear-gradient(90deg, ${seasonalSale.banner_color} 0%, ${seasonalSale.banner_color}dd 100%)`,
-                    }
-                  : {}
-              }
-            >
-              <div className={styles.saleTag}>
-                {flashSale?.title || seasonalSale?.name || "SALE"}
-              </div>
-              <div className={styles.flashSaleContent}>
-                <div className={styles.flashSaleLeft}>
-                  <span className={styles.flashIcon}>⚡</span>
-                  <span>
-                    {flashSale
-                      ? "Flash sale"
-                      : seasonalSale?.season
-                      ? `${seasonalSale.season} sale`
-                      : "Big sale"}
-                  </span>
-                  <span className={styles.separator}>|</span>
-                  <span className={styles.clockIcon}>⏰</span>
-                  <span className={styles.endsText}>Ends in</span>
-                </div>
-                <div className={styles.timer}>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.hours).padStart(2, "0")}
-                  </span>
-                  <span className={styles.timerColon}>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.minutes).padStart(2, "0")}
-                  </span>
-                  <span className={styles.timerColon}>:</span>
-                  <span className={styles.timerDigit}>
-                    {String(timeLeft.seconds).padStart(2, "0")}
-                  </span>
-                </div>
-              </div>
-            </div>
-          )}
+          <SeasonalFlashSaleBanner
+            flashSale={flashSale}
+            seasonalSale={seasonalSale}
+            timeLeft={timeLeft}
+            allSeasonalSales={allSeasonalSales}
+            allFlashSales={allFlashSales}
+          />
 
           {/* Shipping & Delivery Info */}
-          <div className={styles.infoSection}>
-            <div className={styles.infoItem}>
-              <span className={styles.checkIcon}>✓</span>
-              <span className={styles.freeShipping}>Free shipping</span>
-            </div>
-            <div className={styles.infoItem}>
-              <span className={styles.creditIcon}>₦</span>
-              <span>₦1,600 Credit for delay</span>
-            </div>
-          </div>
+          <ShippingDeliveryInfo />
 
-          {/* Delivery Estimate */}
-          <div className={styles.deliveryBadge}>
-            <span className={styles.truckIcon}>🚚</span>
-            <span className={styles.deliveryText}>
-              Arrives in NG in as little as 6 days
-            </span>
-          </div>
-
-          {/* Product Title */}
-          <h1 className={styles.productName}>{productData.name}</h1>
-
-          {/* Sold Count & Store */}
-          <div className={styles.productMeta}>
-            <span className={styles.soldCount}>
-              <span className={styles.fireIcon}>🔥</span>
-              {flashSale?.sold_quantity || 0}+ sold
-            </span>
-            <span className={styles.separator}>|</span>
-            <span className={styles.storeName}>
-              Sold by {productData.store_name || "Store"}
-            </span>
-          </div>
+          {/* Product Title 
+          /Sold Count & Store */}
+          <SoldCountProductTitle
+            productData={productData}
+            flashSale={flashSale}
+          />
 
           {/* Price Section */}
-          <div className={styles.priceSection}>
-            <div className={styles.priceRow}>
-              {(hasDiscount || activeSale || variantDiscount > 0) &&
-                originalPrice > salePrice && (
-                  <>
-                    <span className={styles.originalPrice}>
-                      ₦{parseInt(originalPrice).toLocaleString()}
-                    </span>
-                    <span className={styles.discountBadge}>
-                      {actualDiscount}% OFF {activeSale ? "limited time" : ""}
-                    </span>
-                  </>
-                )}
-            </div>
-            <div className={styles.currentPriceRow}>
-              <div className={styles.currentPrice}>
-                <span className={styles.currency}>₦</span>
-                <span className={styles.priceAmount}>
-                  {parseInt(salePrice).toLocaleString()}
-                </span>
-              </div>
-              <span className={styles.estimate}>Est.</span>
-            </div>
-            {selectedVariant && (
-              <div className={styles.variantInfo}>
-                Selected: {selectedVariant.color} - Size {selectedVariant.size}
-              </div>
-            )}
-            <div className={styles.afterPromo}>
-              after applying promos & credit to ₦
-              {parseInt(salePrice * 0.9).toLocaleString()}
-            </div>
-          </div>
+          <PriceSection
+            selectedVariant={selectedVariant}
+            productData={productData}
+            activeSale={activeSale}
+            flashSale={flashSale}
+            seasonalSale={seasonalSale}
+            originalPrice={originalPrice}
+            basePrice={basePrice}
+            variantDiscount={variantDiscount}
+            salePrice={salePrice}
+            actualDiscount={actualDiscount}
+          />
 
           {/* Color Variants */}
-          {variants.length > 0 && (
-            <>
-              <div className={styles.colorSection}>
-                <h3 className={styles.colorTitle}>Color</h3>
-                <div className={styles.colorOptions}>
-                  {[...new Map(variants.map((v) => [v.color, v])).values()].map(
-                    (variant) => (
-                      <div
-                        key={variant.id}
-                        className={`${styles.colorOption} ${
-                          selectedVariant?.color === variant.color
-                            ? styles.colorOptionActive
-                            : ""
-                        }`}
-                        onClick={() => {
-                          setSelectedVariant(variant);
-                          // Find the image index for this variant if it has an image_url
-                          if (variant.image_url && displayImages.length > 0) {
-                            const imgIndex = displayImages.findIndex(
-                              (img) => img.image_url === variant.image_url
-                            );
-                            if (imgIndex !== -1) {
-                              setSelectedImage(imgIndex);
-                            }
-                          }
-                        }}
-                      >
-                        {variant.image_url && (
-                          <img
-                            src={variant.image_url}
-                            alt={variant.color}
-                            className={styles.colorOptionImage}
-                          />
-                        )}
-                        {selectedVariant?.color === variant.color && (
-                          <div className={styles.colorSelectedBadge}>🔥</div>
-                        )}
-                      </div>
-                    )
-                  )}
-                </div>
-              </div>
-
-              {/* Size Selection */}
-              <div className={styles.sizeSection}>
-                <div className={styles.sizeHeader}>
-                  <h3 className={styles.sizeTitle}>Size(UK)</h3>
-                  <button className={styles.sizeGuideButton}>
-                    <span className={styles.sizeGuideIcon}>📏</span>
-                    Size guide
-                  </button>
-                </div>
-                <div className={styles.sizeOptions}>
-                  {variants
-                    .filter((v) => v.color === selectedVariant?.color)
-                    .map((variant) => (
-                      <button
-                        key={variant.id}
-                        className={`${styles.sizeOption} ${
-                          selectedVariant?.id === variant.id
-                            ? styles.sizeOptionActive
-                            : ""
-                        }`}
-                        onClick={() => setSelectedVariant(variant)}
-                      >
-                        {variant.size}
-                      </button>
-                    ))}
-                </div>
-                <div className={styles.sizeFitInfo}>
-                  <span className={styles.infoIcon}>ⓘ</span>
-                  <span>90% of customers say these fit true to size</span>
-                </div>
-              </div>
-            </>
-          )}
+          <ColorVariants
+            variants={variants}
+            selectedVariant={selectedVariant}
+            setSelectedVariant={setSelectedVariant}
+            displayImages={displayImages}
+            setSelectedImage={setSelectedImage}
+          />
 
           {/* Quantity Selector */}
-          <div className={styles.quantityRow}>
-            <span className={styles.quantityLabel}>Qty</span>
-            <div className={styles.quantitySelector}>
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className={styles.quantityButton}
-              >
-                −
-              </button>
-              <span className={styles.quantityValue}>{quantity}</span>
-              <button
-                onClick={() =>
-                  setQuantity(
-                    Math.min(
-                      selectedVariant?.stock_quantity ||
-                        productData.stock_quantity ||
-                        99,
-                      quantity + 1
-                    )
-                  )
-                }
-                className={styles.quantityButton}
-              >
-                +
-              </button>
-            </div>
-            {(selectedVariant || productData.stock_quantity !== undefined) && (
-              <span className={styles.stockInfo}>
-                {selectedVariant?.stock_quantity || productData.stock_quantity}{" "}
-                available
-              </span>
-            )}
-          </div>
+          <QuantitySelector
+            quantity={quantity}
+            setQuantity={setQuantity}
+            selectedVariant={selectedVariant}
+            productData={productData}
+          />
 
           {/* Guarantees */}
-          <div className={styles.guaranteeSection}>
-            <div className={styles.guaranteeItem}>
-              <span className={styles.shippingIcon}>📦</span>
-              <span className={styles.freeShippingText}>FREE SHIPPING</span>
-            </div>
-          </div>
-
-          <div className={styles.benefitsGrid}>
-            <div className={styles.benefitItem}>
-              <span>✓</span>
-              <span>₦1,600 Credit for delay</span>
-            </div>
-            <div className={styles.benefitItem}>
-              <span>✓</span>
-              <span>15-day no update refund</span>
-            </div>
-            <div className={styles.benefitItem}>
-              <span>✓</span>
-              <span>60-day returns</span>
-            </div>
-          </div>
+          <Guarantees />
 
           {/* Delivery Details */}
-          <div className={styles.deliveryDetails}>
-            <div className={styles.deliveryRow}>
-              <span className={styles.deliveryLabel}>Standard:</span>
-              <span className={styles.deliveryValue}>free on all orders.</span>
-              <button className={styles.clickCollect}>Click & Collect</button>
-            </div>
-            <div className={styles.deliveryRow}>
-              <span className={styles.deliveryLabel}>Delivery:</span>
-              <span className={styles.deliveryValue}>
-                Arrives in NG in as little as 6 days
-              </span>
-            </div>
-            <div className={styles.deliveryRow}>
-              <span className={styles.deliveryLabel}>Courier company:</span>
-              <div className={styles.courierLogos}>
-                <span className={styles.courierBadge}>Speedaf</span>
-                <span className={styles.courierBadge}>GIG</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Safe Payments */}
-          <div className={styles.safePayments}>
-            <span className={styles.shieldIcon}>🛡️</span>
-            <span>Safe payments • Secure privacy</span>
-            <span className={styles.arrowRight}>›</span>
-          </div>
+          <DeliveryDetails />
 
           {/* Order Guarantee */}
-          <div className={styles.orderGuarantee}>
-            <div className={styles.guaranteeHeader}>
-              <span className={styles.guaranteeIcon}>🎁</span>
-              <span>Order guarantee</span>
-              <span className={styles.moreLink}>More ›</span>
-            </div>
-            <div className={styles.guaranteePoints}>
-              <div className={styles.guaranteePoint}>✓ 90-day returns</div>
-              <div className={styles.guaranteePoint}>
-                ✓ Return if item damaged
-              </div>
-              <div className={styles.guaranteePoint}>✓ Price adjustment</div>
-            </div>
-          </div>
+          <PaymentGuarantee />
 
           {/* Product Specs/Attributes */}
-          {Object.keys(attributes).length > 0 && (
-            <div className={styles.specsGrid}>
-              {Object.entries(attributes)
-                .slice(0, 3)
-                .map(([group, attrs]) =>
-                  attrs.slice(0, 1).map((attr, idx) => (
-                    <div key={`${group}-${idx}`} className={styles.specCard}>
-                      <div className={styles.specIcon}>
-                        {group === "battery"
-                          ? "🔋"
-                          : group === "waterproof"
-                          ? "💧"
-                          : "📱"}
-                      </div>
-                      <div className={styles.specLabel}>{attr.name}</div>
-                      <div className={styles.specValue}>{attr.value}</div>
-                    </div>
-                  ))
-                )}
-            </div>
-          )}
+          <ProductSpecs attributes={attributes} />
 
           {/* Description */}
-          {productData.description && (
-            <div className={styles.description}>
-              <h3>Product Description</h3>
-              <p>{productData.description}</p>
-            </div>
-          )}
+          <ProductDescription description={productData.description} />
 
           {/* Product Features */}
-          {productData.tags && productData.tags.length > 0 && (
-            <div className={styles.featuresSection}>
-              <h3 className={styles.featuresTitle}>Key Features</h3>
-              <div className={styles.tagsList}>
-                {productData.tags.map((tag, idx) => (
-                  <span key={idx} className={styles.tag}>
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
+          <ProductFeatures tags={productData.tags} />
 
           {/* Product Image Gallery Grid */}
-          {displayImages.length > 0 && (
-            <div className={styles.productImagesSection}>
-              {/* Mobile Horizontal Scroll View */}
-              <div className={styles.imagesMobileThumbnails}>
-                {displayImages.map((img, idx) => (
-                  <img
-                    key={idx}
-                    src={img.image_url}
-                    alt={`Product image ${idx + 1}`}
-                    className={styles.imageMobileThumbnail}
-                    onClick={() => setSelectedImage(idx)}
-                  />
-                ))}
-              </div>
-
-              {/* Desktop Grid View */}
-              <div className={styles.imagesGrid}>
-                {displayImages.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className={styles.gridImageContainer}
-                    onClick={() => {
-                      setSelectedImage(idx);
-                    }}
-                  >
-                    <img
-                      src={img.image_url}
-                      alt={img.alt_text || `Product image ${idx + 1}`}
-                      className={styles.gridImage}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <ProductImageGalleryGrid
+            displayImages={displayImages}
+            setSelectedImage={setSelectedImage}
+          />
         </div>
       )}
 
       {/* Reviews Tab */}
       {activeTab === "reviews" && (
-        <div className={styles.content}>
-          <h2 className={styles.sectionTitle}>Customer Reviews</h2>
-
-          {reviewSummary && reviewSummary.total > 0 ? (
-            <>
-              {/* Rating Overview */}
-              <div className={styles.ratingOverview}>
-                <div className={styles.ratingScore}>
-                  <div className={styles.bigRating}>
-                    {reviewSummary.average.toFixed(1)}
-                  </div>
-                  <div className={styles.ratingStars}>★★★★★</div>
-                  <div className={styles.ratingCount}>
-                    ({reviewSummary.total.toLocaleString()})
-                  </div>
-                </div>
-              </div>
-
-              {/* Verified Badge */}
-              <div className={styles.verifiedBadge}>
-                <span className={styles.checkMark}>✓</span>
-                <span>All reviews are from verified purchases</span>
-              </div>
-
-              {/* Reviews List */}
-              <div className={styles.reviewsList}>
-                {reviews.map((review) => (
-                  <div key={review.id} className={styles.reviewCard}>
-                    <div className={styles.reviewHeader}>
-                      <div className={styles.reviewerInfo}>
-                        <div className={styles.reviewerAvatar}>
-                          {review.full_name?.charAt(0) || "U"}
-                        </div>
-                        <div>
-                          <div className={styles.reviewerName}>
-                            {review.full_name || "Anonymous"}
-                          </div>
-                        </div>
-                      </div>
-                      <div className={styles.reviewDate}>
-                        {new Date(review.created_at).toLocaleDateString()}
-                      </div>
-                    </div>
-
-                    {review.title && (
-                      <h5 className={styles.reviewTitle}>{review.title}</h5>
-                    )}
-
-                    <p className={styles.reviewText}>{review.comment}</p>
-
-                    {review.images && review.images.length > 0 && (
-                      <div className={styles.reviewImages}>
-                        {review.images.map((img, idx) => (
-                          <img key={idx} src={img} alt="Review" />
-                        ))}
-                      </div>
-                    )}
-
-                    <div className={styles.reviewActions}>
-                      <button className={styles.helpfulButton}>
-                        👍 Helpful({review.helpful_count || 0})
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className={styles.noReviews}>
-              <p>No reviews yet. Be the first to review this product!</p>
-            </div>
-          )}
-        </div>
+        <ReviewsTab reviews={reviews} reviewSummary={reviewSummary} />
       )}
 
       {/* Recommended Tab */}
-      {activeTab === "recommended" && (
-        <div className={styles.content}>
-          <div className={styles.noReviews}>
-            <p>Recommended products coming soon!</p>
-          </div>
-        </div>
-      )}
+      {activeTab === "recommended" && <RecommendedTab />}
 
       {/* Gallery Tab - All Product Images */}
       {activeTab === "gallery" && (
-        <div className={styles.content}>
-          <h2 className={styles.sectionTitle}>All Product Images</h2>
-          <div className={styles.fullImagesGrid}>
-            {displayImages.map((img, idx) => (
-              <div key={idx} className={styles.fullGridImageContainer}>
-                <img
-                  src={img.image_url}
-                  alt={img.alt_text || `Product image ${idx + 1}`}
-                  className={styles.fullGridImage}
-                  onClick={() => {
-                    setSelectedImage(idx);
-                    setActiveTab("overview");
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+        <GalleryTab
+          displayImages={displayImages}
+          setSelectedImage={setSelectedImage}
+          setActiveTab={setActiveTab}
+        />
       )}
 
       {/* Sticky Cart Alert */}
-      {cartCount > 0 && (
-        <div className={styles.cartAlert}>
-          <div className={styles.cartAlertContent}>
-            <span className={styles.cartIcon}>🛒</span>
-            <span>{cartCount} items in your cart</span>
-          </div>
-          <button
-            className={styles.viewCartButton}
-            onClick={() => navigate("/cart")}
-          >
-            View cart ({cartCount})
-          </button>
-        </div>
-      )}
+      <StickyCartAlert cartCount={cartCount} />
 
       {/* Fixed Bottom Bar */}
-      <div className={styles.bottomBar}>
-        <button
-          onClick={handleAddToCart}
-          className={styles.addToCartButton}
-          disabled={productData.stock_quantity === 0}
-        >
-          {activeSale && `-${actualDiscount}% now! `}
-          {productData.stock_quantity === 0 ? "Out of Stock" : "Add to cart!"}
-          <br />
-          <span className={styles.deliverySubtext}>
-            Arrives in NG in as little as 6 days
-          </span>
-        </button>
-        <button
-          className={styles.cartFloatingButton}
-          onClick={() => navigate("/cart")}
-        >
-          🛒
-          {cartCount > 0 && (
-            <span className={styles.cartBadge}>{cartCount}</span>
-          )}
-          <span className={styles.cartFreeShipping}>Free shipping</span>
-        </button>
-      </div>
-
+      <FixedBottomBar
+        handleAddToCart={handleAddToCart}
+        productData={productData}
+        activeSale={activeSale}
+        actualDiscount={actualDiscount}
+        cartCount={cartCount}
+      />
       {/* Exit Intent Modal */}
-      {showExitModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowExitModal(false)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setShowExitModal(false)}
-              className={styles.modalClose}
-            >
-              ×
-            </button>
-
-            <div className={styles.modalIcon}>🎁</div>
-            <h2 className={styles.modalTitle}>Special Offer</h2>
-            <p className={styles.modalSubtitle}>Just for you!</p>
-
-            <div className={styles.modalDivider} />
-
-            <div className={styles.modalDiscount}>15% OFF</div>
-            <p className={styles.modalDescription}>
-              No min. spend. Valid on select items only
-            </p>
-
-            <div className={styles.modalTimer}>
-              <span>Expires in</span>
-              <div className={styles.modalTimerDigits}>
-                <span>{String(timeLeft.hours).padStart(2, "0")}</span>
-                <span>:</span>
-                <span>{String(timeLeft.minutes).padStart(2, "0")}</span>
-                <span>:</span>
-                <span>{String(timeLeft.seconds).padStart(2, "0")}</span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setShowExitModal(false);
-                alert("15% discount applied!");
-              }}
-              className={styles.modalUseButton}
-            >
-              Use Discount
-            </button>
-
-            <button
-              onClick={() => setShowExitModal(false)}
-              className={styles.modalLeaveButton}
-            >
-              No Thanks
-            </button>
-          </div>
-        </div>
-      )}
+      <ExitIntentModal
+        showExitModal={showExitModal}
+        setShowExitModal={setShowExitModal}
+        timeLeft={timeLeft}
+      />
     </div>
   );
 };

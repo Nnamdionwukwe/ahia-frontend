@@ -1,0 +1,177 @@
+/* Content Section */
+.content {
+  padding: 0 16px 20px;
+}
+
+/* Reviews Section */
+.sectionTitle {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 20px 0;
+}
+
+.ratingOverview {
+  background: var(--card-bg);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.ratingScore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.bigRating {
+  font-size: 56px;
+  font-weight: 700;
+}
+
+.ratingStars {
+  color: #ffc107;
+  font-size: 24px;
+}
+
+.ratingCount {
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.verifiedBadge {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.checkMark {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.reviewsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.reviewCard {
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  background: var(--card-bg);
+}
+
+.reviewHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.reviewerInfo {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.reviewerAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #3498db;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.reviewerName {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.reviewStars {
+  color: #ffc107;
+  font-size: 14px;
+}
+
+.reviewDate {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.reviewTitle {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+
+.reviewText {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.reviewImages {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.reviewImages img {
+  width: 70px;
+  height: 70px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+.reviewActions {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+}
+
+.helpfulButton {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* No Reviews State */
+.noReviews {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+.noReviews p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Dark Mode Specific Overrides */
+[data-theme="dark"] .reviewCard,
+.dark .reviewCard {
+  border-color: var(--border-color);
+  background: var(--card-bg);
+}

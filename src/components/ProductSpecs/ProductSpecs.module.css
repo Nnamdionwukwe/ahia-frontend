@@ -1,0 +1,37 @@
+/* Product Specs */
+.specsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.specCard {
+  background: var(--card-bg);
+  padding: 16px 12px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.specIcon {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.specLabel {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.specValue {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .specsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

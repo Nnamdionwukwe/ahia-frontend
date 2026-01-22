@@ -1,0 +1,16 @@
+/* Description */
+.description {
+  margin: 24px 0;
+}
+
+.description h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.description p {
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 14px;
+}

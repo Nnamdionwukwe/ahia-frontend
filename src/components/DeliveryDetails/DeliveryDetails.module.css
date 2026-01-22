@@ -1,0 +1,28 @@
+/* Delivery Details */
+.deliveryDetails {
+  background: var(--card-bg);
+  padding: 14px;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.deliveryRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.deliveryRow:last-child {
+  margin-bottom: 0;
+}
+
+.deliveryLabel {
+  font-weight: 600;
+  min-width: 90px;
+}
+
+.deliveryValue {
+  color: var(--text-secondary);
+}
