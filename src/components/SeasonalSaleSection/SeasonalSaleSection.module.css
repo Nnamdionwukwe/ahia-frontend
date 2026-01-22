@@ -180,7 +180,7 @@
 /* View All Button */
 .viewAllContainer {
   text-align: center;
-  margin-top: 30px;
+  margin-top: -30px;
 }
 
 .viewAllBtn {
