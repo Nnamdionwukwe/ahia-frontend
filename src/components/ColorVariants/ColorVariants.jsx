@@ -12,7 +12,7 @@ const ColorVariants = ({
 
   return (
     <div className={styles.colorSection}>
-      <h3 className={styles.colorTitle}>Color</h3>
+      <h3 className={styles.colorTitle}>Colors</h3>
       <div className={styles.colorOptions}>
         {[...new Map(variants.map((v) => [v.color, v])).values()].map(
           (variant) => (
@@ -49,6 +49,38 @@ const ColorVariants = ({
             </div>
           )
         )}
+      </div>
+
+      {/* Size Selection */}
+      <div className={styles.sizeSection}>
+        <div className={styles.sizeHeader}>
+          <h3 className={styles.sizeTitle}>Size(UK)</h3>
+          <button className={styles.sizeGuideButton}>
+            <span className={styles.sizeGuideIcon}>📏</span>
+            Size guide
+          </button>
+        </div>
+        <div className={styles.sizeOptions}>
+          {variants
+            .filter((v) => v.color === selectedVariant?.color)
+            .map((variant) => (
+              <button
+                key={variant.id}
+                className={`${styles.sizeOption} ${
+                  selectedVariant?.id === variant.id
+                    ? styles.sizeOptionActive
+                    : ""
+                }`}
+                onClick={() => setSelectedVariant(variant)}
+              >
+                {variant.size}
+              </button>
+            ))}
+        </div>
+        <div className={styles.sizeFitInfo}>
+          <span className={styles.infoIcon}>ⓘ</span>
+          <span>90% of customers say these fit true to size</span>
+        </div>
       </div>
     </div>
   );
