@@ -46,7 +46,7 @@ const SaleBannerItem = ({ sale, index, isSeasonal, allSales }) => {
     ? sale.banner_color
       ? `linear-gradient(90deg, ${sale.banner_color} 0%, ${sale.banner_color}dd 100%)`
       : "linear-gradient(135deg, #10b981, #06b6d4)"
-    : undefined;
+    : "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)";
 
   return (
     <div
@@ -95,56 +95,48 @@ const SeasonalFlashSaleBanner = ({
   flashSale,
   seasonalSale,
   timeLeft,
-  allSeasonalSales,
-  allFlashSales,
+  allSeasonalSales = [],
+  allFlashSales = [],
 }) => {
-  const activeSale = flashSale || seasonalSale;
+  // Check if we have any sales at all
+  const hasSeasonalSales = allSeasonalSales.length > 0;
+  const hasFlashSales = allFlashSales.length > 0;
 
-  // Only show banner if there's an active sale
-  if (!activeSale) return null;
+  if (!hasSeasonalSales && !hasFlashSales) {
+    return null;
+  }
 
   return (
-    <div
-      className={styles.flashSaleBanner}
-      style={
-        seasonalSale?.banner_color
-          ? {
-              background: `linear-gradient(90deg, ${seasonalSale.banner_color} 0%, ${seasonalSale.banner_color}dd 100%)`,
-            }
-          : {}
-      }
-    >
-      <div className={styles.saleTag}>
-        {flashSale?.title || seasonalSale?.name || "SALE"}
-      </div>
-      <div className={styles.flashSaleContent}>
-        <div className={styles.flashSaleLeft}>
-          <span className={styles.flashIcon}>⚡</span>
-          <span>
-            {flashSale
-              ? "Flash sale"
-              : seasonalSale?.season
-              ? `${seasonalSale.season} sale`
-              : "Big sale"}
-          </span>
-          <span className={styles.separator}>|</span>
-          <span className={styles.clockIcon}>⏰</span>
-          <span className={styles.endsText}>Ends in</span>
+    <div className={styles.salesContainer}>
+      {/* Render all seasonal sales */}
+      {hasSeasonalSales && (
+        <div className={styles.salesGroup}>
+          {allSeasonalSales.map((sale, index) => (
+            <SaleBannerItem
+              key={sale.id || `seasonal-${index}`}
+              sale={sale}
+              index={index}
+              isSeasonal={true}
+              allSales={allSeasonalSales}
+            />
+          ))}
         </div>
-        <div className={styles.timer}>
-          <span className={styles.timerDigit}>
-            {String(timeLeft.hours).padStart(2, "0")}
-          </span>
-          <span className={styles.timerColon}>:</span>
-          <span className={styles.timerDigit}>
-            {String(timeLeft.minutes).padStart(2, "0")}
-          </span>
-          <span className={styles.timerColon}>:</span>
-          <span className={styles.timerDigit}>
-            {String(timeLeft.seconds).padStart(2, "0")}
-          </span>
+      )}
+
+      {/* Render all flash sales */}
+      {hasFlashSales && (
+        <div className={styles.salesGroup}>
+          {allFlashSales.map((sale, index) => (
+            <SaleBannerItem
+              key={sale.id || `flash-${index}`}
+              sale={sale}
+              index={index}
+              isSeasonal={false}
+              allSales={allFlashSales}
+            />
+          ))}
         </div>
-      </div>
+      )}
     </div>
   );
 };

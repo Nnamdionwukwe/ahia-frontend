@@ -4,7 +4,12 @@ import { Flame } from "lucide-react";
 import FlashSaleFeaturedCard from "../FlashSaleFeaturedCard/FlashSaleFeaturedCard";
 import styles from "./FlashSaleSection.module.css";
 
-const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
+const FlashSaleSection = ({
+  activeFlashSales,
+  activeSeasonalSales,
+  flashSaleProducts,
+  seasonalSaleProducts,
+}) => {
   const navigate = useNavigate();
 
   const handleViewAll = (saleId) => {
@@ -15,12 +20,33 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
     navigate("/flash-sales");
   };
 
+  // Combine flash sales and seasonal sales
+  const allSales = [
+    ...(activeFlashSales || []).map((sale) => ({
+      ...sale,
+      type: "flash",
+    })),
+    ...(activeSeasonalSales || []).map((sale) => ({
+      ...sale,
+      type: "seasonal",
+    })),
+  ];
+
+  // Get products for each sale
+  const getSaleProducts = (sale) => {
+    if (sale.type === "flash") {
+      return flashSaleProducts?.[sale.id] || [];
+    } else {
+      return seasonalSaleProducts?.[sale.id] || [];
+    }
+  };
+
   // Handle null or undefined cases
-  if (!activeFlashSales || activeFlashSales.length === 0) {
+  if (!allSales || allSales.length === 0) {
     return (
       <div className={styles.noSalesContainer}>
         <Flame className={styles.noSalesIcon} size={48} />
-        <h3>No Active Flash Sales</h3>
+        <h3>No Active Sales</h3>
         <p>Check back soon for amazing deals!</p>
         <button
           onClick={handleViewAllSales}
@@ -33,8 +59,8 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
   }
 
   // Filter out sales with no products
-  const salesWithProducts = activeFlashSales.filter((sale) => {
-    const products = flashSaleProducts?.[sale.id] || [];
+  const salesWithProducts = allSales.filter((sale) => {
+    const products = getSaleProducts(sale);
     return products.length > 0;
   });
 
@@ -43,12 +69,12 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
       <div className={styles.noSalesContainer}>
         <Flame className={styles.noSalesIcon} size={48} />
         <h3>No Products Available</h3>
-        <p>Flash sales are active but products are sold out!</p>
+        <p>Sales are active but products are sold out!</p>
         <button
           onClick={handleViewAllSales}
           className={styles.checkUpcomingBtn}
         >
-          View All Flash Sales
+          View All Sales
         </button>
       </div>
     );
@@ -58,16 +84,22 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
     <div className={styles.flashSaleContainer}>
       {/* Section Header */}
 
-      {/* Flash Sales Grid - One Product Per Sale */}
+      {/* Sales Grid - One Product Per Sale */}
       <div className={styles.featuredGrid}>
         {salesWithProducts.map((sale) => {
-          const products = flashSaleProducts[sale.id] || [];
+          const products = getSaleProducts(sale);
 
-          console.log(`Rendering Flash Sale ${sale.id}:`, {
-            title: sale.title,
-            productsCount: products.length,
-            products,
-          });
+          console.log(
+            `Rendering ${sale.type === "flash" ? "Flash" : "Seasonal"} Sale ${
+              sale.id
+            }:`,
+            {
+              title: sale.title || sale.name,
+              type: sale.type,
+              productsCount: products.length,
+              products,
+            }
+          );
 
           // Get the first product as featured product
           const featuredProduct = products[0];
@@ -80,15 +112,16 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
 
           return (
             <FlashSaleFeaturedCard
-              key={sale.id}
+              key={`${sale.type}-${sale.id}`}
               sale={sale}
               featuredProduct={featuredProduct}
+              saleType={sale.type}
             />
           );
         })}
       </div>
 
-      {/* Footer CTA - View all flash sales */}
+      {/* Footer CTA - View all sales */}
       {salesWithProducts.length > 1 && (
         <div className={styles.footerCTA}>
           <button
@@ -96,7 +129,7 @@ const FlashSaleSection = ({ activeFlashSales, flashSaleProducts }) => {
             className={styles.viewAllSalesBtn}
           >
             <Flame size={20} />
-            Browse All Flash Sales
+            Browse All Sales
           </button>
         </div>
       )}
