@@ -177,7 +177,6 @@ const FlashSaleDetail = () => {
   return (
     <div className={styles.container}>
       {/* Header */}
-
       {/* Sale Banner */}
       <div className={styles.saleBanner}>
         <div className={styles.bannerContent}>

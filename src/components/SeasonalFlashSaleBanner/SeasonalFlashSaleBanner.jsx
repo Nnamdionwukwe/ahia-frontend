@@ -9,24 +9,58 @@ const SaleBannerItem = ({ sale, index, isSeasonal, allSales }) => {
   });
 
   useEffect(() => {
+    // const calculateTimeLeft = () => {
+    //   if (!sale || !sale.end_time) {
+    //     setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+    //     return;
+    //   }
+
+    //   const now = new Date().getTime();
+    //   const end = new Date(sale.end_time).getTime();
+    //   const difference = end - now;
+
+    //   if (difference > 0) {
+    //     setSaleTimeLeft({
+    //       hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+    //       minutes: Math.floor((difference / 1000 / 60) % 60),
+    //       seconds: Math.floor((difference / 1000) % 60),
+    //     });
+    //   } else {
+    //     setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+    //   }
+    // };
     const calculateTimeLeft = () => {
-      if (!sale || !sale.end_time) {
+      if (!sale || !sale.start_time || !sale.end_time) {
+        console.warn("Sale data is incomplete or invalid", sale);
         setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
       const now = new Date().getTime();
+      const start = new Date(sale.start_time).getTime();
       const end = new Date(sale.end_time).getTime();
+
+      console.log("Current time:", new Date(now).toISOString());
+      console.log("Sale start time:", new Date(start).toISOString());
+      console.log("Sale end time:", new Date(end).toISOString());
+
+      if (now < start) {
+        console.log("Sale not started yet");
+        setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        return; // Sale hasn't started
+      }
+
       const difference = end - now;
 
       if (difference > 0) {
         setSaleTimeLeft({
           hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
+          minutes: Math.floor((difference / (1000 * 60)) % 60),
           seconds: Math.floor((difference / 1000) % 60),
         });
       } else {
         setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
+        console.log("Sale has ended");
       }
     };
 

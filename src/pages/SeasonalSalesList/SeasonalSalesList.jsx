@@ -200,6 +200,7 @@ const SeasonalSalesList = () => {
                 }}
               >
                 {/* Status Badge */}
+
                 <div className={styles.statusBadge}>
                   {isActive && (
                     <span
@@ -213,6 +214,7 @@ const SeasonalSalesList = () => {
                       LIVE NOW
                     </span>
                   )}
+
                   {isUpcoming && (
                     <span className={styles.upcoming}>UPCOMING</span>
                   )}

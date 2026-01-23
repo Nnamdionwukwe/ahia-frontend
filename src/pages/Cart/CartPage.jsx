@@ -1,339 +1,213 @@
-// ============================================
-// 1. CartPage.jsx
-// ============================================
-import React, { useEffect, useState } from "react";
+// pages/Cart/Cart.jsx
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiTrash2, FiPlus, FiMinus, FiShoppingBag } from "react-icons/fi";
-import useCartStore from "../../store/cartStore";
-import useAuthStore from "../../store/authStore";
 import styles from "./CartPage.module.css";
+// import CartSummary from "./CartSummary/CartSummary";
+// import ManageCartModal from "./ManageCartModal/ManageCartModal";
+// import ShareCartModal from "./ShareCartModal/ShareCartModal";
+import useCartStore from "../../store/cartStore";
+import CartItem from "../CartItem/CartItem";
 
 const CartPage = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState({});
+  const {
+    items,
+    loading,
+    selectedCount,
+    totalCount,
+    fetchCart,
+    toggleSelectAll,
+    removeSelected,
+    getSelectedTotals,
+    getAlmostSoldOutCount,
+  } = useCartStore();
 
-  const accessToken = useAuthStore((state) => state.accessToken);
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
-  const { items, total, itemCount, fetchCart, updateQuantity, removeItem } =
-    useCartStore();
+  const [showManageModal, setShowManageModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/auth");
-      return;
-    }
+    fetchCart();
+  }, [fetchCart]);
 
-    const loadCart = async () => {
-      if (accessToken) {
-        setLoading(true);
-        await fetchCart(accessToken);
-        setLoading(false);
-      }
-    };
-
-    loadCart();
-  }, [accessToken, isAuthenticated, navigate, fetchCart]);
-
-  const handleQuantityChange = async (itemId, newQuantity) => {
-    if (newQuantity < 1) return;
-
-    setUpdating((prev) => ({ ...prev, [itemId]: true }));
-    await updateQuantity(itemId, newQuantity);
-    setUpdating((prev) => ({ ...prev, [itemId]: false }));
-  };
-
-  const handleRemoveItem = async (itemId) => {
-    if (window.confirm("Remove this item from cart?")) {
-      setUpdating((prev) => ({ ...prev, [itemId]: true }));
-      await removeItem(itemId);
-      setUpdating((prev) => ({ ...prev, [itemId]: false }));
-    }
-  };
-
-  const calculateItemPrice = (item) => {
-    const price =
-      item.base_price -
-      (item.base_price * (item.discount_percentage || 0)) / 100;
-    return price;
-  };
+  const allSelected =
+    items.length > 0 && items.every((item) => item.is_selected);
+  const selectedTotals = getSelectedTotals();
+  const almostGoneCount = getAlmostSoldOutCount();
 
   const handleCheckout = () => {
-    // Navigate to checkout page
+    if (selectedCount === 0) {
+      alert("Please select items to checkout");
+      return;
+    }
     navigate("/checkout");
+  };
+
+  const handleManageCart = () => {
+    setShowManageModal(true);
+    setShowMenu(false);
+  };
+
+  const handleShareCart = () => {
+    setShowShareModal(true);
+    setShowMenu(false);
   };
 
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>
-          <div className={styles.spinner}></div>
-          <p>Loading your cart...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!items || items.length === 0) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.empty}>
-          <FiShoppingBag size={64} />
-          <h2>Your Cart is Empty</h2>
-          <p>Add items to get started!</p>
-          <button onClick={() => navigate("/")} className={styles.shopBtn}>
-            Start Shopping
-          </button>
-        </div>
+        <div className={styles.loading}>Loading cart...</div>
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
+      {/* Header */}
       <div className={styles.header}>
-        <h1>Shopping Cart</h1>
-        <span className={styles.itemCount}>{itemCount} items</span>
+        <button className={styles.backButton} onClick={() => navigate(-1)}>
+          ←
+        </button>
+        <div className={styles.headerCenter}>
+          <input
+            type="checkbox"
+            className={styles.selectAllCheckbox}
+            checked={allSelected}
+            onChange={toggleSelectAll}
+          />
+          <span className={styles.headerTitle}>All</span>
+        </div>
+        <h1 className={styles.title}>Cart ({totalCount})</h1>
+        <button
+          className={styles.menuButton}
+          onClick={() => setShowMenu(!showMenu)}
+        >
+          ☰
+        </button>
+
+        {showMenu && (
+          <div className={styles.dropdown}>
+            <button onClick={handleManageCart}>Manage cart</button>
+            <button onClick={handleShareCart}>Share cart</button>
+          </div>
+        )}
       </div>
 
-      <div className={styles.content}>
-        {/* Cart Items */}
-        <div className={styles.itemsSection}>
-          {items.map((item) => {
-            const itemPrice = calculateItemPrice(item);
-            const itemTotal = itemPrice * item.quantity;
-            const isUpdating = updating[item.id];
-
-            return (
-              <div
-                key={item.id}
-                className={`${styles.cartItem} ${
-                  isUpdating ? styles.updating : ""
-                }`}
-              >
-                {/* Product Image */}
-                <div
-                  className={styles.imageContainer}
-                  onClick={() => navigate(`/product/${item.product_id}`)}
-                >
-                  {item.images && item.images[0] ? (
-                    <img src={item.images[0]} alt={item.name} />
-                  ) : (
-                    <div className={styles.imagePlaceholder}>No Image</div>
-                  )}
-                </div>
-
-                {/* Product Details */}
-                <div className={styles.itemDetails}>
-                  <h3
-                    className={styles.itemName}
-                    onClick={() => navigate(`/product/${item.product_id}`)}
-                  >
-                    {item.name}
-                  </h3>
-
-                  {/* Variant Info */}
-                  <div className={styles.variantInfo}>
-                    {item.color && (
-                      <span className={styles.variant}>
-                        <strong>Color:</strong> {item.color}
-                      </span>
-                    )}
-                    {item.size && (
-                      <span className={styles.variant}>
-                        <strong>Size:</strong> {item.size}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Price */}
-                  <div className={styles.priceSection}>
-                    {item.discount_percentage > 0 && (
-                      <span className={styles.originalPrice}>
-                        ₦{parseInt(item.base_price).toLocaleString()}
-                      </span>
-                    )}
-                    <span className={styles.currentPrice}>
-                      ₦{parseInt(itemPrice).toLocaleString()}
-                    </span>
-                    {item.discount_percentage > 0 && (
-                      <span className={styles.discount}>
-                        -{item.discount_percentage}%
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Quantity Controls - Mobile */}
-                  <div className={styles.quantityControlsMobile}>
-                    <button
-                      onClick={() =>
-                        handleQuantityChange(item.id, item.quantity - 1)
-                      }
-                      disabled={isUpdating || item.quantity <= 1}
-                      className={styles.quantityBtn}
-                    >
-                      <FiMinus />
-                    </button>
-                    <span className={styles.quantity}>{item.quantity}</span>
-                    <button
-                      onClick={() =>
-                        handleQuantityChange(item.id, item.quantity + 1)
-                      }
-                      disabled={isUpdating}
-                      className={styles.quantityBtn}
-                    >
-                      <FiPlus />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Quantity Controls - Desktop */}
-                <div className={styles.quantityControlsDesktop}>
-                  <button
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity - 1)
-                    }
-                    disabled={isUpdating || item.quantity <= 1}
-                    className={styles.quantityBtn}
-                  >
-                    <FiMinus />
-                  </button>
-                  <span className={styles.quantity}>{item.quantity}</span>
-                  <button
-                    onClick={() =>
-                      handleQuantityChange(item.id, item.quantity + 1)
-                    }
-                    disabled={isUpdating}
-                    className={styles.quantityBtn}
-                  >
-                    <FiPlus />
-                  </button>
-                </div>
-
-                {/* Item Total */}
-                <div className={styles.itemTotal}>
-                  <span className={styles.totalLabel}>Total:</span>
-                  <span className={styles.totalPrice}>
-                    ₦{parseInt(itemTotal).toLocaleString()}
-                  </span>
-                </div>
-
-                {/* Remove Button */}
-                <button
-                  onClick={() => handleRemoveItem(item.id)}
-                  disabled={isUpdating}
-                  className={styles.removeBtn}
-                  title="Remove item"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-            );
-          })}
+      {/* Free Shipping Banner */}
+      {items.length > 0 && (
+        <div className={styles.freeShippingBanner}>
+          <span className={styles.checkIcon}>✓</span>
+          <span>Free shipping special for you</span>
+          <span className={styles.limitedTime}>Limited-time</span>
         </div>
+      )}
 
-        {/* Order Summary */}
-        <div className={styles.summarySection}>
-          <div className={styles.summary}>
-            <h2>Order Summary</h2>
+      {/* Filter Tabs */}
+      <div className={styles.filterTabs}>
+        <button className={`${styles.filterTab} ${styles.active}`}>
+          All({totalCount})
+        </button>
+        <button className={styles.filterTab}>
+          <span className={styles.cartIcon}>🛒</span>
+          Selected({selectedCount})
+        </button>
+      </div>
 
-            <div className={styles.summaryRow}>
-              <span>Subtotal ({itemCount} items)</span>
-              <span>₦{parseInt(total).toLocaleString()}</span>
+      {/* Cart Items */}
+      {items.length === 0 ? (
+        <div className={styles.emptyCart}>
+          <div className={styles.emptyCartIcon}>🛒</div>
+          <p>Your cart is empty</p>
+          <button
+            className={styles.shopNowButton}
+            onClick={() => navigate("/")}
+          >
+            Start Shopping
+          </button>
+        </div>
+      ) : (
+        <div className={styles.cartItems}>
+          {items.map((item) => (
+            <CartItem key={item.id} item={item} />
+          ))}
+        </div>
+      )}
+
+      {/* Almost Sold Out Alert */}
+      {almostGoneCount > 0 && (
+        <div className={styles.almostGoneAlert}>
+          <span className={styles.fireIcon}>🔥</span>
+          <span>{almostGoneCount} items are almost gone!</span>
+        </div>
+      )}
+
+      {/* Bottom Summary Bar */}
+      {items.length > 0 && (
+        <div className={styles.bottomBar}>
+          <div className={styles.bottomLeft}>
+            <div className={styles.selectAll}>
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={toggleSelectAll}
+              />
+              <span>All</span>
             </div>
+            {selectedCount > 0 && (
+              <button className={styles.removeButton} onClick={removeSelected}>
+                Remove
+              </button>
+            )}
+          </div>
 
-            <div className={styles.summaryRow}>
-              <span>Shipping</span>
-              <span className={styles.free}>Free</span>
+          <div className={styles.bottomRight}>
+            <div className={styles.priceInfo}>
+              {selectedTotals.discount > 0 && (
+                <div className={styles.originalPrice}>
+                  ₦{selectedTotals.subtotal.toLocaleString()}
+                </div>
+              )}
+              <div className={styles.finalPrice}>
+                ₦{selectedTotals.total.toLocaleString()}
+                {selectedTotals.discount > 0 && (
+                  <span className={styles.arrow}>↗</span>
+                )}
+              </div>
             </div>
-
-            <div className={styles.summaryRow}>
-              <span>Tax</span>
-              <span>₦0</span>
-            </div>
-
-            <div className={styles.divider}></div>
-
-            <div className={styles.summaryTotal}>
-              <span>Total</span>
-              <span className={styles.totalAmount}>
-                ₦{parseInt(total).toLocaleString()}
-              </span>
-            </div>
-
-            <button onClick={handleCheckout} className={styles.checkoutBtn}>
-              Proceed to Checkout
-            </button>
 
             <button
-              onClick={() => navigate("/")}
-              className={styles.continueBtn}
+              className={styles.checkoutButton}
+              onClick={handleCheckout}
+              disabled={selectedCount === 0}
             >
-              Continue Shopping
+              {selectedTotals.discount > 0 && (
+                <div className={styles.appliedDiscount}>
+                  Applied ₦{selectedTotals.discount.toLocaleString()} off &
+                  credit {/* Timer */}
+                </div>
+              )}
+              <div className={styles.checkoutText}>
+                <span className={styles.flashIcon}>⚡</span>
+                Last day for {selectedTotals.discountPercentage}% off
+              </div>
+              <div className={styles.checkoutSubtext}>
+                Checkout ({selectedCount}) | {/* Timer */}
+              </div>
             </button>
           </div>
-
-          {/* Promo Banner */}
-          <div className={styles.promoBanner}>
-            <h3>🎉 Free Shipping</h3>
-            <p>On all orders - Limited time offer!</p>
-          </div>
         </div>
-      </div>
+      )}
+
+      {/* Modals */}
+      {showManageModal && (
+        <ManageCartModal onClose={() => setShowManageModal(false)} />
+      )}
+
+      {showShareModal && (
+        <ShareCartModal onClose={() => setShowShareModal(false)} />
+      )}
     </div>
   );
 };
 
 export default CartPage;
-
-// ============================================
-// 2. Add to App.jsx
-// ============================================
-/*
-import CartPage from "./pages/Cart/CartPage";
-
-// In your Routes:
-<Route 
-  path="/cart" 
-  element={isAuthenticated ? <CartPage /> : <Navigate to="/auth" />} 
-/>
-*/
-
-// ============================================
-// 3. Update ProductCard to add items to cart
-// ============================================
-/*
-// In ProductCard.jsx, update the "Add to Cart" button:
-
-import useCartStore from '../../store/cartStore';
-import useAuthStore from '../../store/authStore';
-
-const ProductCard = ({ product }) => {
-  const addItem = useCartStore((state) => state.addItem);
-  const accessToken = useAuthStore((state) => state.accessToken);
-  
-  const handleAddToCart = async (e) => {
-    e.stopPropagation();
-    
-    if (!accessToken) {
-      alert('Please login to add items to cart');
-      return;
-    }
-    
-    // Assuming product has a default variant
-    const success = await addItem(product.variant_id, 1, accessToken);
-    
-    if (success) {
-      // Show success message
-      alert('Added to cart!');
-    }
-  };
-  
-  return (
-    // ... your existing code
-    <button className={styles.button} onClick={handleAddToCart}>
-      Add to Cart
-    </button>
-  );
-};
-*/

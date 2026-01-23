@@ -273,66 +273,117 @@ const ProductDetail = () => {
     }
   };
 
+  // Replace the existing fetchSales function with this:
   // const fetchSales = async () => {
   //   try {
-  //     // Fetch active seasonal sale
-  //     const seasonalRes = await axios.get(
-  //       `${API_URL}/api/seasonal-sales/product/${id}`
-  //     );
-  //     if (seasonalRes.data) {
-  //       setSeasonalSale(seasonalRes.data);
-  //     }
-
-  //     // Fetch active flash sale
-  //     const flashRes = await axios.get(
-  //       `${API_URL}/api/flash-sales/product/${id}`
-  //     );
-  //     if (flashRes.data) {
-  //       setFlashSale(flashRes.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching sales:", error);
-  //   }
-  // };
-  // const fetchSales = async () => {
-  //   try {
-  //     // Reset sales for fresh product
   //     setSeasonalSale(null);
   //     setFlashSale(null);
+  //     setAllFlashSales([]);
+  //     setAllSeasonalSales([]);
 
-  //     // Fetch active seasonal sale
+  //     // Fetch ALL active seasonal sales for this product
   //     try {
   //       const seasonalRes = await axios.get(
-  //         `${API_URL}/api/seasonal-sales/product/${id}`
+  //         `${API_URL}/api/seasonal-sales/product/${id}/all`
   //       );
-  //       if (seasonalRes.data && Object.keys(seasonalRes.data).length > 0) {
+
+  //       if (
+  //         seasonalRes.data &&
+  //         Array.isArray(seasonalRes.data) &&
+  //         seasonalRes.data.length > 0
+  //       ) {
+  //         console.log("✅ Multiple seasonal sales found:", seasonalRes.data);
+  //         setAllSeasonalSales(seasonalRes.data);
+  //         setSeasonalSale(seasonalRes.data[0]);
+  //       } else if (
+  //         seasonalRes.data &&
+  //         !Array.isArray(seasonalRes.data) &&
+  //         Object.keys(seasonalRes.data).length > 0
+  //       ) {
+  //         console.log("✅ Single seasonal sale found:", seasonalRes.data);
+  //         setAllSeasonalSales([seasonalRes.data]);
   //         setSeasonalSale(seasonalRes.data);
   //       }
   //     } catch (error) {
-  //       console.log("No seasonal sale for this product");
-  //       setSeasonalSale(null);
+  //       console.log("No seasonal sales endpoint, trying single seasonal sale");
+  //       try {
+  //         const singleSeasonalRes = await axios.get(
+  //           `${API_URL}/api/seasonal-sales/product/${id}`
+  //         );
+  //         if (
+  //           singleSeasonalRes.data &&
+  //           Object.keys(singleSeasonalRes.data).length > 0
+  //         ) {
+  //           console.log(
+  //             "✅ Single seasonal sale (fallback):",
+  //             singleSeasonalRes.data
+  //           );
+  //           setAllSeasonalSales([singleSeasonalRes.data]);
+  //           setSeasonalSale(singleSeasonalRes.data);
+  //         }
+  //       } catch (err) {
+  //         console.log("No seasonal sales for this product");
+  //         setSeasonalSale(null);
+  //         setAllSeasonalSales([]);
+  //       }
   //     }
 
-  //     // Fetch active flash sale
+  //     // Fetch ALL active flash sales for this product
   //     try {
   //       const flashRes = await axios.get(
-  //         `${API_URL}/api/flash-sales/product/${id}`
+  //         `${API_URL}/api/flash-sales/product/${id}/all`
   //       );
-  //       if (flashRes.data && Object.keys(flashRes.data).length > 0) {
+
+  //       if (
+  //         flashRes.data &&
+  //         Array.isArray(flashRes.data) &&
+  //         flashRes.data.length > 0
+  //       ) {
+  //         console.log("✅ Multiple flash sales found:", flashRes.data);
+  //         setAllFlashSales(flashRes.data);
+  //         setFlashSale(flashRes.data[0]);
+  //       } else if (
+  //         flashRes.data &&
+  //         !Array.isArray(flashRes.data) &&
+  //         Object.keys(flashRes.data).length > 0
+  //       ) {
+  //         console.log("✅ Single flash sale found:", flashRes.data);
+  //         setAllFlashSales([flashRes.data]);
   //         setFlashSale(flashRes.data);
   //       }
   //     } catch (error) {
-  //       console.log("No flash sale for this product");
-  //       setFlashSale(null);
+  //       console.log("No flash sales endpoint, trying single flash sale");
+  //       try {
+  //         const singleFlashRes = await axios.get(
+  //           `${API_URL}/api/flash-sales/product/${id}`
+  //         );
+  //         if (
+  //           singleFlashRes.data &&
+  //           Object.keys(singleFlashRes.data).length > 0
+  //         ) {
+  //           console.log(
+  //             "✅ Single flash sale (fallback):",
+  //             singleFlashRes.data
+  //           );
+  //           setAllFlashSales([singleFlashRes.data]);
+  //           setFlashSale(singleFlashRes.data);
+  //         }
+  //       } catch (err) {
+  //         console.log("No flash sales for this product");
+  //         setFlashSale(null);
+  //         setAllFlashSales([]);
+  //       }
   //     }
   //   } catch (error) {
   //     console.error("Error fetching sales:", error);
   //     setSeasonalSale(null);
   //     setFlashSale(null);
+  //     setAllFlashSales([]);
+  //     setAllSeasonalSales([]);
   //   }
   // };
 
-  // Replace the existing fetchSales function with this:
+  // Replace the entire fetchSales function in ProductDetail.js with this:
   const fetchSales = async () => {
     try {
       setSeasonalSale(null);
@@ -340,51 +391,23 @@ const ProductDetail = () => {
       setAllFlashSales([]);
       setAllSeasonalSales([]);
 
+      console.log(`🔍 Fetching all sales for product: ${id}`);
+
       // Fetch ALL active seasonal sales for this product
       try {
         const seasonalRes = await axios.get(
           `${API_URL}/api/seasonal-sales/product/${id}/all`
         );
 
-        if (
-          seasonalRes.data &&
-          Array.isArray(seasonalRes.data) &&
-          seasonalRes.data.length > 0
-        ) {
-          console.log("✅ Multiple seasonal sales found:", seasonalRes.data);
+        console.log("📦 Seasonal sales response:", seasonalRes.data);
+
+        if (Array.isArray(seasonalRes.data) && seasonalRes.data.length > 0) {
+          console.log(`✅ Found ${seasonalRes.data.length} seasonal sales`);
           setAllSeasonalSales(seasonalRes.data);
           setSeasonalSale(seasonalRes.data[0]);
-        } else if (
-          seasonalRes.data &&
-          !Array.isArray(seasonalRes.data) &&
-          Object.keys(seasonalRes.data).length > 0
-        ) {
-          console.log("✅ Single seasonal sale found:", seasonalRes.data);
-          setAllSeasonalSales([seasonalRes.data]);
-          setSeasonalSale(seasonalRes.data);
         }
       } catch (error) {
-        console.log("No seasonal sales endpoint, trying single seasonal sale");
-        try {
-          const singleSeasonalRes = await axios.get(
-            `${API_URL}/api/seasonal-sales/product/${id}`
-          );
-          if (
-            singleSeasonalRes.data &&
-            Object.keys(singleSeasonalRes.data).length > 0
-          ) {
-            console.log(
-              "✅ Single seasonal sale (fallback):",
-              singleSeasonalRes.data
-            );
-            setAllSeasonalSales([singleSeasonalRes.data]);
-            setSeasonalSale(singleSeasonalRes.data);
-          }
-        } catch (err) {
-          console.log("No seasonal sales for this product");
-          setSeasonalSale(null);
-          setAllSeasonalSales([]);
-        }
+        console.log("❌ Error fetching seasonal sales:", error.message);
       }
 
       // Fetch ALL active flash sales for this product
@@ -393,52 +416,18 @@ const ProductDetail = () => {
           `${API_URL}/api/flash-sales/product/${id}/all`
         );
 
-        if (
-          flashRes.data &&
-          Array.isArray(flashRes.data) &&
-          flashRes.data.length > 0
-        ) {
-          console.log("✅ Multiple flash sales found:", flashRes.data);
+        console.log("📦 Flash sales response:", flashRes.data);
+
+        if (Array.isArray(flashRes.data) && flashRes.data.length > 0) {
+          console.log(`✅ Found ${flashRes.data.length} flash sales`);
           setAllFlashSales(flashRes.data);
           setFlashSale(flashRes.data[0]);
-        } else if (
-          flashRes.data &&
-          !Array.isArray(flashRes.data) &&
-          Object.keys(flashRes.data).length > 0
-        ) {
-          console.log("✅ Single flash sale found:", flashRes.data);
-          setAllFlashSales([flashRes.data]);
-          setFlashSale(flashRes.data);
         }
       } catch (error) {
-        console.log("No flash sales endpoint, trying single flash sale");
-        try {
-          const singleFlashRes = await axios.get(
-            `${API_URL}/api/flash-sales/product/${id}`
-          );
-          if (
-            singleFlashRes.data &&
-            Object.keys(singleFlashRes.data).length > 0
-          ) {
-            console.log(
-              "✅ Single flash sale (fallback):",
-              singleFlashRes.data
-            );
-            setAllFlashSales([singleFlashRes.data]);
-            setFlashSale(singleFlashRes.data);
-          }
-        } catch (err) {
-          console.log("No flash sales for this product");
-          setFlashSale(null);
-          setAllFlashSales([]);
-        }
+        console.log("❌ Error fetching flash sales:", error.message);
       }
     } catch (error) {
-      console.error("Error fetching sales:", error);
-      setSeasonalSale(null);
-      setFlashSale(null);
-      setAllFlashSales([]);
-      setAllSeasonalSales([]);
+      console.error("❌ Error in fetchSales:", error);
     }
   };
 
