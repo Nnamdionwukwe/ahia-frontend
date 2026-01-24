@@ -1,0 +1,206 @@
+/* pages/Cart/CartSummary/CartSummary.module.css */
+.summaryContainer {
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summaryCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.summaryTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.label {
+  color: #666;
+}
+
+.value {
+  font-weight: 500;
+  color: #333;
+}
+
+.value.discount {
+  color: #4caf50;
+}
+
+.value.free {
+  color: #4caf50;
+  font-weight: 600;
+}
+
+.divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 16px 0;
+}
+
+.summaryRow.total {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid #333;
+}
+
+.totalLabel {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.totalPrice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.totalAmount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff6f00;
+}
+
+.savings {
+  font-size: 12px;
+  color: #4caf50;
+  margin-top: 4px;
+}
+
+.checkoutButton {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  color: white;
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.checkoutButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.3);
+}
+
+.checkoutButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.savingsInfo {
+  background: #fff3e0;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #f57c00;
+  font-weight: 500;
+}
+
+.savingsIcon {
+  font-size: 18px;
+}
+
+.promoCard {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.promoTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #333;
+}
+
+.promoInput {
+  display: flex;
+  gap: 8px;
+}
+
+.input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.applyButton {
+  padding: 10px 20px;
+  background: #333;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.applyButton:hover {
+  background: #555;
+}
+
+.paymentMethods {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.methodsTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #666;
+}
+
+.methodsIcons {
+  display: flex;
+  gap: 12px;
+}
+
+.methodIcon {
+  width: 50px;
+  height: 50px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .summaryContainer {
+    position: static;
+    margin-top: 24px;
+  }
+}

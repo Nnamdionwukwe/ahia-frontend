@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CartPage.module.css";
 // import CartSummary from "./CartSummary/CartSummary";
-// import ManageCartModal from "./ManageCartModal/ManageCartModal";
-// import ShareCartModal from "./ShareCartModal/ShareCartModal";
 import useCartStore from "../../store/cartStore";
 import CartItem from "../CartItem/CartItem";
+import ManageCartModal from "../ManageCartModal/ManageCartModal";
+import ShareCartModal from "../ShareCartModal/ShareCartModal";
 
 const CartPage = () => {
   const navigate = useNavigate();

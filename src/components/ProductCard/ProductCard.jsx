@@ -10,7 +10,7 @@ import { FiShoppingCart } from "react-icons/fi";
 const ProductCard = ({ product }) => {
   const [showVariantModal, setShowVariantModal] = useState(false);
   const navigate = useNavigate();
-  const addItem = useCartStore((state) => state.addItem);
+  const addToCart = useCartStore((state) => state.addToCart); // ✅ Changed from addItem to addToCart
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
 
@@ -44,12 +44,14 @@ const ProductCard = ({ product }) => {
 
     setAdding(true);
     try {
-      const success = await addItem(variantId, quantity, accessToken);
+      // ✅ Updated to use addToCart with correct parameters
+      const result = await addToCart(product.id, variantId, quantity);
 
-      if (success) {
+      if (result.success) {
         alert("Added to cart!");
+        setShowVariantModal(false); // Close modal on success
       } else {
-        alert("Failed to add to cart");
+        alert(result.error || "Failed to add to cart");
       }
     } catch (error) {
       console.error("Add to cart error:", error);
@@ -108,20 +110,10 @@ const ProductCard = ({ product }) => {
                 onClick={handleBuyNow}
                 disabled={adding}
               >
-                {/* {adding ? "Adding..." : "Add to Cart"} */}
-                <FiShoppingCart size={16} />
+                {adding ? <span>...</span> : <FiShoppingCart size={16} />}
               </button>
             </div>
           </div>
-
-          {/* <button
-            className={styles.button}
-            onClick={handleBuyNow}
-            disabled={adding}
-          >
-            {adding ? "Adding..." : "Add to Cart"}
-            <FiShoppingCart size={20} />
-          </button> */}
         </div>
       </div>
 
@@ -129,7 +121,7 @@ const ProductCard = ({ product }) => {
         isOpen={showVariantModal}
         onClose={() => setShowVariantModal(false)}
         product={product}
-        onAddToCart={handleAddToCart} // Passing the handleAddToCart to the modal
+        onAddToCart={handleAddToCart}
       />
     </>
   );
