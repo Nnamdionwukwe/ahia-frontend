@@ -97,6 +97,6 @@
   }
 
   .separator {
-    display: none;
+    /* display: none; */
   }
 }
