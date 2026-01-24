@@ -42,8 +42,8 @@ const CategoryPage = () => {
   ];
 
   const promoItems = [
-    { text: "Free shipping", icon: "🚚" },
-    { text: "Price adjustment within 30 days", icon: "💰" },
+    { text: "Free shipping", icon: "✓" },
+    { text: "Price adjustment within 30 days", icon: "✓" },
     // { text: "24/7 customer support", icon: "💬" },
   ];
 
