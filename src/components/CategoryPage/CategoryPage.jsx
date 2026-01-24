@@ -28,9 +28,32 @@ const CategoryPage = () => {
     { name: "Sports & Outdoors", icon: "⚽" },
     { name: "Jewelry & Accessories", icon: "💍" },
     { name: "Beauty & Health", icon: "💄" },
+    { name: "Home & Kitchen", icon: "🏠" },
+
+    { name: "Women's Clothing", icon: "👗" },
+    { name: "Women's Curve Clothing", icon: "👚" },
+    { name: "Women's Shoes", icon: "👠" },
+    { name: "Women's Lingerie & Lounge", icon: "🩱" },
+    { name: "Men's Clothing", icon: "👔" },
+    { name: "Men's Shoes", icon: "👟" },
+    { name: "Men's Big & Tall", icon: "🧥" },
+    { name: "Men's Underwear & Sleepwear", icon: "🩲" },
+    { name: "Sports & Outdoors", icon: "⚽" },
+    { name: "Jewelry & Accessories", icon: "💍" },
+    { name: "Beauty & Health", icon: "💄" },
   ];
 
   const shopByCategory = [
+    { name: "Boys' Athletic", icon: "👟", hot: false },
+    { name: "Photo Shooting", icon: "📸", hot: false },
+    { name: "Men's Sports & Outdoor Shoes", icon: "👟", hot: false },
+    { name: "Tablets, Laptops & Accessories", icon: "💻", hot: false },
+    { name: "Cables & Adapters", icon: "🔌", hot: false },
+    { name: "Men's Casual Shoes", icon: "👞", hot: true },
+    { name: "Men's Sets", icon: "👔", hot: true },
+    { name: "Audio & Radio", icon: "🎧", hot: false },
+    { name: "Home Office Furniture", icon: "🪑", hot: false },
+
     { name: "Boys' Athletic", icon: "👟", hot: false },
     { name: "Photo Shooting", icon: "📸", hot: false },
     { name: "Men's Sports & Outdoor Shoes", icon: "👟", hot: false },
