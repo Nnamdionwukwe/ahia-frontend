@@ -215,7 +215,6 @@ const CategoryPage = () => {
         />
 
         {/* Main Content */}
-
         <MainContent
           shopByCategory={shopByCategory}
           products={products}
