@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+// CategoryPage.jsx
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import CategorySidebar from "./CategorySidebar";
 import MainContent from "../../pages/FlashSalesList/MainContent";
 import ProductVariantModal from "./ProductVariantModal";
@@ -6,6 +8,7 @@ import Toast from "./Toast";
 import AddToCartToast from "./AddToCartToast";
 import PromoBanner from "./PromoBanner";
 import SearchHeader from "../SearchHeader/SearchHeader";
+import ProductCard from "../ProductCard/ProductCard";
 import styles from "./CategoryPage.module.css";
 
 const CategoryPage = () => {
@@ -18,6 +21,10 @@ const CategoryPage = () => {
   const [activeCategory, setActiveCategory] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [showSuccess2, setShowSuccess2] = useState(false);
+  const [trendingProducts, setTrendingProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
   const categories = [
     { name: "Home & Kitchen", icon: "🏠" },
@@ -46,115 +53,43 @@ const CategoryPage = () => {
     { name: "Home Office Furniture", icon: "🪑", hot: false },
   ];
 
-  const products = [
-    {
-      id: 1,
-      name: "9 Port USB Hub with HDMI",
-      image:
-        "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=400&h=400&fit=crop",
-      price: 14743,
-      sold: 25,
-      rating: 4.5,
-      reviews: 77,
-      discount: 65,
-    },
-    {
-      id: 2,
-      name: "Professional Rebound Running Shoes",
-      image:
-        "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=400&fit=crop",
-      price: 12982,
-      originalPrice: 71266,
-      sold: 126,
-      rating: 5,
-      reviews: 6,
-      discount: 81,
-      colors: [
-        {
-          name: "White",
-          image:
-            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400",
-        },
-        {
-          name: "Red",
-          image:
-            "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400",
-        },
-        {
-          name: "Black",
-          image:
-            "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400",
-        },
-      ],
-      sizes: ["3.5", "4.5", "5", "6", "6.5", "7.5", "8.5", "9", "10"],
-    },
-    {
-      id: 3,
-      name: "Adjustable Tablet Stand",
-      image:
-        "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=400&fit=crop",
-      price: 70509,
-      sold: 1000,
-      rating: 4.5,
-      reviews: 77,
-      discount: 45,
-    },
-    {
-      id: 4,
-      name: "Portable Laptop Stand",
-      image:
-        "https://images.unsplash.com/photo-1625225233840-695456021cde?w=400&h=400&fit=crop",
-      price: 23835,
-      sold: 811,
-      rating: 4,
-      reviews: 36,
-      discount: 50,
-    },
-    {
-      id: 5,
-      name: "360° Photo Rotating Base",
-      image:
-        "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
-      price: 11898,
-      sold: 438,
-      rating: 5,
-      reviews: 17,
-      discount: 70,
-      hot: true,
-    },
-    {
-      id: 6,
-      name: "Classic Snapback Cap",
-      image:
-        "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&h=400&fit=crop",
-      price: 2616,
-      sold: 10000,
-      rating: 4.5,
-      reviews: 164,
-      discount: 75,
-    },
-  ];
-
   const promoItems = [
     { text: "Free shipping on orders over $50", icon: "🚚" },
     { text: "30-day money-back guarantee", icon: "💰" },
     { text: "24/7 customer support", icon: "💬" },
   ];
 
+  // Fetch trending products
+  useEffect(() => {
+    fetchTrendingProducts();
+  }, [activeCategory]);
+
+  const fetchTrendingProducts = async () => {
+    try {
+      setLoading(true);
+      const params = {
+        sort: "rating",
+        limit: 12,
+      };
+
+      if (activeCategory) {
+        params.category = activeCategory;
+      }
+
+      const response = await axios.get(`${API_URL}/api/products`, { params });
+
+      setTrendingProducts(response.data.data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching trending products:", error);
+      setLoading(false);
+    }
+  };
+
   const handleCategoryClick = (categoryName) => {
     setActiveCategory(categoryName);
     console.log("Selected category:", categoryName);
   };
-
-  //   const handleAddToCart = (product) => {
-  //     if (product.colors) {
-  //       setSelectedProduct(product);
-  //     } else {
-  //       setCartCount((prev) => prev + 1);
-  //       setShowSuccess(true);
-  //       setTimeout(() => setShowSuccess(false), 2000);
-  //     }
-  //   };
 
   const handleAddToCart = () => {
     if (selectedColor && selectedSize) {
@@ -165,7 +100,6 @@ const CategoryPage = () => {
         quantity,
       });
 
-      // Reset and close
       setSelectedProduct(null);
       setSelectedColor(null);
       setSelectedSize(null);
@@ -197,7 +131,7 @@ const CategoryPage = () => {
   return (
     <div className={styles.container}>
       <SearchHeader />
-      {/* Header */}
+
       <PromoBanner
         items={promoItems}
         showArrow={true}
@@ -206,49 +140,75 @@ const CategoryPage = () => {
       />
 
       <div className={styles.contentWrapper}>
-        {/* Left Sidebar - Categories */}
-
         <CategorySidebar
           categories={categories}
           activeCategory={activeCategory}
           onCategoryClick={handleCategoryClick}
         />
 
-        {/* Main Content */}
-        <MainContent
-          shopByCategory={shopByCategory}
-          products={products}
-          onAddToCart={handleAddToCart}
-          onSortChange={handleSortChange}
-        />
+        <main className={styles.mainContent}>
+          {/* Shop by Category Section */}
+          <section className={styles.section}>
+            <h2 className={styles.sectionTitle}>Shop by category</h2>
+            <div className={styles.categoryGrid}>
+              {shopByCategory.map((cat, idx) => (
+                <div key={idx} className={styles.categoryCard}>
+                  {cat.hot && <span className={styles.hotBadge}>HOT</span>}
+                  <div className={styles.categoryIcon}>{cat.icon}</div>
+                  <p className={styles.categoryName}>{cat.name}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Trending Items Section */}
+          <section className={styles.section}>
+            <div className={styles.trendingHeader}>
+              <h2 className={styles.sectionTitle}>
+                {activeCategory || "Trending items"}
+              </h2>
+              <button className={styles.sortButton} onClick={handleSortChange}>
+                Sort by →
+              </button>
+            </div>
+
+            {loading ? (
+              <div className={styles.loading}>Loading products...</div>
+            ) : (
+              <div className={styles.productGrid}>
+                {trendingProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+
+            {!loading && trendingProducts.length === 0 && (
+              <div className={styles.emptyState}>
+                <p>No products found</p>
+              </div>
+            )}
+          </section>
+        </main>
       </div>
 
-      {/* Product Variant Modal */}
-      <div>
-        <button onClick={() => setSelectedProduct(products)}>
-          Open Variant Modal
-        </button>
+      <ProductVariantModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => {
+          setSelectedProduct(null);
+          setSelectedColor(null);
+          setSelectedSize(null);
+          setQuantity(1);
+        }}
+        selectedColor={selectedColor}
+        selectedSize={selectedSize}
+        quantity={quantity}
+        onColorSelect={setSelectedColor}
+        onSizeSelect={setSelectedSize}
+        onQuantityChange={setQuantity}
+        onAddToCart={handleAddToCart}
+      />
 
-        <ProductVariantModal
-          product={selectedProduct}
-          isOpen={!!selectedProduct}
-          onClose={() => {
-            setSelectedProduct(null);
-            setSelectedColor(null);
-            setSelectedSize(null);
-            setQuantity(1);
-          }}
-          selectedColor={selectedColor}
-          selectedSize={selectedSize}
-          quantity={quantity}
-          onColorSelect={setSelectedColor}
-          onSizeSelect={setSelectedSize}
-          onQuantityChange={setQuantity}
-          onAddToCart={handleAddToCart}
-        />
-      </div>
-
-      {/* Success Toast */}
       <Toast
         show={showToast}
         message="Added to cart"
