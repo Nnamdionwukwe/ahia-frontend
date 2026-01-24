@@ -14,31 +14,19 @@ const CategoryPage = () => {
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
   const categories = [
-    { name: "Home & Kitchen", icon: "🏠" },
-    { name: "Women's Clothing", icon: "👗" },
-    { name: "Women's Curve Clothing", icon: "👚" },
-    { name: "Women's Shoes", icon: "👠" },
-    { name: "Women's Lingerie & Lounge", icon: "🩱" },
-    { name: "Men's Clothing", icon: "👔" },
-    { name: "Men's Shoes", icon: "👟" },
-    { name: "Men's Big & Tall", icon: "🧥" },
-    { name: "Men's Underwear & Sleepwear", icon: "🩲" },
-    { name: "Sports & Outdoors", icon: "⚽" },
-    { name: "Jewelry & Accessories", icon: "💍" },
-    { name: "Beauty & Health", icon: "💄" },
-    { name: "Home & Kitchen", icon: "🏠" },
-
-    { name: "Women's Clothing", icon: "👗" },
-    { name: "Women's Curve Clothing", icon: "👚" },
-    { name: "Women's Shoes", icon: "👠" },
-    { name: "Women's Lingerie & Lounge", icon: "🩱" },
-    { name: "Men's Clothing", icon: "👔" },
-    { name: "Men's Shoes", icon: "👟" },
-    { name: "Men's Big & Tall", icon: "🧥" },
-    { name: "Men's Underwear & Sleepwear", icon: "🩲" },
-    { name: "Sports & Outdoors", icon: "⚽" },
-    { name: "Jewelry & Accessories", icon: "💍" },
-    { name: "Beauty & Health", icon: "💄" },
+    { name: "Home & Kitchen" },
+    { name: "Women's Clothing" },
+    { name: "Women's Curve Clothing" },
+    { name: "Women's Shoes" },
+    { name: "Women's Lingerie & Lounge" },
+    { name: "Men's Clothing" },
+    { name: "Men's Shoes" },
+    { name: "Men's Big & Tall" },
+    { name: "Men's Underwear & Sleepwear" },
+    { name: "Sports & Outdoors" },
+    { name: "Jewelry & Accessories" },
+    { name: "Beauty & Health" },
+    { name: "Home & Kitchen" },
   ];
 
   const shopByCategory = [
@@ -51,21 +39,11 @@ const CategoryPage = () => {
     { name: "Men's Sets", icon: "👔", hot: true },
     { name: "Audio & Radio", icon: "🎧", hot: false },
     { name: "Home Office Furniture", icon: "🪑", hot: false },
-
-    { name: "Boys' Athletic", icon: "👟", hot: false },
-    { name: "Photo Shooting", icon: "📸", hot: false },
-    { name: "Men's Sports & Outdoor Shoes", icon: "👟", hot: false },
-    { name: "Tablets, Laptops & Accessories", icon: "💻", hot: false },
-    { name: "Cables & Adapters", icon: "🔌", hot: false },
-    { name: "Men's Casual Shoes", icon: "👞", hot: true },
-    { name: "Men's Sets", icon: "👔", hot: true },
-    { name: "Audio & Radio", icon: "🎧", hot: false },
-    { name: "Home Office Furniture", icon: "🪑", hot: false },
   ];
 
   const promoItems = [
-    { text: "Free shipping on orders over $50", icon: "🚚" },
-    { text: "30-day money-back guarantee", icon: "💰" },
+    { text: "Free shipping", icon: "🚚" },
+    { text: "Price adjustment within 30 days", icon: "💰" },
     // { text: "24/7 customer support", icon: "💬" },
   ];
 
