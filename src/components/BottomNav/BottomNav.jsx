@@ -27,7 +27,7 @@ const BottomNav = () => {
       id: "categories",
       label: "Categories",
       icon: FiSearch,
-      path: "/searchheader",
+      path: "/categoryPage",
       badge: null,
     },
     {

@@ -3,6 +3,7 @@ import SearchOverlay from "../SearchOverlay/SearchOverlay";
 import { FiSearch, FiCamera } from "react-icons/fi";
 import BottomNav from "../BottomNav/BottomNav";
 import styles from "./SearchHeader.module.css";
+import CategoryPage from "../CategoryPage/CategoryPage";
 
 const SearchHeader = () => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -51,6 +52,8 @@ const SearchHeader = () => {
           </form>
         </div>
       </header>
+
+      {/* <CategoryPage /> */}
 
       <SearchOverlay isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>

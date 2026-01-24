@@ -1,0 +1,13 @@
+/* CategoryPage.module.css */
+.container {
+  min-height: 100vh;
+  background-color: #f9fafb;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.contentWrapper {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+}

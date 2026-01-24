@@ -25,6 +25,7 @@ import FlashSaleCard from "./components/FlashSaleCard/FlashSaleCard";
 import FlashSaleDetail from "./pages/FlashSaleDetail";
 import SeasonalSaleDetail from "./pages/SeasonalSaleDetails/SeasonalSaleDetails";
 import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
+import CategoryPage from "./components/CategoryPage/CategoryPage";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -64,6 +65,7 @@ const App = () => {
             />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/searchheader" element={<SearchHeader />} />
+            <Route path="/categoryPage" element={<CategoryPage />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/auth" element={<Auth />} />
             <Route
