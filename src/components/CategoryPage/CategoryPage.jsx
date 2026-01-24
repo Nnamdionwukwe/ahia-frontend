@@ -2,25 +2,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CategorySidebar from "./CategorySidebar";
-import MainContent from "../../pages/FlashSalesList/MainContent";
-import ProductVariantModal from "./ProductVariantModal";
-import Toast from "./Toast";
-import AddToCartToast from "./AddToCartToast";
 import PromoBanner from "./PromoBanner";
 import SearchHeader from "../SearchHeader/SearchHeader";
 import ProductCard from "../ProductCard/ProductCard";
 import styles from "./CategoryPage.module.css";
+import CategoryHeader from "../CategoryHeader/CategoryHeader";
 
 const CategoryPage = () => {
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
-  const [quantity, setQuantity] = useState(1);
-  const [cartCount, setCartCount] = useState(6);
-  const [showSuccess, setShowSuccess] = useState(false);
   const [activeCategory, setActiveCategory] = useState("");
-  const [showToast, setShowToast] = useState(false);
-  const [showSuccess2, setShowSuccess2] = useState(false);
   const [trendingProducts, setTrendingProducts] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -91,35 +80,6 @@ const CategoryPage = () => {
     console.log("Selected category:", categoryName);
   };
 
-  const handleAddToCart = () => {
-    if (selectedColor && selectedSize) {
-      console.log("Adding to cart:", {
-        product: selectedProduct,
-        color: selectedColor,
-        size: selectedSize,
-        quantity,
-      });
-
-      setSelectedProduct(null);
-      setSelectedColor(null);
-      setSelectedSize(null);
-      setQuantity(1);
-      setShowSuccess2(true);
-    }
-  };
-
-  const handleSelectOption = () => {
-    if (selectedColor && selectedSize) {
-      setCartCount((prev) => prev + quantity);
-      setShowSuccess(true);
-      setSelectedProduct(null);
-      setSelectedColor(null);
-      setSelectedSize(null);
-      setQuantity(1);
-      setTimeout(() => setShowSuccess(false), 2000);
-    }
-  };
-
   const handleSortChange = () => {
     console.log("Sort clicked");
   };
@@ -130,13 +90,10 @@ const CategoryPage = () => {
 
   return (
     <div className={styles.container}>
-      <SearchHeader />
-
-      <PromoBanner
-        items={promoItems}
-        showArrow={true}
+      {/*SearchHeader and PromoBanner*/}
+      <CategoryHeader
+        promoItems={promoItems}
         onBannerClick={handleBannerClick}
-        sticky={true}
       />
 
       <div className={styles.contentWrapper}>
@@ -190,43 +147,6 @@ const CategoryPage = () => {
           </section>
         </main>
       </div>
-
-      <ProductVariantModal
-        product={selectedProduct}
-        isOpen={!!selectedProduct}
-        onClose={() => {
-          setSelectedProduct(null);
-          setSelectedColor(null);
-          setSelectedSize(null);
-          setQuantity(1);
-        }}
-        selectedColor={selectedColor}
-        selectedSize={selectedSize}
-        quantity={quantity}
-        onColorSelect={setSelectedColor}
-        onSizeSelect={setSelectedSize}
-        onQuantityChange={setQuantity}
-        onAddToCart={handleAddToCart}
-      />
-
-      <Toast
-        show={showToast}
-        message="Added to cart"
-        type="success"
-        showAlmostSoldOut={true}
-        showFreeShipping={true}
-        onClose={() => setShowToast(false)}
-        autoHideDuration={3000}
-      />
-
-      <AddToCartToast
-        show={showSuccess2}
-        productName="Professional Running Shoes"
-        almostSoldOut={true}
-        freeShipping={true}
-        onClose={() => setShowSuccess(false)}
-        autoHide={true}
-      />
     </div>
   );
 };
