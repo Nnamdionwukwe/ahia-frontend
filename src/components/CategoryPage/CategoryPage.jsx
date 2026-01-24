@@ -45,7 +45,7 @@ const CategoryPage = () => {
   const promoItems = [
     { text: "Free shipping on orders over $50", icon: "🚚" },
     { text: "30-day money-back guarantee", icon: "💰" },
-    { text: "24/7 customer support", icon: "💬" },
+    // { text: "24/7 customer support", icon: "💬" },
   ];
 
   // Fetch trending products
