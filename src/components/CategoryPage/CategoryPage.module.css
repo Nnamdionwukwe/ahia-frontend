@@ -436,11 +436,11 @@
   overflow-x: hidden;
 }
 
-.contentWrapper {
+/* .contentWrapper {
   display: flex;
   width: 100%;
   max-width: 100%;
-}
+} */
 
 .mainContent {
   flex: 1;
@@ -539,7 +539,8 @@
   display: flex;
   width: 100%;
   max-width: 100%;
-  height: calc(100vh - 120px); /* Adjust based on your header height */
+  margin-top: 80px;
+  /* height: calc(200vh - 120px); Adjust based on your header height */
   overflow: hidden;
 }
 
