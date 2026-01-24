@@ -2,8 +2,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CategorySidebar from "./CategorySidebar";
-import PromoBanner from "./PromoBanner";
-import SearchHeader from "../SearchHeader/SearchHeader";
 import ProductCard from "../ProductCard/ProductCard";
 import styles from "./CategoryPage.module.css";
 import CategoryHeader from "../CategoryHeader/CategoryHeader";
