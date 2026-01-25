@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Tag, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import SeasonalSaleSection from "../../components/SeasonalSaleSection/SeasonalSaleSection";
 import FlashSaleSection from "../../components/FlashSaleSection/FlashSaleSection";
@@ -39,22 +39,30 @@ const Home = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Fetching from API_URL:", API_URL);
+      console.log("🔄 Fetching shuffled products from API...");
+
+      // ✅ Construct URL with shuffle parameter
+      const baseUrl = `${API_URL}/api/products`;
+      const params = new URLSearchParams({
+        limit: "50",
+        sort: "shuffle", // ✅ This tells backend to shuffle
+      });
+
+      if (category) {
+        params.append("category", category);
+      }
+
+      const productsUrl = `${baseUrl}?${params.toString()}`;
+      console.log("📡 Fetching from:", productsUrl);
 
       // Fetch all data in parallel
       const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
         axios.get(`${API_URL}/api/flash-sales/active`),
         axios.get(`${API_URL}/api/seasonal-sales/active`),
-        axios.get(
-          category
-            ? `${API_URL}/api/products?category=${category}`
-            : `${API_URL}/api/products`
-        ),
+        axios.get(productsUrl),
       ]);
 
-      console.log("Flash Sales Response:", flashSalesRes.data);
-      console.log("Seasonal Sales Response:", seasonalSalesRes.data);
-      console.log("Products Response:", productsRes.data);
+      console.log("📦 Full Products Response:", productsRes.data);
 
       // Process Flash Sales
       let flashSales = [];
@@ -136,18 +144,57 @@ const Home = () => {
       }
       setSeasonalSaleProducts(seasonalProductsData);
 
-      // Process Regular Products
+      // ✅ Process Regular Products - CRITICAL FIX
       let regularProducts = [];
-      if (Array.isArray(productsRes.data)) {
-        regularProducts = productsRes.data;
+
+      console.log("🔍 Response structure:", {
+        hasProducts: !!productsRes.data?.products,
+        hasData: !!productsRes.data?.data,
+        isArray: Array.isArray(productsRes.data),
+        keys: Object.keys(productsRes.data || {}),
+      });
+
+      // Check response structure
+      if (productsRes.data?.products) {
+        regularProducts = productsRes.data.products;
+        console.log("✅ Found products in .products");
       } else if (productsRes.data?.data) {
         regularProducts = productsRes.data.data;
-      } else if (productsRes.data?.products) {
-        regularProducts = productsRes.data.products;
+        console.log("✅ Found products in .data");
+      } else if (Array.isArray(productsRes.data)) {
+        regularProducts = productsRes.data;
+        console.log("✅ Found products in array");
       }
+
       setProducts(regularProducts);
+
+      // ✅ Log shuffle information
+      const shuffled = productsRes.data?.shuffled;
+      const shuffleTime =
+        productsRes.data?.shuffleTime || productsRes.data?.timestamp;
+
+      console.log("✅ Products loaded:", regularProducts.length);
+      console.log("🔀 Shuffled:", shuffled);
+      console.log("⏰ Shuffle time:", shuffleTime);
+
+      // Log first 3 product IDs to verify shuffle
+      if (regularProducts.length > 0) {
+        console.log(
+          "📦 First 3 products:",
+          regularProducts.slice(0, 3).map((p) => ({ id: p.id, name: p.name }))
+        );
+      }
+
+      // Alert based on shuffle status
+      if (shuffled) {
+        console.log("✅✅✅ Products successfully shuffled!");
+      } else {
+        console.warn("⚠️⚠️⚠️ Products were NOT shuffled by backend");
+        console.warn("Check backend getAllProducts function");
+      }
     } catch (err) {
-      console.error("Error fetching data:", err);
+      console.error("❌ Error fetching data:", err);
+      console.error("❌ Error response:", err.response?.data);
       const errorMessage =
         err.response?.data?.error ||
         err.response?.data?.details ||
@@ -158,6 +205,141 @@ const Home = () => {
       setLoading(false);
     }
   };
+
+  // const fetchAllData = async () => {
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+
+  //     console.log("🔄 Fetching shuffled products from API...");
+
+  //     // Fetch all data in parallel
+  //     const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
+  //       axios.get(`${API_URL}/api/flash-sales/active`),
+  //       axios.get(`${API_URL}/api/seasonal-sales/active`),
+  //       axios.get(
+  //         category
+  //           ? `${API_URL}/api/products?category=${category}&limit=50`
+  //           : `${API_URL}/api/products?limit=50`
+  //       ),
+  //     ]);
+
+  //     // Process Flash Sales
+  //     let flashSales = [];
+  //     if (Array.isArray(flashSalesRes.data)) {
+  //       flashSales = flashSalesRes.data;
+  //     } else if (flashSalesRes.data?.flashSales) {
+  //       flashSales = flashSalesRes.data.flashSales;
+  //     }
+  //     setActiveFlashSales(flashSales);
+
+  //     // Fetch products for each flash sale
+  //     const flashProductsData = {};
+  //     if (flashSales.length > 0) {
+  //       await Promise.all(
+  //         flashSales.map(async (sale) => {
+  //           try {
+  //             const response = await axios.get(
+  //               `${API_URL}/api/flash-sales/${sale.id}/products`,
+  //               { params: { limit: 8, sort: "popularity" } }
+  //             );
+
+  //             let products = [];
+  //             if (Array.isArray(response.data)) {
+  //               products = response.data;
+  //             } else if (response.data?.products) {
+  //               products = response.data.products;
+  //             }
+
+  //             flashProductsData[sale.id] = products;
+  //           } catch (err) {
+  //             console.error(
+  //               `Error fetching flash sale ${sale.id} products:`,
+  //               err.message
+  //             );
+  //             flashProductsData[sale.id] = [];
+  //           }
+  //         })
+  //       );
+  //     }
+  //     setFlashSaleProducts(flashProductsData);
+
+  //     // Process Seasonal Sales
+  //     let seasonalSales = [];
+  //     if (Array.isArray(seasonalSalesRes.data)) {
+  //       seasonalSales = seasonalSalesRes.data;
+  //     } else if (seasonalSalesRes.data?.seasonalSales) {
+  //       seasonalSales = seasonalSalesRes.data.seasonalSales;
+  //     }
+  //     setActiveSeasonalSales(seasonalSales);
+
+  //     // Fetch products for each seasonal sale
+  //     const seasonalProductsData = {};
+  //     if (seasonalSales.length > 0) {
+  //       await Promise.all(
+  //         seasonalSales.map(async (sale) => {
+  //           try {
+  //             const response = await axios.get(
+  //               `${API_URL}/api/seasonal-sales/${sale.id}/products`,
+  //               { params: { limit: 12 } }
+  //             );
+
+  //             let products = [];
+  //             if (Array.isArray(response.data)) {
+  //               products = response.data;
+  //             } else if (response.data?.products) {
+  //               products = response.data.products;
+  //             }
+
+  //             seasonalProductsData[sale.id] = products;
+  //           } catch (err) {
+  //             console.error(
+  //               `Error fetching seasonal sale ${sale.id} products:`,
+  //               err.message
+  //             );
+  //             seasonalProductsData[sale.id] = [];
+  //           }
+  //         })
+  //       );
+  //     }
+  //     setSeasonalSaleProducts(seasonalProductsData);
+
+  //     // Process Regular Products
+  //     let regularProducts = [];
+  //     if (Array.isArray(productsRes.data)) {
+  //       regularProducts = productsRes.data;
+  //     } else if (productsRes.data?.data) {
+  //       regularProducts = productsRes.data.data;
+  //     } else if (productsRes.data?.products) {
+  //       regularProducts = productsRes.data.products;
+  //     }
+
+  //     setProducts(regularProducts);
+
+  //     // Log shuffle confirmation
+  //     console.log("✅ Products loaded:", regularProducts.length);
+  //     console.log("🔀 Shuffled:", productsRes.data?.shuffled);
+  //     console.log("⏰ Shuffle time:", productsRes.data?.shuffleTime);
+
+  //     // Log first 3 product IDs to verify shuffle
+  //     if (regularProducts.length > 0) {
+  //       console.log(
+  //         "📦 First 3 products:",
+  //         regularProducts.slice(0, 3).map((p) => ({ id: p.id, name: p.name }))
+  //       );
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching data:", err);
+  //     const errorMessage =
+  //       err.response?.data?.error ||
+  //       err.response?.data?.details ||
+  //       err.message ||
+  //       "Failed to load data";
+  //     setError(errorMessage);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   // Loading State
   if (loading) {
@@ -208,7 +390,7 @@ const Home = () => {
           />
         )}
 
-        {/* Seasonal Sales Section - NEW COMPONENT */}
+        {/* Seasonal Sales Section */}
         {activeSeasonalSales.length > 0 && (
           <SeasonalSaleSection
             activeSeasonalSales={activeSeasonalSales}
@@ -219,7 +401,31 @@ const Home = () => {
         {/* Featured Products Section */}
         {products.length > 0 && (
           <section className={styles.featuredSection}>
-            <ProductCardNavigation />
+            {/* <ProductCardNavigation /> */}
+            {/* Featured Products Section */}
+            {products.length > 0 && (
+              <section className={styles.featuredSection}>
+                <div className={styles.sectionHeader}>
+                  <ProductCardNavigation />
+                  <button
+                    onClick={fetchAllData}
+                    className={styles.refreshBtn}
+                    title="Get new random products"
+                  >
+                    🔄 Refresh
+                  </button>
+                </div>
+
+                <div className={styles.grid}>
+                  {products.slice(0, 10000).map((product) => (
+                    <ProductCard
+                      key={product.id || product._id}
+                      product={product}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
 
             <div className={styles.grid}>
               {products.slice(0, 10000).map((product) => (

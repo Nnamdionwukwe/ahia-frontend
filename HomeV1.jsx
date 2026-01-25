@@ -2,12 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Tag, AlertCircle } from "lucide-react";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import SeasonalSaleCard from "../../components/SeasonalSaleCard/SeasonalSaleCard";
+import SeasonalSaleSection from "../../components/SeasonalSaleSection/SeasonalSaleSection";
 import FlashSaleSection from "../../components/FlashSaleSection/FlashSaleSection";
 import SearchHeader from "../../components/SearchHeader/SearchHeader";
 import Navigation from "../../components/Navigation/Navigation";
 import BottomNav from "../../components/BottomNav/BottomNav";
 import styles from "./Home.module.css";
+import ProductCardNavigation from "../../components/Navigation/ProductCardNavigation";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -38,6 +39,8 @@ const Home = () => {
       setLoading(true);
       setError(null);
 
+      console.log("Fetching from API_URL:", API_URL);
+
       // Fetch all data in parallel
       const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
         axios.get(`${API_URL}/api/flash-sales/active`),
@@ -49,71 +52,108 @@ const Home = () => {
         ),
       ]);
 
+      console.log("Flash Sales Response:", flashSalesRes.data);
+      console.log("Seasonal Sales Response:", seasonalSalesRes.data);
+      console.log("Products Response:", productsRes.data);
+
       // Process Flash Sales
-      const flashSales = flashSalesRes.data.flashSales || [];
+      let flashSales = [];
+      if (Array.isArray(flashSalesRes.data)) {
+        flashSales = flashSalesRes.data;
+      } else if (flashSalesRes.data?.flashSales) {
+        flashSales = flashSalesRes.data.flashSales;
+      }
       setActiveFlashSales(flashSales);
 
       // Fetch products for each flash sale
       const flashProductsData = {};
-      await Promise.all(
-        flashSales.map(async (sale) => {
-          try {
-            const response = await axios.get(
-              `${API_URL}/api/flash-sales/${sale.id}/products`,
-              { params: { limit: 8, sort: "popularity" } }
-            );
-            flashProductsData[sale.id] = response.data.products || [];
-          } catch (err) {
-            console.error(
-              `Error fetching flash sale ${sale.id} products:`,
-              err
-            );
-            flashProductsData[sale.id] = [];
-          }
-        })
-      );
+      if (flashSales.length > 0) {
+        await Promise.all(
+          flashSales.map(async (sale) => {
+            try {
+              const response = await axios.get(
+                `${API_URL}/api/flash-sales/${sale.id}/products`,
+                { params: { limit: 8, sort: "popularity" } }
+              );
+
+              let products = [];
+              if (Array.isArray(response.data)) {
+                products = response.data;
+              } else if (response.data?.products) {
+                products = response.data.products;
+              }
+
+              flashProductsData[sale.id] = products;
+            } catch (err) {
+              console.error(
+                `Error fetching flash sale ${sale.id} products:`,
+                err.message
+              );
+              flashProductsData[sale.id] = [];
+            }
+          })
+        );
+      }
       setFlashSaleProducts(flashProductsData);
 
       // Process Seasonal Sales
-      const seasonalSales = seasonalSalesRes.data.seasonalSales || [];
+      let seasonalSales = [];
+      if (Array.isArray(seasonalSalesRes.data)) {
+        seasonalSales = seasonalSalesRes.data;
+      } else if (seasonalSalesRes.data?.seasonalSales) {
+        seasonalSales = seasonalSalesRes.data.seasonalSales;
+      }
       setActiveSeasonalSales(seasonalSales);
 
       // Fetch products for each seasonal sale
       const seasonalProductsData = {};
-      await Promise.all(
-        seasonalSales.map(async (sale) => {
-          try {
-            const response = await axios.get(
-              `${API_URL}/api/seasonal-sales/${sale.id}/products`,
-              { params: { limit: 12 } }
-            );
-            seasonalProductsData[sale.id] = response.data.products || [];
-          } catch (err) {
-            console.error(
-              `Error fetching seasonal sale ${sale.id} products:`,
-              err
-            );
-            seasonalProductsData[sale.id] = [];
-          }
-        })
-      );
+      if (seasonalSales.length > 0) {
+        await Promise.all(
+          seasonalSales.map(async (sale) => {
+            try {
+              const response = await axios.get(
+                `${API_URL}/api/seasonal-sales/${sale.id}/products`,
+                { params: { limit: 12 } }
+              );
+
+              let products = [];
+              if (Array.isArray(response.data)) {
+                products = response.data;
+              } else if (response.data?.products) {
+                products = response.data.products;
+              }
+
+              seasonalProductsData[sale.id] = products;
+            } catch (err) {
+              console.error(
+                `Error fetching seasonal sale ${sale.id} products:`,
+                err.message
+              );
+              seasonalProductsData[sale.id] = [];
+            }
+          })
+        );
+      }
       setSeasonalSaleProducts(seasonalProductsData);
 
       // Process Regular Products
       let regularProducts = [];
       if (Array.isArray(productsRes.data)) {
         regularProducts = productsRes.data;
-      } else if (productsRes.data.data) {
+      } else if (productsRes.data?.data) {
         regularProducts = productsRes.data.data;
-      } else if (productsRes.data.products) {
+      } else if (productsRes.data?.products) {
         regularProducts = productsRes.data.products;
       }
       setProducts(regularProducts);
     } catch (err) {
       console.error("Error fetching data:", err);
-      setError(
-        err.response?.data?.error || err.message || "Failed to load data"
-      );
+      const errorMessage =
+        err.response?.data?.error ||
+        err.response?.data?.details ||
+        err.message ||
+        "Failed to load data";
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -168,98 +208,21 @@ const Home = () => {
           />
         )}
 
-        {/* Seasonal Sales Section */}
-        {activeSeasonalSales.length > 0 &&
-          activeSeasonalSales.map((sale) => {
-            const products = seasonalSaleProducts[sale.id] || [];
-
-            // Don't render if no products
-            if (products.length === 0) return null;
-
-            return (
-              <section key={sale.id} className={styles.seasonalSaleSection}>
-                {/* Seasonal Sale Banner */}
-                <div
-                  className={styles.seasonalBanner}
-                  style={{
-                    background: sale.banner_color
-                      ? `linear-gradient(135deg, ${sale.banner_color}20, ${sale.banner_color}40)`
-                      : "linear-gradient(135deg, #10b98120, #06b6d440)",
-                  }}
-                >
-                  <div className={styles.seasonalBannerContent}>
-                    <div className={styles.seasonalInfo}>
-                      <h2>
-                        {sale.name} - {sale.season}
-                      </h2>
-                      <p>{sale.description}</p>
-                      <div className={styles.seasonalBadges}>
-                        <span className={styles.discountBadge}>
-                          Up to {sale.discount_percentage}% OFF
-                        </span>
-                        <span className={styles.productCountBadge}>
-                          {products.length} products available
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles.seasonalEndDate}>
-                      <div className={styles.label}>Sale ends</div>
-                      <div className={styles.date}>
-                        {new Date(sale.end_time).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Seasonal Sale Products Grid */}
-                <div className={styles.grid}>
-                  {products.slice(0, 12).map((product) => (
-                    <SeasonalSaleCard
-                      key={product.id || product._id}
-                      product={product}
-                      sale={sale}
-                    />
-                  ))}
-                </div>
-
-                {/* View More Button for Seasonal Sale */}
-                {products.length > 12 && (
-                  <div className={styles.viewMoreContainer}>
-                    <button
-                      onClick={() =>
-                        (window.location.href = `/seasonal-sales/${sale.id}`)
-                      }
-                      className={styles.viewMoreBtn}
-                    >
-                      View All {products.length} Products
-                    </button>
-                  </div>
-                )}
-              </section>
-            );
-          })}
+        {/* Seasonal Sales Section - NEW COMPONENT */}
+        {activeSeasonalSales.length > 0 && (
+          <SeasonalSaleSection
+            activeSeasonalSales={activeSeasonalSales}
+            seasonalSaleProducts={seasonalSaleProducts}
+          />
+        )}
 
         {/* Featured Products Section */}
         {products.length > 0 && (
           <section className={styles.featuredSection}>
-            <div className={styles.sectionHeader}>
-              <div className={styles.sectionTitle}>
-                <div className={`${styles.iconBox} ${styles.iconBoxBlue}`}>
-                  <Tag className="text-white" size={28} />
-                </div>
-                <div className={styles.titleText}>
-                  <h2>Featured Products</h2>
-                  <p>Handpicked items just for you</p>
-                </div>
-              </div>
-            </div>
+            <ProductCardNavigation />
 
             <div className={styles.grid}>
-              {products.slice(0, 20).map((product) => (
+              {products.slice(0, 10000).map((product) => (
                 <ProductCard
                   key={product.id || product._id}
                   product={product}
@@ -272,7 +235,6 @@ const Home = () => {
               <div className={styles.loadMoreContainer}>
                 <button
                   onClick={() => {
-                    // Implement load more or pagination logic
                     console.log("Load more products");
                   }}
                   className={styles.loadMoreBtn}
@@ -284,7 +246,7 @@ const Home = () => {
           </section>
         )}
 
-        {/* Empty State - Only show if no content at all */}
+        {/* Empty State */}
         {!hasContent && (
           <div className={styles.emptyState}>
             <div className={styles.emptyContent}>
