@@ -401,11 +401,11 @@ const Home = () => {
         {/* Featured Products Section */}
         {products.length > 0 && (
           <section className={styles.featuredSection}>
-            {/* <ProductCardNavigation /> */}
+            <ProductCardNavigation />
             {/* Featured Products Section */}
             {products.length > 0 && (
               <section className={styles.featuredSection}>
-                <div className={styles.sectionHeader}>
+                {/* <div className={styles.sectionHeader}>
                   <ProductCardNavigation />
                   <button
                     onClick={fetchAllData}
@@ -414,7 +414,7 @@ const Home = () => {
                   >
                     🔄 Refresh
                   </button>
-                </div>
+                </div> */}
 
                 <div className={styles.grid}>
                   {products.slice(0, 10000).map((product) => (
