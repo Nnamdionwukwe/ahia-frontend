@@ -241,7 +241,7 @@ const Home = () => {
 
         {/* Featured Products Section */}
         {products.length > 0 && (
-          <section className={styles.featuredSection}>
+          <section className={styles.featuredSection1}>
             <ProductCardNavigation />
             {/* Featured Products Section */}
             {products.length > 0 && (
