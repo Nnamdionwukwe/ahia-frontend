@@ -268,15 +268,6 @@ const Home = () => {
               </section>
             )}
 
-            <div className={styles.grid}>
-              {products.slice(0, 10000).map((product) => (
-                <ProductCard
-                  key={product.id || product._id}
-                  product={product}
-                />
-              ))}
-            </div>
-
             {/* Load More Button */}
             {products.length > 20 && (
               <div className={styles.loadMoreContainer}>
