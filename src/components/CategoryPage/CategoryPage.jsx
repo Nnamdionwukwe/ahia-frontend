@@ -5,6 +5,7 @@ import CategorySidebar from "./CategorySidebar";
 import ProductCard from "../ProductCard/ProductCard";
 import styles from "./CategoryPage.module.css";
 import CategoryHeader from "../CategoryHeader/CategoryHeader";
+import CategoryProductCard from "./CategoryProductCard";
 
 const CategoryPage = () => {
   const [activeCategory, setActiveCategory] = useState("");
@@ -133,7 +134,7 @@ const CategoryPage = () => {
             ) : (
               <div className={styles.productGrid}>
                 {trendingProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <CategoryProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}

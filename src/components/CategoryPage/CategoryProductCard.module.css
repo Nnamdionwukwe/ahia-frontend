@@ -1,0 +1,181 @@
+/* Card Component with Dark/Light Mode Support */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  transition: all var(--transition-base);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  /* margin-bottom: ; */
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  overflow: hidden;
+  background: var(--bg-secondary);
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.card:hover .image {
+  transform: scale(1.1);
+}
+
+.placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+
+.discount {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  color: white;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.wishlist {
+  position: absolute;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+}
+
+.content {
+  padding: var(--spacing-md);
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: -19px;
+  margin-top: -6px;
+  line-height: 1.4;
+  min-height: 40px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  font-size: 12px;
+}
+
+.stars {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.reviews {
+  color: var(--text-secondary);
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+  margin-top: -15px;
+  margin-bottom: 2px;
+}
+
+.current {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-right: 5px;
+}
+
+.original {
+  text-decoration: line-through;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.button {
+  cursor: pointer;
+  color: white;
+  margin-top: 8px;
+}
+
+.button:active {
+  transform: scale(0.98);
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: var(--spacing-sm);
+  }
+
+  .name {
+    font-size: 13px;
+    min-height: 36px;
+  }
+
+  .current {
+    font-size: 13px;
+  }
+}
+
+/* Update your CSS variables to include theme support */
+/* Add these to your globals.css or root styles: */
+
+/*
+:root {
+  --color-light: #ffffff;
+  --color-dark: #1a1a1a;
+  --color-gray-light: #e0e0e0;
+  --color-gray-medium: #666666;
+  --color-primary: #ff9500;
+  --color-error: #e74c3c;
+  
+  --card-bg: #f8f9fa;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --border-color: #e0e0e0;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"],
+.dark {
+  --card-bg: #2d2d2d;
+  --bg-secondary: #3a3a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #b0b0b0;
+  --border-color: #3a3a3a;
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+*/
