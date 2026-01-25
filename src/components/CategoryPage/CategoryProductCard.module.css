@@ -139,6 +139,14 @@
     padding: var(--spacing-sm);
   }
 
+  .stars {
+    font-size: 11px;
+  }
+
+  .reviews {
+    font-size: 11px;
+  }
+
   .name {
     font-size: 13px;
     min-height: 36px;
