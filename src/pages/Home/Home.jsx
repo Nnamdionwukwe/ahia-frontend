@@ -39,12 +39,10 @@ const Home = () => {
       setLoading(true);
       setError(null);
 
-      console.log("🔄 Fetching shuffled products from API...");
-
       // ✅ Construct URL with shuffle parameter
       const baseUrl = `${API_URL}/api/products`;
       const params = new URLSearchParams({
-        limit: "50",
+        limit: "50000",
         sort: "shuffle", // ✅ This tells backend to shuffle
       });
 
@@ -53,7 +51,6 @@ const Home = () => {
       }
 
       const productsUrl = `${baseUrl}?${params.toString()}`;
-      console.log("📡 Fetching from:", productsUrl);
 
       // Fetch all data in parallel
       const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
@@ -61,8 +58,6 @@ const Home = () => {
         axios.get(`${API_URL}/api/seasonal-sales/active`),
         axios.get(productsUrl),
       ]);
-
-      console.log("📦 Full Products Response:", productsRes.data);
 
       // Process Flash Sales
       let flashSales = [];
@@ -168,15 +163,6 @@ const Home = () => {
 
       setProducts(regularProducts);
 
-      // ✅ Log shuffle information
-      const shuffled = productsRes.data?.shuffled;
-      const shuffleTime =
-        productsRes.data?.shuffleTime || productsRes.data?.timestamp;
-
-      console.log("✅ Products loaded:", regularProducts.length);
-      console.log("🔀 Shuffled:", shuffled);
-      console.log("⏰ Shuffle time:", shuffleTime);
-
       // Log first 3 product IDs to verify shuffle
       if (regularProducts.length > 0) {
         console.log(
@@ -184,17 +170,7 @@ const Home = () => {
           regularProducts.slice(0, 3).map((p) => ({ id: p.id, name: p.name }))
         );
       }
-
-      // Alert based on shuffle status
-      if (shuffled) {
-        console.log("✅✅✅ Products successfully shuffled!");
-      } else {
-        console.warn("⚠️⚠️⚠️ Products were NOT shuffled by backend");
-        console.warn("Check backend getAllProducts function");
-      }
     } catch (err) {
-      console.error("❌ Error fetching data:", err);
-      console.error("❌ Error response:", err.response?.data);
       const errorMessage =
         err.response?.data?.error ||
         err.response?.data?.details ||
@@ -205,141 +181,6 @@ const Home = () => {
       setLoading(false);
     }
   };
-
-  // const fetchAllData = async () => {
-  //   try {
-  //     setLoading(true);
-  //     setError(null);
-
-  //     console.log("🔄 Fetching shuffled products from API...");
-
-  //     // Fetch all data in parallel
-  //     const [flashSalesRes, seasonalSalesRes, productsRes] = await Promise.all([
-  //       axios.get(`${API_URL}/api/flash-sales/active`),
-  //       axios.get(`${API_URL}/api/seasonal-sales/active`),
-  //       axios.get(
-  //         category
-  //           ? `${API_URL}/api/products?category=${category}&limit=50`
-  //           : `${API_URL}/api/products?limit=50`
-  //       ),
-  //     ]);
-
-  //     // Process Flash Sales
-  //     let flashSales = [];
-  //     if (Array.isArray(flashSalesRes.data)) {
-  //       flashSales = flashSalesRes.data;
-  //     } else if (flashSalesRes.data?.flashSales) {
-  //       flashSales = flashSalesRes.data.flashSales;
-  //     }
-  //     setActiveFlashSales(flashSales);
-
-  //     // Fetch products for each flash sale
-  //     const flashProductsData = {};
-  //     if (flashSales.length > 0) {
-  //       await Promise.all(
-  //         flashSales.map(async (sale) => {
-  //           try {
-  //             const response = await axios.get(
-  //               `${API_URL}/api/flash-sales/${sale.id}/products`,
-  //               { params: { limit: 8, sort: "popularity" } }
-  //             );
-
-  //             let products = [];
-  //             if (Array.isArray(response.data)) {
-  //               products = response.data;
-  //             } else if (response.data?.products) {
-  //               products = response.data.products;
-  //             }
-
-  //             flashProductsData[sale.id] = products;
-  //           } catch (err) {
-  //             console.error(
-  //               `Error fetching flash sale ${sale.id} products:`,
-  //               err.message
-  //             );
-  //             flashProductsData[sale.id] = [];
-  //           }
-  //         })
-  //       );
-  //     }
-  //     setFlashSaleProducts(flashProductsData);
-
-  //     // Process Seasonal Sales
-  //     let seasonalSales = [];
-  //     if (Array.isArray(seasonalSalesRes.data)) {
-  //       seasonalSales = seasonalSalesRes.data;
-  //     } else if (seasonalSalesRes.data?.seasonalSales) {
-  //       seasonalSales = seasonalSalesRes.data.seasonalSales;
-  //     }
-  //     setActiveSeasonalSales(seasonalSales);
-
-  //     // Fetch products for each seasonal sale
-  //     const seasonalProductsData = {};
-  //     if (seasonalSales.length > 0) {
-  //       await Promise.all(
-  //         seasonalSales.map(async (sale) => {
-  //           try {
-  //             const response = await axios.get(
-  //               `${API_URL}/api/seasonal-sales/${sale.id}/products`,
-  //               { params: { limit: 12 } }
-  //             );
-
-  //             let products = [];
-  //             if (Array.isArray(response.data)) {
-  //               products = response.data;
-  //             } else if (response.data?.products) {
-  //               products = response.data.products;
-  //             }
-
-  //             seasonalProductsData[sale.id] = products;
-  //           } catch (err) {
-  //             console.error(
-  //               `Error fetching seasonal sale ${sale.id} products:`,
-  //               err.message
-  //             );
-  //             seasonalProductsData[sale.id] = [];
-  //           }
-  //         })
-  //       );
-  //     }
-  //     setSeasonalSaleProducts(seasonalProductsData);
-
-  //     // Process Regular Products
-  //     let regularProducts = [];
-  //     if (Array.isArray(productsRes.data)) {
-  //       regularProducts = productsRes.data;
-  //     } else if (productsRes.data?.data) {
-  //       regularProducts = productsRes.data.data;
-  //     } else if (productsRes.data?.products) {
-  //       regularProducts = productsRes.data.products;
-  //     }
-
-  //     setProducts(regularProducts);
-
-  //     // Log shuffle confirmation
-  //     console.log("✅ Products loaded:", regularProducts.length);
-  //     console.log("🔀 Shuffled:", productsRes.data?.shuffled);
-  //     console.log("⏰ Shuffle time:", productsRes.data?.shuffleTime);
-
-  //     // Log first 3 product IDs to verify shuffle
-  //     if (regularProducts.length > 0) {
-  //       console.log(
-  //         "📦 First 3 products:",
-  //         regularProducts.slice(0, 3).map((p) => ({ id: p.id, name: p.name }))
-  //       );
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching data:", err);
-  //     const errorMessage =
-  //       err.response?.data?.error ||
-  //       err.response?.data?.details ||
-  //       err.message ||
-  //       "Failed to load data";
-  //     setError(errorMessage);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
 
   // Loading State
   if (loading) {
@@ -404,7 +245,7 @@ const Home = () => {
             <ProductCardNavigation />
             {/* Featured Products Section */}
             {products.length > 0 && (
-              <section className={styles.featuredSection}>
+              <section className={styles.featuredSection1}>
                 {/* <div className={styles.sectionHeader}>
                   <ProductCardNavigation />
                   <button

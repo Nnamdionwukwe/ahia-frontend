@@ -58,7 +58,7 @@ const CategoryPage = () => {
       setLoading(true);
       const params = {
         sort: "rating",
-        limit: 12,
+        limit: 10000,
       };
 
       if (activeCategory) {

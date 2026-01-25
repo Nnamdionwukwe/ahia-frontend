@@ -199,54 +199,7 @@ const FlashSaleDetail = () => {
                 <div className={styles.saleTag}>⚡ FLASH SALE</div>
               </div>
             </div>
-            {/* {sale.description && (
-              <p className={styles.saleDescription}>{sale.description}</p>
-            )} */}
-
-            {/* <div className={styles.saleBadges}>
-              <span className={styles.discountBadge}>
-                {sale.discount_percentage}% OFF
-              </span>
-              <span className={styles.productBadge}>
-                {products.length} products
-              </span>
-            </div> */}
           </div>
-
-          {/* Countdown Timer */}
-          {/* <div className={styles.timerSection}>
-            <div className={styles.timerBox}>
-              <Clock className={styles.timerIcon} size={24} />
-              <div className={styles.timerContent}>
-                <span className={styles.timerLabel}>
-                  {isExpired ? "Sale Ended" : "Ends in"}
-                </span>
-                {!isExpired && (
-                  <div className={styles.timer}>
-                    {timeLeft.days > 0 && (
-                      <>
-                        <span className={styles.timerDigit}>
-                          {String(timeLeft.days).padStart(2, "0")}
-                        </span>
-                        <span>:</span>
-                      </>
-                    )}
-                    <span className={styles.timerDigit}>
-                      {String(timeLeft.hours).padStart(2, "0")}
-                    </span>
-                    <span>:</span>
-                    <span className={styles.timerDigit}>
-                      {String(timeLeft.minutes).padStart(2, "0")}
-                    </span>
-                    <span>:</span>
-                    <span className={styles.timerDigit}>
-                      {String(timeLeft.seconds).padStart(2, "0")}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
 
