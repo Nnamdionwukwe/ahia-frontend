@@ -1,13 +1,13 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
 import styles from "./ProductDetailHeader.module.css";
 
-const ProductDetailHeader = ({ activeTab, setActiveTab, displayImages }) => {
-  const navigate = useNavigate();
+const ProductDetailHeader = ({ activeTab, setActiveTab, setShowExitModal }) => {
+  const handleClose = () => {
+    setShowExitModal(true);
+  };
 
   return (
     <div className={styles.header}>
-      <button onClick={() => navigate(-1)} className={styles.backButton}>
+      <button onClick={handleClose} className={styles.backButton}>
         ←
       </button>
       <div className={styles.headerTabs}>

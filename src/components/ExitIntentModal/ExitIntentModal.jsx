@@ -1,8 +1,15 @@
 import React from "react";
 import styles from "./ExitIntentModal.module.css";
+import { useNavigate } from "react-router-dom";
 
 const ExitIntentModal = ({ showExitModal, setShowExitModal, timeLeft }) => {
   if (!showExitModal) return null;
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    navigate(-1);
+    setShowExitModal(false);
+  };
 
   return (
     <div
@@ -49,10 +56,7 @@ const ExitIntentModal = ({ showExitModal, setShowExitModal, timeLeft }) => {
           Use Discount
         </button>
 
-        <button
-          onClick={() => setShowExitModal(false)}
-          className={styles.modalLeaveButton}
-        >
+        <button onClick={handleClose} className={styles.modalLeaveButton}>
           No Thanks
         </button>
       </div>

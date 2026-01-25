@@ -514,7 +514,7 @@ const ProductDetail = () => {
       <ProductDetailHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        displayImages={displayImages}
+        setShowExitModal={setShowExitModal}
       />
 
       {/* Image Gallery */}
@@ -525,6 +525,7 @@ const ProductDetail = () => {
         setFullscreenImageIndex={setFullscreenImageIndex}
         setShowFullscreenImage={setShowFullscreenImage}
         productData={productData}
+        showExitModal={showExitModal}
       />
 
       {/* Tab Content */}
