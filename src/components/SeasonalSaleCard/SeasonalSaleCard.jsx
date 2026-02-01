@@ -125,7 +125,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
               ))}
             </div>
             <span className={styles.ratingValue}>{rating.toFixed(1)}</span>
-            <span className={styles.reviewCount}>({reviewCount} )</span>
+            <span className={styles.reviewCount}>({reviewCount} reviews)</span>
           </div>
 
           <div className={styles.priceSection}>
