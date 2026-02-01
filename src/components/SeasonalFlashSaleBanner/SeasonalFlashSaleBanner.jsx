@@ -100,11 +100,11 @@ const SeasonalFlashSaleBanner = ({
         <div className={styles.saleTag}>{saleTitle}</div>
         <div className={styles.flashSaleContent}>
           <div className={styles.flashSaleLeft}>
-            <span className={styles.flashIcon}>⚡</span>
+            {/* <span className={styles.flashIcon}>⚡</span> */}
             <span>{saleTagText}</span>
             <span className={styles.separator}>|</span>
             <span className={styles.clockIcon}>⏰</span>
-            <span className={styles.endsText}>Ends in</span>
+            {/* <span className={styles.endsText}>Ends in</span> */}
           </div>
           <div className={styles.timer}>
             <span className={styles.timerDigit}>
