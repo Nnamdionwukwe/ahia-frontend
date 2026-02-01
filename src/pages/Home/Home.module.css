@@ -425,6 +425,7 @@
 @media (max-width: 768px) {
   .content {
     padding: 12px;
+    margin-top: 10px;
   }
 
   .seasonalSaleSection,
@@ -489,6 +490,11 @@
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 2px;
+  }
+
+  .content {
+    /* padding: 12px; */
+    margin-top: 30px;
   }
 
   .seasonalInfo h2 {
