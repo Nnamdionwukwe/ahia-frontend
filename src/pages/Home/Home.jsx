@@ -76,7 +76,7 @@ const Home = () => {
             try {
               const response = await axios.get(
                 `${API_URL}/api/flash-sales/${sale.id}/products`,
-                { params: { limit: 8, sort: "popularity" } },
+                { params: { limit: 8, sort: "shuffle" } },
               );
 
               let products = [];
@@ -116,7 +116,7 @@ const Home = () => {
             try {
               const response = await axios.get(
                 `${API_URL}/api/seasonal-sales/${sale.id}/products`,
-                { params: { limit: 12 } },
+                { params: { limit: 12, sort: "shuffle" } },
               );
 
               let products = [];
