@@ -38,7 +38,7 @@ const FlashSaleDetail = () => {
 
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
-        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
       );
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
@@ -75,7 +75,7 @@ const FlashSaleDetail = () => {
       // Fetch products for this sale
       const productsRes = await axios.get(
         `${API_URL}/api/flash-sales/${saleId}/products`,
-        { params: { limit: 100, sort: "popularity" } }
+        { params: { limit: 10000, sort: "shuffle" } },
       );
 
       console.log("📌 Products response structure:", {
@@ -110,7 +110,7 @@ const FlashSaleDetail = () => {
 
       console.log(
         `📊 Products array (${productsData.length} items):`,
-        productsData
+        productsData,
       );
 
       // Validate and filter products
@@ -128,14 +128,14 @@ const FlashSaleDetail = () => {
 
       console.log(
         `✅ Valid products after filtering (${validProducts.length}):`,
-        validProducts
+        validProducts,
       );
 
       setProducts(validProducts);
     } catch (err) {
       console.error("❌ Error fetching flash sale:", err);
       setError(
-        err.response?.data?.error || err.message || "Failed to load flash sale"
+        err.response?.data?.error || err.message || "Failed to load flash sale",
       );
     } finally {
       setLoading(false);

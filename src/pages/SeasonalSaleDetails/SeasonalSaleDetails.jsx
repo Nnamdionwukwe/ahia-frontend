@@ -40,7 +40,7 @@ const SeasonalSaleDetail = () => {
 
       const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
-        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        (timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
       );
       const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
@@ -75,7 +75,7 @@ const SeasonalSaleDetail = () => {
 
       // Fetch sale details
       const saleRes = await axios.get(
-        `${API_URL}/api/seasonal-sales/${activeSaleId}`
+        `${API_URL}/api/seasonal-sales/${activeSaleId}`,
       );
       console.log("📌 Sale response:", saleRes.data);
 
@@ -87,7 +87,7 @@ const SeasonalSaleDetail = () => {
       // Fetch products for this sale
       const productsRes = await axios.get(
         `${API_URL}/api/seasonal-sales/${activeSaleId}/products`,
-        { params: { limit: 100, sort: "popularity" } }
+        { params: { limit: 100, sort: "shuffle" } },
       );
 
       console.log("📌 Products response structure:", {
@@ -122,7 +122,7 @@ const SeasonalSaleDetail = () => {
 
       console.log(
         `📊 Products array (${productsData.length} items):`,
-        productsData
+        productsData,
       );
 
       // Validate and filter products
@@ -140,7 +140,7 @@ const SeasonalSaleDetail = () => {
 
       console.log(
         `✅ Valid products after filtering (${validProducts.length}):`,
-        validProducts
+        validProducts,
       );
 
       setProducts(validProducts);
@@ -149,7 +149,7 @@ const SeasonalSaleDetail = () => {
       setError(
         err.response?.data?.error ||
           err.message ||
-          "Failed to load seasonal sale"
+          "Failed to load seasonal sale",
       );
     } finally {
       setLoading(false);
