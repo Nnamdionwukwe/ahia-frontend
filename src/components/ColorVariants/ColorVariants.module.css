@@ -111,7 +111,7 @@
 }
 
 .sizeOption {
-  min-width: 70px;
+  min-width: 40px;
   padding: 8px 12px;
   background: var(--bg-primary);
   border: 2px solid var(--border-color);
