@@ -28,7 +28,9 @@
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .header {
@@ -40,15 +42,16 @@
   gap: 8px; */
 }
 
+/* CHANGED: Reduced padding and made more compact */
 .backButton {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 6px 12px;
   background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
   border: none;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   color: white;
   border-radius: 8px;
   transition: all 0.2s ease;
@@ -59,10 +62,11 @@
   transform: translateY(-2px);
 }
 
+/* CHANGED: Reduced padding from 14px to 10px */
 .saleBanner {
   background: linear-gradient(135deg, #ff6b35 0%, #ff8c42 100%);
   color: white;
-  padding: 14px 10px;
+  padding: 10px;
 }
 
 .bannerContent {
@@ -75,26 +79,31 @@
   flex-wrap: wrap; */
 }
 
+/* CHANGED: Added gap for better spacing */
 .saleTagDiv {
   display: flex;
   justify-items: center;
   flex-wrap: wrap;
   margin: 0 auto;
+  gap: 6px;
 }
 
+/* CHANGED: Reduced font-size from 15px to 14px */
 .saleTitle {
-  font-size: 15px;
+  font-size: 14px;
   color: white;
+  font-weight: 600;
 }
 
+/* CHANGED: Reduced padding and font-size */
 .saleTag {
   display: inline-block;
   background: rgba(255, 255, 255, 0.2);
-  padding: 4px 12px;
+  padding: 3px 10px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .saleDescription {
@@ -204,7 +213,7 @@
   }
 }
 
-/* Mobile - 2 cards */
+/* CHANGED: Mobile - 2 cards with optimized banner */
 @media (max-width: 639px) {
   .productsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -219,22 +228,36 @@
     padding: 16px 10px;
   }
 
-  .saleTitle {
-    font-size: 13px;
+  /* CHANGED: Reduced banner padding */
+  .saleBanner {
+    padding: 8px;
   }
 
+  /* CHANGED: Reduced title font-size from 13px to 12px */
+  .saleTitle {
+    font-size: 12px;
+  }
+
+  /* CHANGED: Reduced tag size */
   .saleTag {
     font-size: 10px;
-    padding: 3px 10px;
+    padding: 2px 8px;
+    margin-bottom: 3px;
   }
 
+  /* CHANGED: Smaller back button */
   .backButton {
-    padding: 6px 12px;
-    font-size: 14px;
+    padding: 5px 10px;
+    font-size: 13px;
+    gap: 4px;
+  }
+
+  .saleTagDiv {
+    gap: 4px;
   }
 }
 
-/* Extra small mobile */
+/* CHANGED: Extra small mobile with further optimizations */
 @media (max-width: 480px) {
   .productsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -249,22 +272,42 @@
     padding: 12px 8px;
   }
 
-  .saleTitle {
-    font-size: 12px;
+  /* CHANGED: Further reduced banner padding */
+  .saleBanner {
+    padding: 6px;
   }
 
+  /* CHANGED: Smaller title */
+  .saleTitle {
+    font-size: 11px;
+  }
+
+  /* CHANGED: Smaller tag */
   .saleTag {
     font-size: 9px;
-    padding: 2px 8px;
+    padding: 2px 6px;
+    margin-bottom: 2px;
   }
 
+  /* CHANGED: Smaller button */
   .backButton {
-    padding: 5px 10px;
-    font-size: 13px;
+    padding: 4px 8px;
+    font-size: 12px;
+    gap: 3px;
+  }
+
+  /* CHANGED: Reduce icon size */
+  .backButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .saleTagDiv {
+    gap: 3px;
   }
 }
 
-/* Very small screens */
+/* CHANGED: Very small screens with minimal spacing */
 @media (max-width: 360px) {
   .productsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -280,13 +323,38 @@
     border-radius: 8px;
   }
 
-  .saleTitle {
-    font-size: 11px;
+  /* CHANGED: Minimal banner padding */
+  .saleBanner {
+    padding: 5px;
   }
 
+  /* CHANGED: Very small title */
+  .saleTitle {
+    font-size: 10px;
+  }
+
+  /* CHANGED: Very small tag */
+  .saleTag {
+    font-size: 8px;
+    padding: 2px 5px;
+    margin-bottom: 2px;
+  }
+
+  /* CHANGED: Minimal button */
   .backButton {
-    padding: 4px 8px;
-    font-size: 12px;
+    padding: 3px 6px;
+    font-size: 11px;
+    gap: 2px;
+  }
+
+  /* CHANGED: Smaller icon */
+  .backButton svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .saleTagDiv {
+    gap: 2px;
   }
 }
 
@@ -321,7 +389,9 @@
   border-top: 1px solid var(--border-color);
   padding: 32px 16px;
   margin-top: auto;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .footerContent {
@@ -413,7 +483,9 @@
   background: var(--card-bg);
   border-radius: 12px;
   box-shadow: 0 4px 12px var(--section-shadow);
-  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .errorContent svg {
