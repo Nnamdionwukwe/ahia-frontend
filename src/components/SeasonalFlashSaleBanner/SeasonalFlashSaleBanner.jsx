@@ -1,176 +1,145 @@
 import React, { useState, useEffect } from "react";
 import styles from "./SeasonalFlashSaleBanner.module.css";
 
-const SaleBannerItem = ({ sale, index, isSeasonal, allSales }) => {
+const SeasonalFlashSaleBanner = ({
+  allSeasonalSales = [],
+  allFlashSales = [],
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [saleTimeLeft, setSaleTimeLeft] = useState({
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
 
+  // ✅ Merge all sales into one list
+  const allSales = React.useMemo(() => {
+    const merged = [];
+
+    allSeasonalSales.forEach((sale) => {
+      merged.push({ ...sale, _type: "seasonal" });
+    });
+
+    allFlashSales.forEach((sale) => {
+      merged.push({ ...sale, _type: "flash" });
+    });
+
+    return merged;
+  }, [allSeasonalSales, allFlashSales]);
+
+  const currentSale = allSales[currentIndex] || null;
+  const isSeasonal = currentSale?._type === "seasonal";
+
+  // ✅ Auto-rotate every 4 seconds
   useEffect(() => {
-    // const calculateTimeLeft = () => {
-    //   if (!sale || !sale.end_time) {
-    //     setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-    //     return;
-    //   }
+    if (allSales.length <= 1) return;
 
-    //   const now = new Date().getTime();
-    //   const end = new Date(sale.end_time).getTime();
-    //   const difference = end - now;
+    const rotator = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % allSales.length);
+    }, 4000);
 
-    //   if (difference > 0) {
-    //     setSaleTimeLeft({
-    //       hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-    //       minutes: Math.floor((difference / 1000 / 60) % 60),
-    //       seconds: Math.floor((difference / 1000) % 60),
-    //     });
-    //   } else {
-    //     setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-    //   }
-    // };
+    return () => clearInterval(rotator);
+  }, [allSales.length]);
+
+  // ✅ Countdown timer for current sale
+  useEffect(() => {
+    if (!currentSale) return;
+
     const calculateTimeLeft = () => {
-      if (!sale || !sale.start_time || !sale.end_time) {
-        console.warn("Sale data is incomplete or invalid", sale);
-        setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return;
-      }
-
       const now = new Date().getTime();
-      const start = new Date(sale.start_time).getTime();
-      const end = new Date(sale.end_time).getTime();
-
-      console.log("Current time:", new Date(now).toISOString());
-      console.log("Sale start time:", new Date(start).toISOString());
-      console.log("Sale end time:", new Date(end).toISOString());
+      const start = new Date(currentSale.start_time).getTime();
+      const end = new Date(currentSale.end_time).getTime();
 
       if (now < start) {
-        console.log("Sale not started yet");
         setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        return; // Sale hasn't started
+        return;
       }
 
       const difference = end - now;
 
       if (difference > 0) {
         setSaleTimeLeft({
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / (1000 * 60)) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
+          hours: Math.floor(difference / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000),
         });
       } else {
         setSaleTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
-        console.log("Sale has ended");
       }
     };
 
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [sale]);
+  }, [currentSale]);
 
-  const isSaleEnded =
-    saleTimeLeft.hours === 0 &&
-    saleTimeLeft.minutes === 0 &&
-    saleTimeLeft.seconds === 0;
-
-  if (isSaleEnded) return null;
+  if (!currentSale) return null;
 
   const backgroundStyle = isSeasonal
-    ? sale.banner_color
-      ? `linear-gradient(90deg, ${sale.banner_color} 0%, ${sale.banner_color}dd 100%)`
+    ? currentSale.banner_color
+      ? `linear-gradient(90deg, ${currentSale.banner_color} 0%, ${currentSale.banner_color}dd 100%)`
       : "linear-gradient(135deg, #10b981, #06b6d4)"
     : "linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%)";
 
-  return (
-    <div
-      className={styles.flashSaleBanner}
-      style={{
-        marginBottom: index < allSales.length - 1 ? "12px" : "0",
-        background: backgroundStyle,
-      }}
-    >
-      <div className={styles.saleTag}>
-        {isSeasonal ? sale.name || "SEASONAL SALE" : sale.title || "FLASH SALE"}
-      </div>
-      <div className={styles.flashSaleContent}>
-        <div className={styles.flashSaleLeft}>
-          <span className={styles.flashIcon}>⚡</span>
-          <span>
-            {isSeasonal
-              ? sale.season
-                ? `${sale.season} sale`
-                : "Seasonal sale"
-              : "Flash sale"}
-          </span>
-          <span className={styles.separator}>|</span>
-          <span className={styles.clockIcon}>⏰</span>
-          <span className={styles.endsText}>Ends in</span>
-        </div>
-        <div className={styles.timer}>
-          <span className={styles.timerDigit}>
-            {String(saleTimeLeft.hours).padStart(2, "0")}
-          </span>
-          <span className={styles.timerColon}>:</span>
-          <span className={styles.timerDigit}>
-            {String(saleTimeLeft.minutes).padStart(2, "0")}
-          </span>
-          <span className={styles.timerColon}>:</span>
-          <span className={styles.timerDigit}>
-            {String(saleTimeLeft.seconds).padStart(2, "0")}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
+  const saleTitle = isSeasonal
+    ? currentSale.name || currentSale.title || "SEASONAL SALE"
+    : currentSale.title || currentSale.name || "FLASH SALE";
 
-const SeasonalFlashSaleBanner = ({
-  flashSale,
-  seasonalSale,
-  timeLeft,
-  allSeasonalSales = [],
-  allFlashSales = [],
-}) => {
-  // Check if we have any sales at all
-  const hasSeasonalSales = allSeasonalSales.length > 0;
-  const hasFlashSales = allFlashSales.length > 0;
-
-  if (!hasSeasonalSales && !hasFlashSales) {
-    return null;
-  }
+  const saleTagText = isSeasonal
+    ? currentSale.season
+      ? `${currentSale.season} Sale`
+      : currentSale.name || "Seasonal Sale"
+    : currentSale.title || "Flash Sale";
 
   return (
     <div className={styles.salesContainer}>
-      {/* Render all seasonal sales */}
-      {hasSeasonalSales && (
-        <div className={styles.salesGroup}>
-          {allSeasonalSales.map((sale, index) => (
-            <SaleBannerItem
-              key={sale.id || `seasonal-${index}`}
-              sale={sale}
-              index={index}
-              isSeasonal={true}
-              allSales={allSeasonalSales}
-            />
-          ))}
+      <div
+        className={styles.flashSaleBanner}
+        style={{ background: backgroundStyle }}
+      >
+        <div className={styles.saleTag}>{saleTitle}</div>
+        <div className={styles.flashSaleContent}>
+          <div className={styles.flashSaleLeft}>
+            <span className={styles.flashIcon}>⚡</span>
+            <span>{saleTagText}</span>
+            <span className={styles.separator}>|</span>
+            <span className={styles.clockIcon}>⏰</span>
+            <span className={styles.endsText}>Ends in</span>
+          </div>
+          <div className={styles.timer}>
+            <span className={styles.timerDigit}>
+              {String(saleTimeLeft.hours).padStart(2, "0")}
+            </span>
+            <span className={styles.timerColon}>:</span>
+            <span className={styles.timerDigit}>
+              {String(saleTimeLeft.minutes).padStart(2, "0")}
+            </span>
+            <span className={styles.timerColon}>:</span>
+            <span className={styles.timerDigit}>
+              {String(saleTimeLeft.seconds).padStart(2, "0")}
+            </span>
+          </div>
         </div>
-      )}
 
-      {/* Render all flash sales */}
-      {hasFlashSales && (
-        <div className={styles.salesGroup}>
-          {allFlashSales.map((sale, index) => (
-            <SaleBannerItem
-              key={sale.id || `flash-${index}`}
-              sale={sale}
-              index={index}
-              isSeasonal={false}
-              allSales={allFlashSales}
-            />
-          ))}
-        </div>
-      )}
+        {/* ✅ Dot indicators */}
+        {allSales.length > 1 && (
+          <div className={styles.dotContainer}>
+            {allSales.map((_, i) => (
+              <div
+                key={i}
+                className={styles.dot}
+                style={{
+                  background:
+                    i === currentIndex ? "#fff" : "rgba(255,255,255,0.4)",
+                  width: i === currentIndex ? "20px" : "8px",
+                  transition: "all 0.3s ease",
+                }}
+                onClick={() => setCurrentIndex(i)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

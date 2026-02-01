@@ -57,8 +57,11 @@ const ProductDetail = () => {
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
+  const hasFetched = useRef(false);
+
   useEffect(() => {
-    if (id) {
+    if (id && !hasFetched.current) {
+      hasFetched.current = true;
       fetchProduct();
       fetchReviews();
       fetchCartCount();
@@ -140,7 +143,7 @@ const ProductDetail = () => {
         setFullscreenImageIndex((prev) => (prev + 1) % images.length);
       } else if (e.key === "ArrowLeft") {
         setFullscreenImageIndex(
-          (prev) => (prev - 1 + images.length) % images.length
+          (prev) => (prev - 1 + images.length) % images.length,
         );
       } else if (e.key === "Escape") {
         setShowFullscreenImage(false);
@@ -217,7 +220,7 @@ const ProductDetail = () => {
       setFullscreenImageIndex((prev) => (prev + 1) % images.length);
     } else if (isRightSwipe) {
       setFullscreenImageIndex(
-        (prev) => (prev - 1 + images.length) % images.length
+        (prev) => (prev - 1 + images.length) % images.length,
       );
     }
   };
@@ -233,7 +236,7 @@ const ProductDetail = () => {
         // Get the first color's first size variant
         const firstColor = response.data.variants[0].color;
         const firstVariantOfColor = response.data.variants.find(
-          (v) => v.color === firstColor
+          (v) => v.color === firstColor,
         );
         setSelectedVariant(firstVariantOfColor);
       }
@@ -383,7 +386,7 @@ const ProductDetail = () => {
   //   }
   // };
 
-  // Replace the entire fetchSales function in ProductDetail.js with this:
+  // Replace the fetchSales function in ProductDetail.jsx with this:
   const fetchSales = async () => {
     try {
       setSeasonalSale(null);
@@ -396,15 +399,26 @@ const ProductDetail = () => {
       // Fetch ALL active seasonal sales for this product
       try {
         const seasonalRes = await axios.get(
-          `${API_URL}/api/seasonal-sales/product/${id}/all`
+          `${API_URL}/api/seasonal-sales/product/${id}/all`,
         );
 
-        console.log("📦 Seasonal sales response:", seasonalRes.data);
+        console.log("📦 Seasonal sales RAW response:", seasonalRes.data);
 
-        if (Array.isArray(seasonalRes.data) && seasonalRes.data.length > 0) {
-          console.log(`✅ Found ${seasonalRes.data.length} seasonal sales`);
-          setAllSeasonalSales(seasonalRes.data);
-          setSeasonalSale(seasonalRes.data[0]);
+        // Handle both array and single object responses
+        let seasonalSalesArray = [];
+        if (Array.isArray(seasonalRes.data)) {
+          seasonalSalesArray = seasonalRes.data;
+        } else if (seasonalRes.data && typeof seasonalRes.data === "object") {
+          // If it's a single object, wrap it in an array
+          seasonalSalesArray = [seasonalRes.data];
+        }
+
+        if (seasonalSalesArray.length > 0) {
+          console.log(`✅ Found ${seasonalSalesArray.length} seasonal sales`);
+          setAllSeasonalSales(seasonalSalesArray);
+          setSeasonalSale(seasonalSalesArray[0]);
+        } else {
+          console.log("ℹ️ No seasonal sales found");
         }
       } catch (error) {
         console.log("❌ Error fetching seasonal sales:", error.message);
@@ -413,15 +427,26 @@ const ProductDetail = () => {
       // Fetch ALL active flash sales for this product
       try {
         const flashRes = await axios.get(
-          `${API_URL}/api/flash-sales/product/${id}/all`
+          `${API_URL}/api/flash-sales/product/${id}/all`,
         );
 
-        console.log("📦 Flash sales response:", flashRes.data);
+        console.log("📦 Flash sales RAW response:", flashRes.data);
 
-        if (Array.isArray(flashRes.data) && flashRes.data.length > 0) {
-          console.log(`✅ Found ${flashRes.data.length} flash sales`);
-          setAllFlashSales(flashRes.data);
-          setFlashSale(flashRes.data[0]);
+        // Handle both array and single object responses
+        let flashSalesArray = [];
+        if (Array.isArray(flashRes.data)) {
+          flashSalesArray = flashRes.data;
+        } else if (flashRes.data && typeof flashRes.data === "object") {
+          // If it's a single object, wrap it in an array
+          flashSalesArray = [flashRes.data];
+        }
+
+        if (flashSalesArray.length > 0) {
+          console.log(`✅ Found ${flashSalesArray.length} flash sales`);
+          setAllFlashSales(flashSalesArray);
+          setFlashSale(flashSalesArray[0]);
+        } else {
+          console.log("ℹ️ No flash sales found");
         }
       } catch (error) {
         console.log("❌ Error fetching flash sales:", error.message);
@@ -487,8 +512,8 @@ const ProductDetail = () => {
   const salePrice = activeSale
     ? flashSale?.sale_price || seasonalSale?.sale_price
     : variantDiscount > 0
-    ? basePrice * (1 - variantDiscount / 100)
-    : basePrice;
+      ? basePrice * (1 - variantDiscount / 100)
+      : basePrice;
 
   // Calculate actual discount if in sale
   const actualDiscount = activeSale

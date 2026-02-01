@@ -98,4 +98,17 @@
   box-shadow: 0 6px 16px rgba(255, 107, 107, 0.4);
 }
 
+.dotContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0 4px;
+}
+
+.dot {
+  height: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
 /* Rest of your existing CSS... */
