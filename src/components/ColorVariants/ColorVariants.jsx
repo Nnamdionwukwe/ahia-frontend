@@ -28,7 +28,7 @@ const ColorVariants = ({
                 // Find the image index for this variant if it has an image_url
                 if (variant.image_url && displayImages.length > 0) {
                   const imgIndex = displayImages.findIndex(
-                    (img) => img.image_url === variant.image_url
+                    (img) => img.image_url === variant.image_url,
                   );
                   if (imgIndex !== -1) {
                     setSelectedImage(imgIndex);
@@ -47,7 +47,7 @@ const ColorVariants = ({
                 <div className={styles.colorSelectedBadge}>🔥</div>
               )}
             </div>
-          )
+          ),
         )}
       </div>
 
