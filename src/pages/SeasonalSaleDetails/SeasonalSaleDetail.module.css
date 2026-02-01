@@ -33,11 +33,11 @@
   transition: background-color 0.3s ease;
 }
 
-/* Sale Banner */
+/* CHANGED: Reduced padding and height for more compact banner */
 .saleBanner {
   color: white;
-  padding: 10px 20px;
-  height: 90px;
+  padding: 12px 16px;
+  min-height: 70px;
 }
 
 .bannerContent {
@@ -55,20 +55,21 @@
   min-width: 300px;
 }
 
+/* CHANGED: Reduced gap and margin */
 .header {
   display: flex;
   align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
-  /* margin-top: -10px; */
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
+/* CHANGED: Reduced button size */
 .backButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border: none;
@@ -84,52 +85,58 @@
   transform: translateX(-2px);
 }
 
+/* CHANGED: Reduced gap */
 .titleSection {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
+/* CHANGED: Reduced font-size from 2rem to 1.5rem */
 .saleTitle {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   margin: 0;
   color: white;
 }
 
+/* CHANGED: Reduced padding and font-size */
 .seasonBadge {
   display: inline-block;
   background: rgba(255, 255, 255, 0.25);
   backdrop-filter: blur(10px);
-  padding: 6px 14px;
+  padding: 4px 12px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
+/* CHANGED: Reduced font-size and margin */
 .saleDescription {
-  font-size: 16px;
-  margin: 12px 0;
+  font-size: 14px;
+  margin: 8px 0;
   opacity: 0.95;
   line-height: 1.5;
 }
 
+/* CHANGED: Reduced gap and margin */
 .saleBadges {
   display: flex;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 12px;
   flex-wrap: wrap;
 }
 
+/* CHANGED: Reduced padding and font-size */
 .discountBadge,
 .productBadge {
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
-  padding: 8px 16px;
+  padding: 6px 14px;
   border-radius: 20px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
 }
 
@@ -138,10 +145,11 @@
   flex-shrink: 0;
 }
 
+/* CHANGED: Reduced padding */
 .timerBox {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
-  padding: 20px;
+  padding: 16px;
   border-radius: 16px;
   display: flex;
   align-items: center;
@@ -165,8 +173,9 @@
   letter-spacing: 1px;
 }
 
+/* CHANGED: Reduced font-size from 24px to 20px */
 .timer {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
   font-family: "Courier New", monospace;
   letter-spacing: 2px;
@@ -177,19 +186,20 @@
   text-align: center;
 }
 
-/* Content */
+/* CHANGED: Reduced padding */
 .content {
   flex: 1;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
-  padding: 30px 20px;
+  padding: 24px 16px;
 }
 
+/* CHANGED: Reduced padding */
 .productsSection {
   background: var(--card-bg);
   border-radius: 16px;
-  padding: 30px;
+  padding: 24px;
   box-shadow: 0 2px 8px var(--section-shadow);
   transition: background-color 0.3s ease;
 }
@@ -233,7 +243,9 @@
   border-top: 1px solid var(--border-color);
   padding: 32px 20px;
   margin-top: auto;
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .footerContent {
@@ -352,49 +364,56 @@
   }
 }
 
-/* Tablet/Mobile */
+/* CHANGED: Tablet/Mobile - Optimized banner sizing */
 @media (max-width: 768px) {
   .saleBanner {
-    padding: 24px 15px;
-    height: 72px;
+    padding: 10px 12px;
+    min-height: 60px;
   }
 
   .bannerContent {
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
   }
 
   .saleInfo {
     min-width: auto;
   }
 
+  /* CHANGED: Reduced from 1.2rem to 1.1rem */
   .saleTitle {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
 
+  /* CHANGED: Reduced from 0.8rem to 0.75rem */
   .seasonBadge {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    padding: 3px 10px;
   }
 
+  /* CHANGED: Reduced from 14px to 13px */
   .saleDescription {
-    font-size: 14px;
+    font-size: 13px;
   }
 
+  /* CHANGED: Reduced padding */
   .timerBox {
     width: 100%;
-    padding: 16px;
+    padding: 14px;
   }
 
+  /* CHANGED: Reduced from 20px to 18px */
   .timer {
-    font-size: 20px;
+    font-size: 18px;
   }
 
+  /* CHANGED: Reduced padding */
   .content {
-    padding: 20px 15px;
+    padding: 16px 12px;
   }
 
   .productsSection {
-    padding: 20px 15px;
+    padding: 16px 12px;
   }
 
   /* Display 2 cards on tablets */
@@ -402,70 +421,101 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
   }
+
+  /* CHANGED: Reduced header gap */
+  .header {
+    gap: 10px;
+  }
+
+  /* CHANGED: Reduced button size */
+  .backButton {
+    width: 32px;
+    height: 32px;
+  }
 }
 
-/* Mobile */
+/* CHANGED: Mobile - Further optimizations */
 @media (max-width: 480px) {
   .saleBanner {
-    padding: 20px 10px;
+    padding: 8px 10px;
+    min-height: 50px;
   }
 
+  /* CHANGED: Reduced gap */
   .header {
-    gap: 12px;
-  }
-
-  .backButton {
-    width: 36px;
-    height: 36px;
-  }
-
-  .saleTitle {
-    font-size: 1.25rem;
-  }
-
-  .seasonBadge {
-    font-size: 0.75rem;
-    padding: 4px 10px;
-  }
-
-  .saleDescription {
-    font-size: 13px;
-  }
-
-  .saleBadges {
     gap: 8px;
+    margin-bottom: 6px;
   }
 
+  /* CHANGED: Reduced button size */
+  .backButton {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* CHANGED: Smaller icon in button */
+  .backButton svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* CHANGED: Reduced from 1.25rem to 1rem */
+  .saleTitle {
+    font-size: 1rem;
+  }
+
+  /* CHANGED: Reduced */
+  .seasonBadge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+  }
+
+  /* CHANGED: Reduced from 13px to 12px */
+  .saleDescription {
+    font-size: 12px;
+    margin: 6px 0;
+  }
+
+  /* CHANGED: Reduced gap */
+  .saleBadges {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  /* CHANGED: Reduced padding and font-size */
   .discountBadge,
   .productBadge {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 4px 10px;
+    font-size: 11px;
   }
 
+  /* CHANGED: Reduced padding */
   .timerBox {
-    padding: 12px;
-    gap: 12px;
+    padding: 10px;
+    gap: 10px;
   }
 
   .timerIcon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   .timerLabel {
     font-size: 10px;
   }
 
+  /* CHANGED: Reduced from 18px to 16px */
   .timer {
-    font-size: 18px;
+    font-size: 16px;
   }
 
+  /* CHANGED: Reduced padding */
   .content {
-    padding: 16px 10px;
+    padding: 12px 8px;
   }
 
   .productsSection {
-    padding: 16px 10px;
+    padding: 12px 8px;
     border-radius: 12px;
   }
 
@@ -476,83 +526,124 @@
   }
 
   .footer {
-    padding: 20px 10px;
-  }
-
-  .footerContent h3 {
-    font-size: 18px;
-  }
-
-  .footerContent p {
-    font-size: 14px;
-  }
-
-  .backBtn {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-}
-
-/* Extra Small Mobile */
-@media (max-width: 360px) {
-  .saleBanner {
     padding: 16px 8px;
   }
 
-  .backButton {
-    width: 32px;
-    height: 32px;
-  }
-
-  .saleTitle {
-    font-size: 1.1rem;
-  }
-
-  .seasonBadge {
-    font-size: 0.7rem;
-    padding: 3px 8px;
-  }
-
-  .saleDescription {
-    font-size: 12px;
-  }
-
-  .discountBadge,
-  .productBadge {
-    padding: 5px 10px;
-    font-size: 11px;
-  }
-
-  .timerBox {
-    padding: 10px;
-  }
-
-  .timer {
+  .footerContent h3 {
     font-size: 16px;
   }
 
+  .footerContent p {
+    font-size: 13px;
+  }
+
+  .backBtn {
+    padding: 8px 18px;
+    font-size: 13px;
+  }
+}
+
+/* CHANGED: Extra Small Mobile - Maximum optimization */
+@media (max-width: 360px) {
+  .saleBanner {
+    padding: 6px 8px;
+    min-height: 45px;
+  }
+
+  /* CHANGED: Minimal gap */
+  .header {
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+
+  /* CHANGED: Smallest button size */
+  .backButton {
+    width: 28px;
+    height: 28px;
+  }
+
+  .backButton svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* CHANGED: Reduced from 1.1rem to 0.9rem */
+  .saleTitle {
+    font-size: 0.9rem;
+  }
+
+  /* CHANGED: Minimal gap */
+  .titleSection {
+    gap: 6px;
+  }
+
+  /* CHANGED: Very small badge */
+  .seasonBadge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+
+  /* CHANGED: Smallest description */
+  .saleDescription {
+    font-size: 11px;
+    margin: 4px 0;
+  }
+
+  /* CHANGED: Minimal spacing */
+  .saleBadges {
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  /* CHANGED: Smallest badges */
+  .discountBadge,
+  .productBadge {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+
+  .timerBox {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .timerIcon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* CHANGED: Smallest timer */
+  .timer {
+    font-size: 14px;
+  }
+
+  /* CHANGED: Minimal padding */
   .content {
-    padding: 12px 8px;
+    padding: 10px 6px;
   }
 
   .productsSection {
-    padding: 12px 8px;
+    padding: 10px 6px;
   }
 
   .productsGrid {
     gap: 6px;
   }
 
+  .footer {
+    padding: 12px 6px;
+  }
+
   .footerContent h3 {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .footerContent p {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .backBtn {
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 7px 14px;
+    font-size: 12px;
   }
 }
