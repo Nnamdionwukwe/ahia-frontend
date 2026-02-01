@@ -122,7 +122,7 @@ const SeasonalFlashSaleBanner = ({
         </div>
 
         {/* ✅ Dot indicators */}
-        {allSales.length > 1 && (
+        {/* {allSales.length > 1 && (
           <div className={styles.dotContainer}>
             {allSales.map((_, i) => (
               <div
@@ -138,7 +138,7 @@ const SeasonalFlashSaleBanner = ({
               />
             ))}
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

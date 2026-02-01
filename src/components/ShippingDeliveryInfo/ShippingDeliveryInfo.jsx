@@ -20,7 +20,7 @@ const ShippingDeliveryInfo = () => {
       <div className={styles.deliveryBadge}>
         <span className={styles.truckIcon}>🚚</span>
         <span className={styles.deliveryText}>
-          Arrives in NG in as little as 6 days
+          Arrives in NG in as little as 7 days
         </span>
       </div>
     </>

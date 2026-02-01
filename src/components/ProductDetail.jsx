@@ -568,6 +568,9 @@ const ProductDetail = () => {
           {/* Shipping & Delivery Info */}
           <ShippingDeliveryInfo />
 
+          {/* Description */}
+          <ProductDescription description={productData.description} />
+
           {/* Product Title 
           /Sold Count & Store */}
           <SoldCountProductTitle
@@ -624,9 +627,6 @@ const ProductDetail = () => {
 
           {/* Product Specs/Attributes */}
           <ProductSpecs attributes={attributes} />
-
-          {/* Description */}
-          <ProductDescription description={productData.description} />
 
           {/* Product Features */}
           <ProductFeatures tags={productData.tags} />

@@ -6,7 +6,6 @@ const ProductDescription = ({ description }) => {
 
   return (
     <div className={styles.description}>
-      <h3>Product Description</h3>
       <p>{description}</p>
     </div>
   );
