@@ -144,7 +144,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
             timeLeft.minutes > 0 ||
             timeLeft.seconds > 0) && (
             <div className={styles.timeLeftBadge}>
-              Ends in {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m{" "}
+              Ends in {timeLeft.days} {timeLeft.hours} {timeLeft.minutes}{" "}
               {timeLeft.seconds}s
             </div>
           )}
