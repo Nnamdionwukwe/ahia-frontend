@@ -55,9 +55,10 @@
 
 /* CHANGED: Reduced min-height from 48px to 36px and added font-size: 14px */
 .productName {
+  font-size: 16px;
   font-weight: 600;
   color: var(--text-primary);
-  margin: 0;
+  margin: 0px 0px -15px 0px;
   min-height: 36px;
   font-size: 14px;
   display: -webkit-box;
@@ -69,10 +70,12 @@
 
 /* CHANGED: Reduced margin from default to 4px 0 */
 .rating {
+  font-size: 1px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 4px 0;
+  margin: 4px 0px -5px 0px;
 }
 
 .starsContainer {
@@ -95,7 +98,7 @@
 
 /* CHANGED: Reduced font-size from 13px to 12px */
 .ratingValue {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-primary);
   font-weight: 600;
   min-width: 20px;
@@ -118,6 +121,7 @@
   display: flex;
   align-items: baseline;
   gap: 8px;
+  font-weight: bold;
 }
 
 /* CHANGED: Reduced font-size from 24px to 20px */
@@ -222,7 +226,12 @@
 
   /* CHANGED: Reduced font-size from 20px to 18px */
   .salePrice {
-    font-size: 18px;
+    font-size: 13px;
+  }
+
+  .originalPrice {
+    font-size: 11px;
+    /* font-family: bold; */
   }
 
   /* CHANGED: Reduced padding from 12px to 10px and gap from 8px to 6px */
@@ -251,11 +260,11 @@
 
   /* CHANGED: Reduced font-size from 18px to 16px */
   .salePrice {
-    font-size: 16px;
+    font-size: 13px;
   }
 
   .ratingText {
-    font-size: 12px;
+    font-size: 11px;
   }
 
   /* CHANGED: Reduced padding from 10px to 8px */

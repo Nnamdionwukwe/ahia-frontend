@@ -115,7 +115,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
                   key={star}
-                  size={16}
+                  size={11}
                   className={
                     star <= Math.round(rating)
                       ? styles.starFilled
