@@ -2,7 +2,7 @@
 .infoSection {
   display: flex;
   gap: 20px;
-  margin: 12px 0;
+  margin: 5px 0;
   font-size: 14px;
 }
 
@@ -28,11 +28,10 @@
 }
 
 .deliveryBadge {
-  background: #e8f5e9;
-  color: #2e7d32;
-  padding: 10px 14px;
+  color: #eaefea;
+  padding: 10px 0px;
   border-radius: 8px;
-  margin: 12px 0;
+  margin: -10px 0;
   display: flex;
   align-items: center;
   gap: 8px;
