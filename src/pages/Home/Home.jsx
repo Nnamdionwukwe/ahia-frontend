@@ -76,7 +76,7 @@ const Home = () => {
             try {
               const response = await axios.get(
                 `${API_URL}/api/flash-sales/${sale.id}/products`,
-                { params: { limit: 8, sort: "popularity" } }
+                { params: { limit: 8, sort: "popularity" } },
               );
 
               let products = [];
@@ -90,11 +90,11 @@ const Home = () => {
             } catch (err) {
               console.error(
                 `Error fetching flash sale ${sale.id} products:`,
-                err.message
+                err.message,
               );
               flashProductsData[sale.id] = [];
             }
-          })
+          }),
         );
       }
       setFlashSaleProducts(flashProductsData);
@@ -116,7 +116,7 @@ const Home = () => {
             try {
               const response = await axios.get(
                 `${API_URL}/api/seasonal-sales/${sale.id}/products`,
-                { params: { limit: 12 } }
+                { params: { limit: 12 } },
               );
 
               let products = [];
@@ -130,11 +130,11 @@ const Home = () => {
             } catch (err) {
               console.error(
                 `Error fetching seasonal sale ${sale.id} products:`,
-                err.message
+                err.message,
               );
               seasonalProductsData[sale.id] = [];
             }
-          })
+          }),
         );
       }
       setSeasonalSaleProducts(seasonalProductsData);
@@ -167,7 +167,7 @@ const Home = () => {
       if (regularProducts.length > 0) {
         console.log(
           "📦 First 3 products:",
-          regularProducts.slice(0, 3).map((p) => ({ id: p.id, name: p.name }))
+          regularProducts.slice(0, 3).map((p) => ({ id: p.id, name: p.name })),
         );
       }
     } catch (err) {
@@ -246,17 +246,6 @@ const Home = () => {
             {/* Featured Products Section */}
             {products.length > 0 && (
               <section className={styles.featuredSection1}>
-                {/* <div className={styles.sectionHeader}>
-                  <ProductCardNavigation />
-                  <button
-                    onClick={fetchAllData}
-                    className={styles.refreshBtn}
-                    title="Get new random products"
-                  >
-                    🔄 Refresh
-                  </button>
-                </div> */}
-
                 <div className={styles.grid}>
                   {products.slice(0, 10000).map((product) => (
                     <ProductCard
