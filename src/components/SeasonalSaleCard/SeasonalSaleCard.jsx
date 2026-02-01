@@ -66,7 +66,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
       setTimeLeft({
         days: Math.floor(distance / (1000 * 60 * 60 * 24)),
         hours: Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
         ),
         minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
         seconds: Math.floor((distance % (1000 * 60)) / 1000),
@@ -105,7 +105,9 @@ const SeasonalSaleCard = ({ product, sale }) => {
           </div>
         </div>
         <div className={styles.content}>
-          <h3 className={styles.productName}>{product.name}</h3>
+          <h3 className={styles.productName}>
+            {product.name?.substring(0, 20)}...
+          </h3>
 
           {/* Rating and Review Count */}
           <div className={styles.rating}>
@@ -123,7 +125,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
               ))}
             </div>
             <span className={styles.ratingValue}>{rating.toFixed(1)}</span>
-            <span className={styles.reviewCount}>({reviewCount} reviews)</span>
+            <span className={styles.reviewCount}>({reviewCount} )</span>
           </div>
 
           <div className={styles.priceSection}>
@@ -156,7 +158,7 @@ const SeasonalSaleCard = ({ product, sale }) => {
                   style={{
                     width: `${Math.round(
                       ((product.sold_quantity || 0) / product.max_quantity) *
-                        100
+                        100,
                     )}%`,
                   }}
                 />
