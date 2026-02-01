@@ -89,7 +89,7 @@ const SeasonalFlashSaleBanner = ({
     ? currentSale.season
       ? `${currentSale.season} Sale`
       : currentSale.name || "Seasonal Sale"
-    : currentSale.title || "Flash Sale";
+    : !currentSale.title || "Flash Sale";
 
   return (
     <div className={styles.salesContainer}>
