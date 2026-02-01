@@ -16,7 +16,7 @@
   color: white;
   padding: 4px 12px;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.5px;
 }
@@ -32,12 +32,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 10px;
+  font-weight: bold;
 }
 
 .flashIcon,
 .clockIcon {
-  font-size: 18px;
+  font-size: 10px;
+  font-weight: bold;
 }
 
 .separator {
@@ -45,13 +47,13 @@
 }
 
 .endsText {
-  font-size: 13px;
+  font-size: 10px;
 }
 
 .timer {
   display: flex;
   gap: 3px;
-  font-size: 16px;
+  font-size: 10px;
   font-weight: 700;
 }
 
