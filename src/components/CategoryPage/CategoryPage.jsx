@@ -57,7 +57,7 @@ const CategoryPage = () => {
     try {
       setLoading(true);
       const params = {
-        sort: "rating",
+        sort: "shuffle",
         limit: 10000,
       };
 
@@ -67,7 +67,7 @@ const CategoryPage = () => {
 
       const response = await axios.get(`${API_URL}/api/products`, { params });
 
-      setTrendingProducts(response.data.data || []);
+      setTrendingProducts(response.data.products || []);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching trending products:", error);
