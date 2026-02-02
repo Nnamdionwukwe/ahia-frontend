@@ -21,7 +21,7 @@ const DeliveryDetails = () => {
         <div className={styles.deliveryRow}>
           <span className={styles.deliveryLabel}>Delivery:</span>
           <span className={styles.deliveryValue}>
-            Arrives in NG in as little as 6 days
+            Arrives in NG in as little as 7 days
           </span>
         </div>
         <div className={styles.deliveryRow}>
