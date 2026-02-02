@@ -635,7 +635,7 @@ const ProductDetail = () => {
             setSelectedImage={setSelectedImage}
           /> */}
 
-          <ProductImageGallerySub
+          {/* <ProductImageGallerySub
             displayImages={displayImages}
             selectedImage={selectedImage}
             setSelectedImage={setSelectedImage}
@@ -653,7 +653,7 @@ const ProductDetail = () => {
             setShowFullscreenImage={setShowFullscreenImage}
             productData={productData}
             showExitModal={showExitModal}
-          />
+          /> */}
         </div>
       )}
 
