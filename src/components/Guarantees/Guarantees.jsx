@@ -4,14 +4,6 @@ import styles from "./Guarantees.module.css";
 const Guarantees = () => {
   return (
     <>
-      {/* Guarantees */}
-      <div className={styles.guaranteeSection}>
-        <div className={styles.guaranteeItem}>
-          <span className={styles.shippingIcon}>📦</span>
-          <span className={styles.freeShippingText}>FREE SHIPPING</span>
-        </div>
-      </div>
-
       <div className={styles.benefitsGrid}>
         <div className={styles.benefitItem}>
           <span>✓</span>

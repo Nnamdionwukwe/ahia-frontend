@@ -1,28 +1,3 @@
-/* Guarantees */
-.guaranteeSection {
-  background: #e8f5e9;
-  padding: 2px 16px;
-  border-radius: 8px;
-  margin: 16px 0;
-}
-
-.guaranteeItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.shippingIcon {
-  font-size: 18px;
-}
-
-.freeShippingText {
-  color: #2e7d32;
-  font-weight: 700;
-}
-
 .benefitsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);

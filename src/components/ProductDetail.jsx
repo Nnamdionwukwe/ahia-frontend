@@ -609,14 +609,14 @@ const ProductDetail = () => {
             productData={productData}
           />
 
-          {/* Guarantees */}
-          <Guarantees />
-
           {/* Delivery Details */}
           <DeliveryDetails />
 
           {/* Order Guarantee */}
           <PaymentGuarantee />
+
+          {/* Guarantees */}
+          <Guarantees />
 
           {/* Reviews Preview */}
           <ReviewsPreview
