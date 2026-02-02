@@ -55,7 +55,6 @@
 /* Responsive */
 @media (max-width: 768px) {
   .guaranteePoints {
-    text-overflow: scroll;
     grid-template-columns: repeat(6, 1fr);
   }
 }

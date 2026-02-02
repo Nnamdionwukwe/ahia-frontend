@@ -7,9 +7,9 @@ const ReviewsPreview = ({ reviews, reviewSummary, onViewAllReviews }) => {
   return (
     <div className={styles.reviewsPreviewSection}>
       <div className={styles.reviewsHeader}>
-        <h3 className={styles.reviewsTitle}>
+        <h6 className={styles.reviewsTitle}>
           All reviews are from verified purchases{" "}
-        </h3>
+        </h6>
       </div>
 
       {reviewSummary && (
@@ -25,7 +25,7 @@ const ReviewsPreview = ({ reviews, reviewSummary, onViewAllReviews }) => {
           </div>
 
           <button className={styles.viewAllButton} onClick={onViewAllReviews}>
-            View all reviews ›
+            ›
           </button>
         </div>
       )}
