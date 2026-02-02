@@ -13,8 +13,6 @@ const ProductImageGallery = ({
   const [touchEnd, setTouchEnd] = useState(0);
 
   const minSwipeDistance = 50;
-import React, { useState } from "react";
-import styles from "./ProductImageGallery.module.css";
 
 const ProductImageGallery = ({
   displayImages,
