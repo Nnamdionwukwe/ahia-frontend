@@ -10,6 +10,10 @@ const ProductDescription = ({ description }) => {
     <div className={styles.description}>
       <div className={styles.textWrapper}>
         <p className={isExpanded ? styles.expanded : styles.collapsed}>
+          <span className={styles.truckIcon}>🚚</span>
+          <span className={styles.deliveryText}>
+            Arrives in NG in as little as 7 days
+          </span>{" "}
           {description}
         </p>
         {!isExpanded && (
@@ -24,16 +28,6 @@ const ProductDescription = ({ description }) => {
           </button>
         )}
       </div>
-      {/* {isExpanded && (
-        <button
-          className={styles.showLessButton}
-          onClick={() => setIsExpanded(false)}
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 5L3 10h10z" />
-          </svg>
-        </button>
-      )} */}
     </div>
   );
 };

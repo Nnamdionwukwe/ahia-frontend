@@ -31,8 +31,16 @@
   padding-right: 28px; /* Space for arrow button */
 }
 
+.collapsed span {
+  font-weight: bold;
+}
+
 .expanded {
   display: block;
+}
+
+.truckIcon {
+  margin-right: 5px;
 }
 
 .toggleButton {

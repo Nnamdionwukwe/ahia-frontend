@@ -15,14 +15,6 @@ const ShippingDeliveryInfo = () => {
           <span>₦1,600 Credit for delay</span>
         </div>
       </div>
-
-      {/* Delivery Estimate */}
-      <div className={styles.deliveryBadge}>
-        <span className={styles.truckIcon}>🚚</span>
-        <span className={styles.deliveryText}>
-          Arrives in NG in as little as 7 days
-        </span>
-      </div>
     </>
   );
 };
