@@ -25,6 +25,8 @@
 
 /* Delivery Details */
 .deliveryDetails {
+  display: flex;
+  justify-content: space-between;
   background: var(--card-bg);
   padding: 10px;
   border-radius: 8px;
@@ -36,6 +38,22 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
+  font-size: 10px;
+}
+
+.deliveryRow2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 10px;
+}
+
+.clickCollect {
+  background: none;
+  border: none;
+  color: #3498db;
+  cursor: pointer;
   font-size: 10px;
 }
 
