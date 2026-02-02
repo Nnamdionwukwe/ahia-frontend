@@ -15,7 +15,7 @@ const ProductImageGallery = ({
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
-    setTouchEnd(0); // Reset
+    setTouchEnd(0);
     setTouchStart(e.targetTouches[0].clientX);
   };
 
@@ -30,14 +30,16 @@ const ProductImageGallery = ({
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe && selectedImage < displayImages.length - 1) {
-      // Swipe left → next image
-      setSelectedImage(selectedImage + 1);
+    if (isLeftSwipe) {
+      // Swipe left → next image (loop to first)
+      setSelectedImage((prev) => (prev + 1) % displayImages.length);
     }
 
-    if (isRightSwipe && selectedImage > 0) {
-      // Swipe right → previous image
-      setSelectedImage(selectedImage - 1);
+    if (isRightSwipe) {
+      // Swipe right → previous image (loop to last)
+      setSelectedImage((prev) =>
+        prev === 0 ? displayImages.length - 1 : prev - 1,
+      );
     }
   };
 
