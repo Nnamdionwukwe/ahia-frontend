@@ -635,16 +635,6 @@ const ProductDetail = () => {
             setSelectedImage={setSelectedImage}
           /> */}
 
-          {/* <ProductImageGallerySub
-            displayImages={displayImages}
-            selectedImage={selectedImage}
-            setSelectedImage={setSelectedImage}
-            setFullscreenImageIndex={setFullscreenImageIndex}
-            setShowFullscreenImage={setShowFullscreenImage}
-            productData={productData}
-            showExitModal={showExitModal}
-          />
-
           <ProductImageGallerySub
             displayImages={displayImages}
             selectedImage={selectedImage}
@@ -653,7 +643,7 @@ const ProductDetail = () => {
             setShowFullscreenImage={setShowFullscreenImage}
             productData={productData}
             showExitModal={showExitModal}
-          /> */}
+          />
         </div>
       )}
 

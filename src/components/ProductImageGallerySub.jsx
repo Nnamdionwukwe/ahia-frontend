@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./ProductImageGallery.module.css";
+import styles from "./ProductImageGallerySub.module.css";
 
 const ProductImageGallerySub = ({
   displayImages,
