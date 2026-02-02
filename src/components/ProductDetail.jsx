@@ -629,12 +629,6 @@ const ProductDetail = () => {
           {/* Product Features */}
           <ProductFeatures tags={productData.tags} />
 
-          {/* Product Image Gallery Grid */}
-          {/* <ProductImageGalleryGrid
-            displayImages={displayImages}
-            setSelectedImage={setSelectedImage}
-          /> */}
-
           <ProductImageGallerySub
             displayImages={displayImages}
             setFullscreenImageIndex={setFullscreenImageIndex}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./ProductImageGallery.module.css";
 
 const ProductImageGallery = ({
@@ -9,6 +9,38 @@ const ProductImageGallery = ({
   setShowFullscreenImage,
   productData,
 }) => {
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(0); // Reset
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && selectedImage < displayImages.length - 1) {
+      // Swipe left → next image
+      setSelectedImage(selectedImage + 1);
+    }
+
+    if (isRightSwipe && selectedImage > 0) {
+      // Swipe right → previous image
+      setSelectedImage(selectedImage - 1);
+    }
+  };
+
   return (
     <>
       {displayImages.length > 0 && (
@@ -19,6 +51,9 @@ const ProductImageGallery = ({
               setFullscreenImageIndex(selectedImage);
               setShowFullscreenImage(true);
             }}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
           >
             <img
               src={displayImages[selectedImage]?.image_url}
