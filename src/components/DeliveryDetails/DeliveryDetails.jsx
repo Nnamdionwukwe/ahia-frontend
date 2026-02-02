@@ -25,6 +25,7 @@ const DeliveryDetails = () => {
                 Arrives in NG in as little as 7 days
               </span>
             </div>
+
             <div className={styles.deliveryRow}>
               <span className={styles.deliveryLabel}>Courier company:</span>
               <div className={styles.courierLogos}>
