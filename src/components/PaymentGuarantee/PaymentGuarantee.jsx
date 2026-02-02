@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./PaymentGuarantee.module.css";
+import Guarantees from "../Guarantees/Guarantees";
 
 const PaymentGuarantee = () => {
   return (
@@ -22,6 +23,9 @@ const PaymentGuarantee = () => {
           <div className={styles.guaranteePoint}>✓ 90-day returns</div>
           <div className={styles.guaranteePoint}>✓ Return if item damaged</div>
           <div className={styles.guaranteePoint}>✓ Price adjustment</div>
+          <div className={styles.guaranteePoint}>✓ ₦1,600 Credit for delay</div>
+          <div className={styles.guaranteePoint}>✓ 15-day no update refund</div>
+          <div className={styles.guaranteePoint}>✓ 90-day returns</div>
         </div>
       </div>
     </>

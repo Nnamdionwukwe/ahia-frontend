@@ -615,9 +615,6 @@ const ProductDetail = () => {
           {/* Order Guarantee */}
           <PaymentGuarantee />
 
-          {/* Guarantees */}
-          <Guarantees />
-
           {/* Reviews Preview */}
           <ReviewsPreview
             reviews={reviews}
