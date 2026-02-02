@@ -1,6 +1,7 @@
 /* Description */
 .description {
   margin: 2px 0;
+  position: relative;
 }
 
 .description h3 {
@@ -9,8 +10,78 @@
   margin-bottom: 12px;
 }
 
+.textWrapper {
+  position: relative;
+}
+
 .description p {
   color: var(--text-secondary);
   line-height: 1.6;
   font-size: 14px;
+  transition: all 0.3s ease;
+  margin: 0;
+}
+
+.collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 28px; /* Space for arrow button */
+}
+
+.expanded {
+  display: block;
+}
+
+.toggleButton {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  /* background: linear-gradient(to right, transparent, white 30%); */
+  border: none;
+  color: #1a73e8;
+  cursor: pointer;
+  padding: 0 0 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.6em; /* Match line-height */
+  transition: opacity 0.2s ease;
+}
+
+.toggleButton:hover {
+  opacity: 0.7;
+}
+
+.toggleButton:active {
+  opacity: 0.5;
+}
+
+.toggleButton svg {
+  flex-shrink: 0;
+}
+
+.showLessButton {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.showLessButton:hover {
+  opacity: 0.8;
+}
+
+.showLessButton:active {
+  opacity: 0.6;
 }
