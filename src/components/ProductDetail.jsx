@@ -644,6 +644,16 @@ const ProductDetail = () => {
             productData={productData}
             showExitModal={showExitModal}
           />
+
+          <ProductImageGallerySub
+            displayImages={displayImages}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            setFullscreenImageIndex={setFullscreenImageIndex}
+            setShowFullscreenImage={setShowFullscreenImage}
+            productData={productData}
+            showExitModal={showExitModal}
+          />
         </div>
       )}
 

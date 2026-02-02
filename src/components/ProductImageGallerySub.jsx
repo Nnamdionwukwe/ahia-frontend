@@ -24,19 +24,6 @@ const ProductImageGallerySub = ({
               src={displayImages[selectedImage]?.image_url}
               alt={displayImages[selectedImage]?.alt_text || productData.name}
             />
-            <div className={styles.imageCounter}>
-              {selectedImage + 1}/{displayImages.length}
-            </div>
-            <button
-              className={styles.fullScreenButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setFullscreenImageIndex(selectedImage);
-                setShowFullscreenImage(true);
-              }}
-            >
-              ⛶
-            </button>
           </div>
 
           {displayImages.length > 1 && (
