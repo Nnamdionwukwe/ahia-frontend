@@ -25,6 +25,7 @@ import FixedBottomBar from "./FixedBottomBar/FixedBottomBar";
 import StickyCartAlert from "./StickyCartAlert/StickyCartAlert";
 import FullscreenImageViewer from "./FullscreenImageViewer/FullscreenImageViewer";
 import ReviewsPreview from "./ReviewsPreview/ReviewsPreview";
+import ProductImageGallerySub from "./ProductImageGallerySub";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -629,9 +630,29 @@ const ProductDetail = () => {
           <ProductFeatures tags={productData.tags} />
 
           {/* Product Image Gallery Grid */}
-          <ProductImageGalleryGrid
+          {/* <ProductImageGalleryGrid
             displayImages={displayImages}
             setSelectedImage={setSelectedImage}
+          /> */}
+
+          <ProductImageGallerySub
+            displayImages={displayImages}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            setFullscreenImageIndex={setFullscreenImageIndex}
+            setShowFullscreenImage={setShowFullscreenImage}
+            productData={productData}
+            showExitModal={showExitModal}
+          />
+
+          <ProductImageGallerySub
+            displayImages={displayImages}
+            selectedImage={selectedImage}
+            setSelectedImage={setSelectedImage}
+            setFullscreenImageIndex={setFullscreenImageIndex}
+            setShowFullscreenImage={setShowFullscreenImage}
+            productData={productData}
+            showExitModal={showExitModal}
           />
         </div>
       )}
