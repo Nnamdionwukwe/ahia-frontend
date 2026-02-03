@@ -151,7 +151,7 @@ const CartItem = ({ item }) => {
               className={styles.productName}
               onClick={() => navigate(`/product/${item.product_id}`)}
             >
-              {item.name}
+              {item.name?.substring(0, 20)}...
             </h3>
 
             {/* Variant Info */}
