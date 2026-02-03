@@ -323,6 +323,7 @@
 .swipeContainer {
   position: relative;
   overflow: hidden; /* hides the delete button until card swipes left */
+  margin: 5px 0px;
   border-radius: 12px;
 }
 
