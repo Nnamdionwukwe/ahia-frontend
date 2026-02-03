@@ -20,9 +20,9 @@
   background: #ff6b35;
   color: white;
   border: none;
-  padding: 14px;
+  padding: 10px;
   border-radius: 10px;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   line-height: 1.4;
@@ -51,8 +51,8 @@
   position: fixed;
   bottom: 20px;
   right: 16px;
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
   background: #4caf50;
   color: white;
   border: none;
@@ -105,7 +105,7 @@
   bottom: -18px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 9px;
+  font-size: 8px;
   font-weight: 700;
   white-space: nowrap;
   background: #4caf50;
