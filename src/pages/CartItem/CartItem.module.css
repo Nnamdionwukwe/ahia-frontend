@@ -1,14 +1,14 @@
 /* pages/Cart/CartItem/CartItem.module.css */
-.cartItem {
+/* .cartItem {
   background: white;
-  /* margin: 8px 16px; */
+  margin: 8px 16px;
   padding: 16px;
   border-radius: 12px;
   display: flex;
   gap: 12px;
   position: relative;
   transition: opacity 0.3s;
-}
+} */
 
 .cartItem.soldOut {
   opacity: 0.6;
