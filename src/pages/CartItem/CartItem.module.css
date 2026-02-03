@@ -377,3 +377,15 @@
 .swipeDeleteButton button:active {
   background: rgba(0, 0, 0, 0.1);
 }
+
+.deleteButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+}
