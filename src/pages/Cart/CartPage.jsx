@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CartPage.module.css";
-// import CartSummary from "./CartSummary/CartSummary";
 import useCartStore from "../../store/cartStore";
 import CartItem from "../CartItem/CartItem";
 import ManageCartModal from "../ManageCartModal/ManageCartModal";
@@ -76,6 +75,13 @@ const CartPage = () => {
             onChange={toggleSelectAll}
           />
           <span className={styles.headerTitle}>All</span>
+          <div className={styles.bottomLeft}>
+            {selectedCount > 0 && (
+              <button className={styles.removeButton} onClick={removeSelected}>
+                Remove
+              </button>
+            )}
+          </div>
         </div>
         <h1 className={styles.title}>Cart ({totalCount})</h1>
         <button
@@ -144,37 +150,21 @@ const CartPage = () => {
       {/* Bottom Summary Bar */}
       {items.length > 0 && (
         <div className={styles.bottomBar}>
-          <div className={styles.bottomLeft}>
-            <div className={styles.selectAll}>
-              <input
-                type="checkbox"
-                checked={allSelected}
-                onChange={toggleSelectAll}
-              />
-              <span>All</span>
-            </div>
-            {selectedCount > 0 && (
-              <button className={styles.removeButton} onClick={removeSelected}>
-                Remove
-              </button>
+          <div className={styles.priceInfo}>
+            {selectedTotals.discount > 0 && (
+              <div className={styles.originalPrice}>
+                ₦{selectedTotals.subtotal.toLocaleString()}
+              </div>
             )}
+            <div className={styles.finalPrice}>
+              ₦{selectedTotals.total.toLocaleString()}
+              {selectedTotals.discount > 0 && (
+                <span className={styles.arrow}>↗</span>
+              )}
+            </div>
           </div>
 
           <div className={styles.bottomRight}>
-            <div className={styles.priceInfo}>
-              {selectedTotals.discount > 0 && (
-                <div className={styles.originalPrice}>
-                  ₦{selectedTotals.subtotal.toLocaleString()}
-                </div>
-              )}
-              <div className={styles.finalPrice}>
-                ₦{selectedTotals.total.toLocaleString()}
-                {selectedTotals.discount > 0 && (
-                  <span className={styles.arrow}>↗</span>
-                )}
-              </div>
-            </div>
-
             <button
               className={styles.checkoutButton}
               onClick={handleCheckout}
