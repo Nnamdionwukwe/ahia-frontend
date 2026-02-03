@@ -1,5 +1,5 @@
 /* pages/Cart/CartItem/CartItem.module.css */
-.cartItem {
+/* .cartItem {
   background: white;
   margin: 8px 16px;
   padding: 16px;
@@ -12,7 +12,7 @@
 
 .cartItem.soldOut {
   opacity: 0.6;
-}
+} */
 
 .checkbox {
   width: 20px;
