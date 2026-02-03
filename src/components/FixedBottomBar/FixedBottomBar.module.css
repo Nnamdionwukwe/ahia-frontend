@@ -1,4 +1,6 @@
-/* Bottom Bar */
+/* =========================================
+   BOTTOM BAR — pinned flat to the bottom
+   ========================================= */
 .bottomBar {
   position: fixed;
   bottom: 0;
@@ -7,8 +9,8 @@
   background: var(--bg-primary);
   border-top: 1px solid var(--border-color);
   padding: 12px 16px;
+  padding-right: 80px; /* gap so cart button never covers the text */
   display: flex;
-  gap: 12px;
   z-index: 100;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -41,55 +43,142 @@
   font-weight: 400;
 }
 
+/* =========================================
+   FLOATING CART — position fixed so it
+   sits above the bar on the bottom-right
+   ========================================= */
 .cartFloatingButton {
-  width: 60px;
-  height: 60px;
+  position: fixed;
+  bottom: 20px;
+  right: 16px;
+  width: 58px;
+  height: 58px;
   background: #4caf50;
   color: white;
   border: none;
   border-radius: 50%;
   font-size: 24px;
   cursor: pointer;
-  position: relative;
-  flex-shrink: 0;
-  transition: background 0.2s;
+  z-index: 101; /* above bottomBar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .cartFloatingButton:hover {
   background: #45a049;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
+.cartFloatingButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Badge showing item count */
 .cartBadge {
   position: absolute;
-  top: -5px;
-  right: -5px;
+  top: -4px;
+  right: -4px;
   background: #ff6b35;
   color: white;
   font-size: 11px;
   font-weight: 700;
-  width: 22px;
-  height: 22px;
+  min-width: 20px;
+  height: 20px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid var(--bg-primary); /* clean gap between badge and button */
 }
 
+/* "Free shipping" label underneath the circle */
 .cartFreeShipping {
   position: absolute;
-  bottom: -20px;
+  bottom: -18px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
-  font-weight: 600;
+  font-size: 9px;
+  font-weight: 700;
   white-space: nowrap;
   background: #4caf50;
+  color: white;
   padding: 2px 8px;
   border-radius: 10px;
 }
 
-/* Dark Mode Specific Overrides */
+/* =========================================
+   TABLET (768px+)
+   ========================================= */
+@media (min-width: 768px) {
+  .bottomBar {
+    padding: 14px 20px;
+    padding-right: 86px;
+  }
+
+  .addToCartButton {
+    font-size: 16px;
+    padding: 15px;
+  }
+
+  .cartFloatingButton {
+    width: 62px;
+    height: 62px;
+    bottom: 22px;
+    right: 20px;
+    font-size: 26px;
+  }
+
+  .cartFreeShipping {
+    font-size: 10px;
+  }
+}
+
+/* =========================================
+   DESKTOP (1024px+)
+   ========================================= */
+@media (min-width: 1024px) {
+  .bottomBar {
+    padding: 16px 24px;
+    padding-right: 92px;
+  }
+
+  .addToCartButton {
+    font-size: 17px;
+    padding: 16px;
+  }
+
+  .cartFloatingButton {
+    width: 66px;
+    height: 66px;
+    bottom: 24px;
+    right: 24px;
+    font-size: 28px;
+  }
+
+  .cartBadge {
+    min-width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+}
+
+/* =========================================
+   DARK MODE
+   ========================================= */
 [data-theme="dark"] .bottomBar,
 .dark .bottomBar {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .cartBadge,
+.dark .cartBadge {
+  border-color: #2d2d2d;
 }

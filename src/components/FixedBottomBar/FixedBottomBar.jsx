@@ -12,19 +12,24 @@ const FixedBottomBar = ({
   const navigate = useNavigate();
 
   return (
-    <div className={styles.bottomBar}>
-      <button
-        onClick={handleAddToCart}
-        className={styles.addToCartButton}
-        disabled={productData.stock_quantity === 0}
-      >
-        {activeSale && `-${actualDiscount}% now! `}
-        {productData.stock_quantity === 0 ? "Out of Stock" : "Add to cart!"}
-        <br />
-        <span className={styles.deliverySubtext}>
-          Arrives in NG in as little as 6 days
-        </span>
-      </button>
+    <>
+      {/* Add to Cart bar — pinned flat to the bottom */}
+      <div className={styles.bottomBar}>
+        <button
+          onClick={handleAddToCart}
+          className={styles.addToCartButton}
+          disabled={productData.stock_quantity === 0}
+        >
+          {activeSale && `-${actualDiscount}% now! `}
+          {productData.stock_quantity === 0 ? "Out of Stock" : "Add to cart!"}
+          <br />
+          <span className={styles.deliverySubtext}>
+            Arrives in NG in as little as 6 days
+          </span>
+        </button>
+      </div>
+
+      {/* Cart button — floats on its own, above the bar */}
       <button
         className={styles.cartFloatingButton}
         onClick={() => navigate("/cart")}
@@ -33,7 +38,7 @@ const FixedBottomBar = ({
         {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
         <span className={styles.cartFreeShipping}>Free shipping</span>
       </button>
-    </div>
+    </>
   );
 };
 

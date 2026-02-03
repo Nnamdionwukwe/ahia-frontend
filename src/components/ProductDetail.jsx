@@ -26,6 +26,7 @@ import StickyCartAlert from "./StickyCartAlert/StickyCartAlert";
 import FullscreenImageViewer from "./FullscreenImageViewer/FullscreenImageViewer";
 import ReviewsPreview from "./ReviewsPreview/ReviewsPreview";
 import ProductImageGallerySub from "./ProductImageGallerySub";
+import ProductVariantModal from "./ProductVariantModal/ProductVariantModal";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -52,7 +53,8 @@ const ProductDetail = () => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
-  // Add these state variables at the top with other useState:
+  const [showVariantModal, setShowVariantModal] = useState(false);
+
   const [allFlashSales, setAllFlashSales] = useState([]);
   const [allSeasonalSales, setAllSeasonalSales] = useState([]);
 
@@ -101,11 +103,7 @@ const ProductDetail = () => {
     const calculateTimeLeft = () => {
       const sale = flashSale || seasonalSale;
       if (!sale || !sale.end_time) {
-        setTimeLeft({
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
         return;
       }
 
@@ -120,17 +118,12 @@ const ProductDetail = () => {
           seconds: Math.floor((difference / 1000) % 60),
         });
       } else {
-        setTimeLeft({
-          hours: 0,
-          minutes: 0,
-          seconds: 0,
-        });
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0 });
       }
     };
 
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
-
     return () => clearInterval(timer);
   }, [flashSale, seasonalSale]);
 
@@ -170,47 +163,36 @@ const ProductDetail = () => {
     setTouchEnd(e.changedTouches[0].clientX);
     const touchEndY = e.changedTouches[0].clientY;
     const touchEndX = e.changedTouches[0].clientX;
-
     handleSwipe(touchEndY, touchEndX);
     setFullscreenSwipeProgress(0);
   };
 
   const handleTouchMove = (e) => {
     if (!showFullscreenImage) return;
-
     const currentY = e.targetTouches[0].clientY;
     const verticalDistance = currentY - touchStartY;
-
     if (verticalDistance > 0) {
-      // Calculate progress (0 to 1)
       const progress = Math.min(verticalDistance / 200, 1);
       setFullscreenSwipeProgress(progress);
     }
   };
 
   const handleSwipe = (touchEndY, touchEndX) => {
-    // Vertical swipe detection (top to bottom closes fullscreen)
     const verticalDistance = touchEndY - touchStartY;
     const horizontalDistance = touchStartX - touchEndX;
-
-    // Minimum distance to register a swipe
     const minSwipeDistance = 50;
 
-    // Check if vertical swipe is greater than horizontal (prioritize vertical)
     if (Math.abs(verticalDistance) > Math.abs(horizontalDistance)) {
-      // Swipe down to close (from any height)
       if (verticalDistance > minSwipeDistance) {
         setShowFullscreenImage(false);
         setFullscreenSwipeProgress(0);
         return;
       } else {
-        // Reset if didn't swipe far enough
         setFullscreenSwipeProgress(0);
         return;
       }
     }
 
-    // Horizontal swipe for image navigation
     if (!touchStart || !touchEnd) return;
 
     const images = product?.images || [];
@@ -232,9 +214,7 @@ const ProductDetail = () => {
       const response = await axios.get(`${API_URL}/api/products/${id}/details`);
       setProduct(response.data);
 
-      // Set first variant as selected if available
       if (response.data.variants && response.data.variants.length > 0) {
-        // Get the first color's first size variant
         const firstColor = response.data.variants[0].color;
         const firstVariantOfColor = response.data.variants.find(
           (v) => v.color === firstColor,
@@ -255,7 +235,6 @@ const ProductDetail = () => {
         axios.get(`${API_URL}/api/reviews/${id}`),
         axios.get(`${API_URL}/api/reviews/${id}/summary`),
       ]);
-
       setReviews(reviewsRes.data.reviews || []);
       setReviewSummary(summaryRes.data);
     } catch (error) {
@@ -277,117 +256,6 @@ const ProductDetail = () => {
     }
   };
 
-  // Replace the existing fetchSales function with this:
-  // const fetchSales = async () => {
-  //   try {
-  //     setSeasonalSale(null);
-  //     setFlashSale(null);
-  //     setAllFlashSales([]);
-  //     setAllSeasonalSales([]);
-
-  //     // Fetch ALL active seasonal sales for this product
-  //     try {
-  //       const seasonalRes = await axios.get(
-  //         `${API_URL}/api/seasonal-sales/product/${id}/all`
-  //       );
-
-  //       if (
-  //         seasonalRes.data &&
-  //         Array.isArray(seasonalRes.data) &&
-  //         seasonalRes.data.length > 0
-  //       ) {
-  //         console.log("✅ Multiple seasonal sales found:", seasonalRes.data);
-  //         setAllSeasonalSales(seasonalRes.data);
-  //         setSeasonalSale(seasonalRes.data[0]);
-  //       } else if (
-  //         seasonalRes.data &&
-  //         !Array.isArray(seasonalRes.data) &&
-  //         Object.keys(seasonalRes.data).length > 0
-  //       ) {
-  //         console.log("✅ Single seasonal sale found:", seasonalRes.data);
-  //         setAllSeasonalSales([seasonalRes.data]);
-  //         setSeasonalSale(seasonalRes.data);
-  //       }
-  //     } catch (error) {
-  //       console.log("No seasonal sales endpoint, trying single seasonal sale");
-  //       try {
-  //         const singleSeasonalRes = await axios.get(
-  //           `${API_URL}/api/seasonal-sales/product/${id}`
-  //         );
-  //         if (
-  //           singleSeasonalRes.data &&
-  //           Object.keys(singleSeasonalRes.data).length > 0
-  //         ) {
-  //           console.log(
-  //             "✅ Single seasonal sale (fallback):",
-  //             singleSeasonalRes.data
-  //           );
-  //           setAllSeasonalSales([singleSeasonalRes.data]);
-  //           setSeasonalSale(singleSeasonalRes.data);
-  //         }
-  //       } catch (err) {
-  //         console.log("No seasonal sales for this product");
-  //         setSeasonalSale(null);
-  //         setAllSeasonalSales([]);
-  //       }
-  //     }
-
-  //     // Fetch ALL active flash sales for this product
-  //     try {
-  //       const flashRes = await axios.get(
-  //         `${API_URL}/api/flash-sales/product/${id}/all`
-  //       );
-
-  //       if (
-  //         flashRes.data &&
-  //         Array.isArray(flashRes.data) &&
-  //         flashRes.data.length > 0
-  //       ) {
-  //         console.log("✅ Multiple flash sales found:", flashRes.data);
-  //         setAllFlashSales(flashRes.data);
-  //         setFlashSale(flashRes.data[0]);
-  //       } else if (
-  //         flashRes.data &&
-  //         !Array.isArray(flashRes.data) &&
-  //         Object.keys(flashRes.data).length > 0
-  //       ) {
-  //         console.log("✅ Single flash sale found:", flashRes.data);
-  //         setAllFlashSales([flashRes.data]);
-  //         setFlashSale(flashRes.data);
-  //       }
-  //     } catch (error) {
-  //       console.log("No flash sales endpoint, trying single flash sale");
-  //       try {
-  //         const singleFlashRes = await axios.get(
-  //           `${API_URL}/api/flash-sales/product/${id}`
-  //         );
-  //         if (
-  //           singleFlashRes.data &&
-  //           Object.keys(singleFlashRes.data).length > 0
-  //         ) {
-  //           console.log(
-  //             "✅ Single flash sale (fallback):",
-  //             singleFlashRes.data
-  //           );
-  //           setAllFlashSales([singleFlashRes.data]);
-  //           setFlashSale(singleFlashRes.data);
-  //         }
-  //       } catch (err) {
-  //         console.log("No flash sales for this product");
-  //         setFlashSale(null);
-  //         setAllFlashSales([]);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching sales:", error);
-  //     setSeasonalSale(null);
-  //     setFlashSale(null);
-  //     setAllFlashSales([]);
-  //     setAllSeasonalSales([]);
-  //   }
-  // };
-
-  // Replace the fetchSales function in ProductDetail.jsx with this:
   const fetchSales = async () => {
     try {
       setSeasonalSale(null);
@@ -395,31 +263,22 @@ const ProductDetail = () => {
       setAllFlashSales([]);
       setAllSeasonalSales([]);
 
-      console.log(`🔍 Fetching all sales for product: ${id}`);
-
       // Fetch ALL active seasonal sales for this product
       try {
         const seasonalRes = await axios.get(
           `${API_URL}/api/seasonal-sales/product/${id}/all`,
         );
 
-        console.log("📦 Seasonal sales RAW response:", seasonalRes.data);
-
-        // Handle both array and single object responses
         let seasonalSalesArray = [];
         if (Array.isArray(seasonalRes.data)) {
           seasonalSalesArray = seasonalRes.data;
         } else if (seasonalRes.data && typeof seasonalRes.data === "object") {
-          // If it's a single object, wrap it in an array
           seasonalSalesArray = [seasonalRes.data];
         }
 
         if (seasonalSalesArray.length > 0) {
-          console.log(`✅ Found ${seasonalSalesArray.length} seasonal sales`);
           setAllSeasonalSales(seasonalSalesArray);
           setSeasonalSale(seasonalSalesArray[0]);
-        } else {
-          console.log("ℹ️ No seasonal sales found");
         }
       } catch (error) {
         console.log("❌ Error fetching seasonal sales:", error.message);
@@ -431,23 +290,16 @@ const ProductDetail = () => {
           `${API_URL}/api/flash-sales/product/${id}/all`,
         );
 
-        console.log("📦 Flash sales RAW response:", flashRes.data);
-
-        // Handle both array and single object responses
         let flashSalesArray = [];
         if (Array.isArray(flashRes.data)) {
           flashSalesArray = flashRes.data;
         } else if (flashRes.data && typeof flashRes.data === "object") {
-          // If it's a single object, wrap it in an array
           flashSalesArray = [flashRes.data];
         }
 
         if (flashSalesArray.length > 0) {
-          console.log(`✅ Found ${flashSalesArray.length} flash sales`);
           setAllFlashSales(flashSalesArray);
           setFlashSale(flashSalesArray[0]);
-        } else {
-          console.log("ℹ️ No flash sales found");
         }
       } catch (error) {
         console.log("❌ Error fetching flash sales:", error.message);
@@ -457,28 +309,31 @@ const ProductDetail = () => {
     }
   };
 
-  const handleAddToCart = async () => {
+  // Called by FixedBottomBar — opens the variant modal instead of adding directly
+  const handleAddToCart = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      alert("Please login to add items to cart");
+      navigate("/login");
+      return;
+    }
+    setShowVariantModal(true);
+  };
+
+  // Called by ProductVariantModal after user picks variant + quantity
+  const handleConfirmAddToCart = async (variantId, qty) => {
     try {
       const token = localStorage.getItem("accessToken");
 
-      if (!token) {
-        alert("Please login to add items to cart");
-        navigate("/login");
-        return;
-      }
-
-      const payload = selectedVariant
-        ? {
-            product_variant_id: selectedVariant.id,
-            quantity: parseInt(quantity),
-          }
-        : { product_id: id, quantity: parseInt(quantity) };
+      const payload = variantId
+        ? { product_variant_id: variantId, quantity: parseInt(qty) }
+        : { product_id: id, quantity: parseInt(qty) };
 
       await axios.post(`${API_URL}/api/cart/add`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setCartCount((prev) => prev + 1);
+      setCartCount((prev) => prev + parseInt(qty));
       alert("Added to cart!");
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -504,7 +359,6 @@ const ProductDetail = () => {
   const hasDiscount = productData.discount_percentage > 0;
   const activeSale = flashSale || seasonalSale;
 
-  // Use variant price if selected, otherwise use product price
   const basePrice = selectedVariant?.base_price || productData.price;
   const variantDiscount = selectedVariant?.discount_percentage || 0;
   const originalPrice =
@@ -516,7 +370,6 @@ const ProductDetail = () => {
       ? basePrice * (1 - variantDiscount / 100)
       : basePrice;
 
-  // Calculate actual discount if in sale
   const actualDiscount = activeSale
     ? Math.round(((originalPrice - salePrice) / originalPrice) * 100)
     : variantDiscount || productData.discount_percentage;
@@ -572,8 +425,7 @@ const ProductDetail = () => {
           {/* Description */}
           <ProductDescription description={productData.description} />
 
-          {/* Product Title 
-          /Sold Count & Store */}
+          {/* Product Title / Sold Count & Store */}
           <SoldCountProductTitle
             productData={productData}
             flashSale={flashSale}
@@ -646,7 +498,7 @@ const ProductDetail = () => {
       {/* Recommended Tab */}
       {activeTab === "recommended" && <RecommendedTab />}
 
-      {/* Gallery Tab - All Product Images */}
+      {/* Gallery Tab */}
       {activeTab === "gallery" && (
         <GalleryTab
           displayImages={displayImages}
@@ -658,7 +510,7 @@ const ProductDetail = () => {
       {/* Sticky Cart Alert */}
       <StickyCartAlert cartCount={cartCount} />
 
-      {/* Fixed Bottom Bar */}
+      {/* Fixed Bottom Bar — opens modal on tap */}
       <FixedBottomBar
         handleAddToCart={handleAddToCart}
         productData={productData}
@@ -666,6 +518,15 @@ const ProductDetail = () => {
         actualDiscount={actualDiscount}
         cartCount={cartCount}
       />
+
+      {/* Variant Modal — confirms variant + quantity, then adds to cart */}
+      <ProductVariantModal
+        isOpen={showVariantModal}
+        onClose={() => setShowVariantModal(false)}
+        product={product}
+        onAddToCart={handleConfirmAddToCart}
+      />
+
       {/* Exit Intent Modal */}
       <ExitIntentModal
         showExitModal={showExitModal}
