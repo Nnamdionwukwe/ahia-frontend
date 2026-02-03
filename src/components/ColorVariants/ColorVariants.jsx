@@ -25,7 +25,6 @@ const ColorVariants = ({
               }`}
               onClick={() => {
                 setSelectedVariant(variant);
-                // Find the image index for this variant if it has an image_url
                 if (variant.image_url && displayImages.length > 0) {
                   const imgIndex = displayImages.findIndex(
                     (img) => img.image_url === variant.image_url,
@@ -78,7 +77,7 @@ const ColorVariants = ({
             ))}
         </div>
         <div className={styles.sizeFitInfo}>
-          <span className={styles.infoIcon}>ⓘ</span>
+          <span className={styles.infoIcon}>i</span>
           <span>90% of customers say these fit true to size</span>
         </div>
       </div>
