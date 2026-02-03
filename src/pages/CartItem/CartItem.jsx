@@ -8,12 +8,22 @@ const CartItem = ({ item }) => {
   const navigate = useNavigate();
   const { toggleSelection, updateQuantity, removeItem } = useCartStore();
 
+  // ✅ Safety check
+  if (!item) {
+    return null;
+  }
+
   const [timeLeft, setTimeLeft] = useState({
     hours: 0,
     minutes: 0,
     seconds: 0,
   });
   const [showQuantityModal, setShowQuantityModal] = useState(false);
+  const [swipeX, setSwipeX] = useState(0);
+  const [startX, setStartX] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+
+  const MAX_SWIPE = -80;
 
   useEffect(() => {
     if (!item?.sale_end_time) return;
@@ -57,134 +67,184 @@ const CartItem = ({ item }) => {
     setShowQuantityModal(false);
   };
 
-  const formatTime = (num) => String(num).padStart(2, "0");
+  const handleTouchStart = (e) => {
+    setStartX(e.touches[0].clientX);
+    setIsSwiping(true);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!isSwiping) return;
+
+    const currentX = e.touches[0].clientX;
+    const diffX = currentX - startX;
+
+    // Only allow left swipe (negative values)
+    if (diffX < 0) {
+      const newSwipeX = Math.max(diffX, MAX_SWIPE);
+      setSwipeX(newSwipeX);
+    } else if (diffX > 0 && swipeX < 0) {
+      // Allow right swipe to close
+      const newSwipeX = Math.min(swipeX + diffX, 0);
+      setSwipeX(newSwipeX);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsSwiping(false);
+
+    // Snap to open or closed position
+    if (swipeX < MAX_SWIPE / 2) {
+      setSwipeX(MAX_SWIPE); // Snap to open
+    } else {
+      setSwipeX(0); // Snap to closed
+    }
+  };
 
   return (
     <>
-      <div className={`${styles.cartItem} ${isSoldOut ? styles.soldOut : ""}`}>
-        {/* Selection Checkbox */}
-        <input
-          type="checkbox"
-          className={styles.checkbox}
-          checked={item.is_selected}
-          onChange={() => toggleSelection(item.id)}
-          disabled={isSoldOut}
-        />
-
-        {/* Product Image */}
+      <div className={styles.swipeContainer}>
         <div
-          className={styles.imageContainer}
-          onClick={() => navigate(`/product/${item.product_id}`)}
+          className={`${styles.cartItem} ${isSoldOut ? styles.soldOut : ""}`}
+          style={{
+            transform: `translateX(${swipeX}px)`,
+            transition: isSwiping ? "none" : "transform 0.3s ease",
+          }}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
-          <img
-            src={item.image_url}
-            alt={item.name}
-            className={styles.productImage}
+          {/* Selection Checkbox */}
+          <input
+            type="checkbox"
+            className={styles.checkbox}
+            checked={item.is_selected}
+            onChange={() => toggleSelection(item.id)}
+            disabled={isSoldOut}
           />
-          {isAlmostGone && !isSoldOut && (
-            <div className={styles.almostSoldOutBadge}>ALMOST SOLD OUT</div>
-          )}
-          {isSoldOut && (
-            <div className={styles.soldOutOverlay}>
-              <span>Sold out in '{item.color || "this variant"}'</span>
-            </div>
-          )}
-          {stock <= 50 && stock > 20 && (
-            <div className={styles.stockBadge}>⚡ ONLY {stock} LEFT</div>
-          )}
-        </div>
 
-        {/* Product Info */}
-        <div className={styles.productInfo}>
-          <h3
-            className={styles.productName}
+          {/* Product Image */}
+          <div
+            className={styles.imageContainer}
             onClick={() => navigate(`/product/${item.product_id}`)}
           >
-            {item.name}
-          </h3>
+            <img
+              src={item.image_url}
+              alt={item.name}
+              className={styles.productImage}
+            />
+            {isAlmostGone && !isSoldOut && (
+              <div className={styles.almostSoldOutBadge}>ALMOST SOLD OUT</div>
+            )}
+            {isSoldOut && (
+              <div className={styles.soldOutOverlay}>
+                <span>Sold out in '{item.color || "this variant"}'</span>
+              </div>
+            )}
+            {stock <= 50 && stock > 20 && (
+              <div className={styles.stockBadge}>⚡ ONLY {stock} LEFT</div>
+            )}
+          </div>
 
-          {/* Variant Info */}
-          {(item.color || item.size) && (
-            <div className={styles.variantInfo}>
-              {item.color && <span>{item.color}</span>}
-              {item.size && <span> x{item.quantity}</span>}
-            </div>
-          )}
+          {/* Product Info */}
+          <div className={styles.productInfo}>
+            <h3
+              className={styles.productName}
+              onClick={() => navigate(`/product/${item.product_id}`)}
+            >
+              {item.name}
+            </h3>
 
-          {/* Sale Badge */}
-          {item.sale && (
-            <div className={styles.saleBadge}>
-              <span className={styles.bigSale}>Big sale</span>
-              {item.sale.name && <span className={styles.saleIcon}>⏰</span>}
-              <span className={styles.lastDays}>
-                Last{" "}
-                {Math.ceil(
-                  (new Date(item.sale_end_time) - new Date()) /
-                    (1000 * 60 * 60 * 24),
-                )}{" "}
-                days
-              </span>
-            </div>
-          )}
-
-          {/* Price Section */}
-          <div className={styles.priceSection}>
-            {discount > 0 && (
-              <div className={styles.originalPrice}>
-                ₦{originalPrice.toLocaleString()}
+            {/* Variant Info */}
+            {(item.color || item.size) && (
+              <div className={styles.variantInfo}>
+                {item.color && <span>{item.color}</span>}
+                {item.size && <span> x{item.quantity}</span>}
               </div>
             )}
 
-            <div className={styles.priceRow}>
-              {item.sale && (
-                <div className={styles.lastDayBadge}>
-                  <span className={styles.fireIcon}>🔥</span>
-                  Last day
+            {/* Sale Badge */}
+            {item.sale && (
+              <div className={styles.saleBadge}>
+                <span className={styles.bigSale}>Big sale</span>
+                {item.sale.name && <span className={styles.saleIcon}>⏰</span>}
+                <span className={styles.lastDays}>
+                  Last{" "}
+                  {Math.ceil(
+                    (new Date(item.sale_end_time) - new Date()) /
+                      (1000 * 60 * 60 * 24),
+                  )}{" "}
+                  days
+                </span>
+              </div>
+            )}
+
+            {/* Price Section */}
+            <div className={styles.priceSection}>
+              {discount > 0 && (
+                <div className={styles.originalPrice}>
+                  ₦{originalPrice.toLocaleString()}
                 </div>
               )}
-              <div className={styles.finalPrice}>
-                ₦{finalPrice.toLocaleString()}
+
+              <div className={styles.priceRow}>
+                {item.sale && (
+                  <div className={styles.lastDayBadge}>
+                    <span className={styles.fireIcon}>🔥</span>
+                    Last day
+                  </div>
+                )}
+                <div className={styles.finalPrice}>
+                  ₦{finalPrice.toLocaleString()}
+                </div>
+                {discount > 0 && (
+                  <div className={styles.discountBadge}>-{discount}%</div>
+                )}
               </div>
-              {discount > 0 && (
-                <div className={styles.discountBadge}>-{discount}%</div>
+
+              {item.sale && (
+                <div className={styles.afterPromo}>
+                  after applying promos & credit to ₦
+                  {(finalPrice * 0.9).toLocaleString()} ›
+                </div>
               )}
             </div>
 
-            {item.sale && (
-              <div className={styles.afterPromo}>
-                after applying promos & credit to ₦
-                {(finalPrice * 0.9).toLocaleString()} ›
+            {/* Pre-order info */}
+            {item.is_preorder && (
+              <div className={styles.preorderInfo}>
+                <span className={styles.preorderIcon}>⏰</span>
+                Pre-order. Delivery: {item.delivery_date}
               </div>
             )}
           </div>
 
-          {/* Pre-order info */}
-          {item.is_preorder && (
-            <div className={styles.preorderInfo}>
-              <span className={styles.preorderIcon}>⏰</span>
-              Pre-order. Delivery: {item.delivery_date}
-            </div>
-          )}
-        </div>
+          {/* Quantity Selector */}
+          <div className={styles.quantitySection}>
+            <button
+              className={styles.quantityButton}
+              onClick={() => setShowQuantityModal(true)}
+              disabled={isSoldOut}
+            >
+              {item.quantity} ▼
+            </button>
+          </div>
 
-        {/* Quantity Selector */}
-        <div className={styles.quantitySection}>
+          {/* Delete Button */}
           <button
-            className={styles.quantityButton}
-            onClick={() => setShowQuantityModal(true)}
-            disabled={isSoldOut}
+            className={styles.deleteButton}
+            onClick={() => removeItem(item.id)}
           >
-            {item.quantity} ▼
+            🗑️
           </button>
         </div>
 
-        {/* Delete Button */}
-        <button
-          className={styles.deleteButton}
-          onClick={() => removeItem(item.id)}
-        >
-          🗑️
-        </button>
+        {/* Swipe Delete Button */}
+        <div className={styles.swipeDeleteButton}>
+          <button onClick={() => removeItem(item.id)}>
+            <span className={styles.trashIcon}>🗑️</span>
+            <span>Remove</span>
+          </button>
+        </div>
       </div>
 
       {/* Quantity Modal */}
