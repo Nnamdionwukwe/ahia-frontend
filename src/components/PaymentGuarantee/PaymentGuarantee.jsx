@@ -1,6 +1,5 @@
 import React from "react";
 import styles from "./PaymentGuarantee.module.css";
-import Guarantees from "../Guarantees/Guarantees";
 
 const PaymentGuarantee = () => {
   return (
@@ -19,6 +18,8 @@ const PaymentGuarantee = () => {
           <span>Order guarantee</span>
           <span className={styles.moreLink}>More ›</span>
         </div>
+
+        {/* Scrollable guarantee points — same pattern as deliveryContainer */}
         <div className={styles.guaranteePoints}>
           <div className={styles.guaranteePoint}>✓ 90-day returns</div>
           <div className={styles.guaranteePoint}>✓ Return if item damaged</div>

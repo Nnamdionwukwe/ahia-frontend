@@ -1,6 +1,5 @@
-/* Safe Payments & Guarantee */
-.safePayments,
-.orderGuarantee {
+/* Safe Payments */
+.safePayments {
   background: var(--card-bg);
   padding: 14px;
   border-radius: 8px;
@@ -8,13 +7,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 13px;
   cursor: pointer;
 }
 
-.shieldIcon,
-.guaranteeIcon {
-  font-size: 10px;
+.shieldIcon {
+  font-size: 16px;
 }
 
 .arrowRight {
@@ -23,9 +21,12 @@
   color: var(--text-secondary);
 }
 
+/* Order Guarantee wrapper */
 .orderGuarantee {
-  flex-direction: column;
-  align-items: stretch;
+  background: var(--card-bg);
+  padding: 14px;
+  border-radius: 8px;
+  margin: 12px 0;
 }
 
 .guaranteeHeader {
@@ -33,28 +34,99 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.guaranteeIcon {
+  font-size: 16px;
 }
 
 .moreLink {
   margin-left: auto;
   color: #3498db;
   font-size: 14px;
+  font-weight: 600;
 }
 
+/* =========================================
+   SCROLLABLE ROW — mirrors .deliveryContainer
+   ========================================= */
 .guaranteePoints {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  display: flex;
   gap: 10px;
-  font-size: 13px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
+  padding-bottom: 4px;
 }
 
+.guaranteePoints::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Each point — mirrors .deliveryRow2 / .deliveryDetails min-width pattern */
 .guaranteePoint {
-  color: var(--text-secondary);
+  flex: 0 0 auto;
+  min-width: 150px;
+  background: #f0fdf4;
+  color: #16a34a;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 14px;
+  border-radius: 8px;
+  white-space: nowrap;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* =========================================
+   TABLET (768px+) — stop scrolling, wrap
+   ========================================= */
+@media (min-width: 768px) {
   .guaranteePoints {
-    grid-template-columns: repeat(6, 1fr);
+    overflow-x: visible;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .guaranteePoint {
+    min-width: auto;
+    flex: 0 0 auto;
+    font-size: 14px;
+    padding: 10px 16px;
+  }
+
+  .guaranteeHeader {
+    font-size: 14px;
+  }
+
+  .safePayments {
+    font-size: 14px;
+  }
+}
+
+/* =========================================
+   DESKTOP (1024px+)
+   ========================================= */
+@media (min-width: 1024px) {
+  .guaranteePoints {
+    gap: 12px;
+  }
+
+  .guaranteePoint {
+    font-size: 15px;
+    padding: 11px 18px;
+  }
+
+  .guaranteeHeader {
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+
+  .safePayments {
+    font-size: 15px;
+    padding: 16px;
+  }
+
+  .orderGuarantee {
+    padding: 16px;
   }
 }
