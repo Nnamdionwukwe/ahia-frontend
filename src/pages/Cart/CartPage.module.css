@@ -283,12 +283,12 @@
   background: rgba(0, 0, 0, 0.2);
   padding: 4px 12px;
   border-radius: 12px;
-  font-size: 11px;
+  font-size: 9px;
   margin-bottom: 4px;
 }
 
 .checkoutText {
-  font-size: 14px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -296,11 +296,11 @@
 }
 
 .flashIcon {
-  font-size: 16px;
+  font-size: 12px;
 }
 
 .checkoutSubtext {
-  font-size: 11px;
+  font-size: 10px;
   opacity: 0.9;
   margin-top: 2px;
 }

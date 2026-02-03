@@ -67,6 +67,7 @@ const CartPage = () => {
         <button className={styles.backButton} onClick={() => navigate(-1)}>
           ←
         </button>
+
         <div className={styles.headerCenter}>
           <input
             type="checkbox"
@@ -74,7 +75,9 @@ const CartPage = () => {
             checked={allSelected}
             onChange={toggleSelectAll}
           />
+
           <span className={styles.headerTitle}>All</span>
+
           <div className={styles.bottomLeft}>
             {selectedCount > 0 && (
               <button className={styles.removeButton} onClick={removeSelected}>
