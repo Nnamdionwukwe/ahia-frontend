@@ -1,14 +1,4 @@
 /* pages/Cart/CartItem/CartItem.module.css */
-/* .cartItem {
-  background: white;
-  margin: 8px 16px;
-  padding: 16px;
-  border-radius: 12px;
-  display: flex;
-  gap: 12px;
-  position: relative;
-  transition: opacity 0.3s;
-} */
 
 .cartItem.soldOut {
   opacity: 0.6;
@@ -216,22 +206,6 @@
   cursor: not-allowed;
 }
 
-.deleteButton {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  cursor: pointer;
-  padding: 4px;
-  opacity: 0.6;
-}
-
-.deleteButton:hover {
-  opacity: 1;
-}
-
 /* Quantity Modal */
 .modalOverlay {
   position: fixed;
@@ -343,8 +317,9 @@
   cursor: not-allowed;
 }
 
-/* Add to existing CartItem.module.css */
-
+/* =========================================
+   SWIPE-TO-DELETE
+   ========================================= */
 .swipeContainer {
   position: relative;
   overflow: hidden;
@@ -361,8 +336,6 @@
   transition: opacity 0.3s;
   will-change: transform;
 }
-
-/* Remove the old margin from .cartItem since it's now on .swipeContainer */
 
 .swipeDeleteButton {
   position: absolute;

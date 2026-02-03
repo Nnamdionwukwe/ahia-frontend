@@ -228,17 +228,9 @@ const CartItem = ({ item }) => {
               {item.quantity} ▼
             </button>
           </div>
-
-          {/* Delete Button */}
-          <button
-            className={styles.deleteButton}
-            onClick={() => removeItem(item.id)}
-          >
-            🗑️
-          </button>
         </div>
 
-        {/* Swipe Delete Button */}
+        {/* Swipe Delete Button - only visible when swiped */}
         <div className={styles.swipeDeleteButton}>
           <button onClick={() => removeItem(item.id)}>
             <span className={styles.trashIcon}>🗑️</span>
