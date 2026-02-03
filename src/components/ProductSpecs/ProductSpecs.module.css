@@ -1,14 +1,26 @@
-/* Product Specs */
+/* =========================================
+   SCROLLABLE ROW — mirrors .deliveryContainer
+   ========================================= */
 .specsGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; /* Firefox */
   margin: 20px 0px -20px 0px;
+  padding-bottom: 4px;
 }
 
+.specsGrid::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+/* Each card — mirrors .deliveryRow2 / .guaranteePoint pattern */
 .specCard {
+  flex: 0 0 auto;
+  min-width: 100px;
   background: var(--card-bg);
-  padding: 6px 2px;
+  padding: 10px 8px;
   border-radius: 10px;
   text-align: center;
 }
@@ -22,16 +34,59 @@
   font-size: 10px;
   color: var(--text-secondary);
   margin-bottom: 6px;
+  white-space: nowrap;
 }
 
 .specValue {
   font-size: 11px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* =========================================
+   TABLET (768px+) — stop scrolling, wrap
+   ========================================= */
+@media (min-width: 768px) {
   .specsGrid {
-    grid-template-columns: repeat(3, 1fr);
+    overflow-x: visible;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .specCard {
+    min-width: 120px;
+    padding: 12px 10px;
+  }
+
+  .specLabel {
+    font-size: 11px;
+  }
+
+  .specValue {
+    font-size: 12px;
+  }
+}
+
+/* =========================================
+   DESKTOP (1024px+)
+   ========================================= */
+@media (min-width: 1024px) {
+  .specsGrid {
+    gap: 14px;
+  }
+
+  .specCard {
+    min-width: 140px;
+    padding: 14px 12px;
+  }
+
+  .specLabel {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .specValue {
+    font-size: 13px;
   }
 }
