@@ -322,8 +322,9 @@
    ========================================= */
 .swipeContainer {
   position: relative;
-  overflow: hidden;
+  overflow: hidden; /* hides the delete button until card swipes left */
   margin: 8px 16px;
+  border-radius: 12px;
 }
 
 .cartItem {
@@ -335,6 +336,7 @@
   position: relative;
   transition: opacity 0.3s;
   will-change: transform;
+  z-index: 2; /* sits above the delete button */
 }
 
 .swipeDeleteButton {
@@ -348,6 +350,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 0 12px 12px 0;
+  z-index: 1; /* sits behind the cart item */
 }
 
 .swipeDeleteButton button {
