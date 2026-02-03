@@ -280,10 +280,13 @@
 }
 
 .appliedDiscount {
-  background: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  background: #4caf50;
+  color: white;
   padding: 4px 12px;
   border-radius: 12px;
-  font-size: 9px;
+  font-size: 8px;
+  margin-top: -34px;
   margin-bottom: 4px;
 }
 
