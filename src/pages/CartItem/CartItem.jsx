@@ -16,7 +16,7 @@ const CartItem = ({ item }) => {
   const [showQuantityModal, setShowQuantityModal] = useState(false);
 
   useEffect(() => {
-    if (!item.sale_end_time) return;
+    if (!item?.sale_end_time) return;
 
     const calculateTimeLeft = () => {
       const now = new Date().getTime();
@@ -35,7 +35,7 @@ const CartItem = ({ item }) => {
     calculateTimeLeft();
     const timer = setInterval(calculateTimeLeft, 1000);
     return () => clearInterval(timer);
-  }, [item.sale_end_time]);
+  }, [item?.sale_end_time]);
 
   const originalPrice = parseFloat(item.item_original_price || 0);
   const finalPrice = parseFloat(item.final_price || 0);
@@ -120,7 +120,7 @@ const CartItem = ({ item }) => {
                 Last{" "}
                 {Math.ceil(
                   (new Date(item.sale_end_time) - new Date()) /
-                    (1000 * 60 * 60 * 24)
+                    (1000 * 60 * 60 * 24),
                 )}{" "}
                 days
               </span>
