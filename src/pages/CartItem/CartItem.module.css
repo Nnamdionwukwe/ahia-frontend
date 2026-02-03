@@ -1,7 +1,7 @@
 /* pages/Cart/CartItem/CartItem.module.css */
-/* .cartItem {
+.cartItem {
   background: white;
-  margin: 8px 16px;
+  /* margin: 8px 16px; */
   padding: 16px;
   border-radius: 12px;
   display: flex;
@@ -12,7 +12,7 @@
 
 .cartItem.soldOut {
   opacity: 0.6;
-} */
+}
 
 .checkbox {
   width: 20px;

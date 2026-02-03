@@ -77,14 +77,6 @@ const CartPage = () => {
           />
 
           <span className={styles.headerTitle}>All</span>
-
-          <div className={styles.bottomLeft}>
-            {selectedCount > 0 && (
-              <button className={styles.removeButton} onClick={removeSelected}>
-                Remove
-              </button>
-            )}
-          </div>
         </div>
         <h1 className={styles.title}>Cart ({totalCount})</h1>
         <button
