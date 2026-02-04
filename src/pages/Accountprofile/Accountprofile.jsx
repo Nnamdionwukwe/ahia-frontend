@@ -15,6 +15,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import styles from "./AccountProfile.module.css";
 import useCartStore from "../../store/cartStore";
+import Header from "../../components/Header/Header";
 
 const AccountProfile = () => {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ const AccountProfile = () => {
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.header}>
+      {/* <div className={styles.header}>
         <div className={styles.profileSection}>
           <img
             src={profile.avatar}
@@ -110,7 +111,9 @@ const AccountProfile = () => {
           </div>
           <Eye size={24} />
         </div>
-      </div>
+      </div> */}
+
+      <Header />
 
       {/* Notification Banner */}
       {showNotification && (

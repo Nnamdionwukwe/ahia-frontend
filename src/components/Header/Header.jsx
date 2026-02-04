@@ -5,6 +5,7 @@ import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
 import useCartStore from "../../store/cartStore";
 import styles from "./Header.module.css";
+import SettingsPage from "../../pages/Settings/Settingspage";
 
 const Header = ({ onMenuClick }) => {
   const navigate = useNavigate();
@@ -49,7 +50,11 @@ const Header = ({ onMenuClick }) => {
 
           {/* User */}
           {user ? (
-            <Link to="/settings" className={styles.userBtn} title="Settings">
+            <Link
+              to="/settings-page"
+              className={styles.userBtn}
+              title="Settings"
+            >
               {user.full_name?.charAt(0).toUpperCase()}
             </Link>
           ) : (

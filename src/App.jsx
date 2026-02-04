@@ -83,7 +83,7 @@ const App = () => {
             />
 
             <Route
-              path="/account-profile"
+              path="/settings-page"
               element={
                 isAuthenticated ? <SettingsPage /> : <Navigate to="/auth" />
               }
