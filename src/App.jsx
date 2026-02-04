@@ -82,12 +82,12 @@ const App = () => {
               }
             />
 
-            <Route
+            {/* <Route
               path="/settings-page"
               element={
                 isAuthenticated ? <SettingsPage /> : <Navigate to="/auth" />
               }
-            />
+            /> */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
