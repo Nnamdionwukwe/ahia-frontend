@@ -26,7 +26,7 @@ import FlashSaleDetail from "./pages/FlashSaleDetail";
 import SeasonalSaleDetail from "./pages/SeasonalSaleDetails/SeasonalSaleDetails";
 import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
-import AccountProfile from "./pages/Accountprofile/Accountprofile";
+import AccountProfile from "./pages/Accountprofile/AccountProfile";
 import SettingsPage from "./pages/Settings/Settingspage";
 
 const App = () => {
