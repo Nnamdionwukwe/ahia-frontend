@@ -523,7 +523,15 @@ const ProductDetail = () => {
       <ProductVariantModal
         isOpen={showVariantModal}
         onClose={() => setShowVariantModal(false)}
-        product={product}
+        product={{
+          id: productData.id,
+          name: productData.name,
+          price: productData.price,
+          original_price: productData.original_price,
+          discount_percentage: productData.discount_percentage,
+          images: images.map((img) => img.image_url),
+          variants: variants,
+        }}
         onAddToCart={handleConfirmAddToCart}
       />
 
