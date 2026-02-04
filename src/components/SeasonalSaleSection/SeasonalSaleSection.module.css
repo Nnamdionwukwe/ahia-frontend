@@ -1,28 +1,5 @@
 /* SeasonalSaleSection.module.css */
 
-/* Light Mode (Default) */
-.seasonalSaleContainer {
-  --bg-primary: #ffffff;
-  --bg-secondary: #fafafa;
-  --text-primary: #222222;
-  --text-secondary: #666666;
-  --border-color: #e0e0e0;
-  --banner-overlay: rgba(16, 185, 129, 0.1);
-  --card-shadow: rgba(0, 0, 0, 0.06);
-}
-
-/* Dark Mode */
-[data-theme="dark"] .seasonalSaleContainer,
-.dark .seasonalSaleContainer {
-  --bg-primary: #2d2d2d;
-  --bg-secondary: #1a1a1a;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --border-color: #3a3a3a;
-  --banner-overlay: rgba(16, 185, 129, 0.2);
-  --card-shadow: rgba(0, 0, 0, 0.3);
-}
-
 .seasonalSaleContainer {
   width: 100%;
   max-width: 1400px;
@@ -30,6 +7,8 @@
   margin-top: -10px;
   padding: 0 20px;
   transition: background-color 0.3s ease;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 .seasonalSaleSection {
@@ -49,8 +28,9 @@
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 30px;
-  box-shadow: 0 4px 20px var(--card-shadow);
+  box-shadow: 0 4px 20px var(--shadow);
   transition: all 0.3s ease;
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
 }
 
 .bannerContent {
@@ -96,6 +76,7 @@
   padding: 4px 12px;
   border-radius: 20px;
   backdrop-filter: blur(10px);
+  color: white;
 }
 
 .saleDescription {
