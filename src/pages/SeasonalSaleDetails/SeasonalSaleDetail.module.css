@@ -1,40 +1,17 @@
 /* SeasonalSaleDetail.module.css */
 
-/* Light Mode (Default) */
-.container {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f5f5;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-tertiary: #999999;
-  --border-color: #eeeeee;
-  --card-bg: #ffffff;
-  --section-shadow: rgba(0, 0, 0, 0.06);
-}
-
-/* Dark Mode */
-[data-theme="dark"] .container,
-.dark .container {
-  --bg-primary: #2d2d2d;
-  --bg-secondary: #1a1a1a;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --text-tertiary: #808080;
-  --border-color: #3a3a3a;
-  --card-bg: #2d2d2d;
-  --section-shadow: rgba(0, 0, 0, 0.3);
-}
-
 .container {
   min-height: 100vh;
   background: var(--bg-secondary);
   display: flex;
   flex-direction: column;
   transition: background-color 0.3s ease;
+  color: var(--text-primary);
 }
 
 /* CHANGED: Reduced padding and height for more compact banner */
 .saleBanner {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
   color: white;
   padding: 12px 16px;
   min-height: 70px;
@@ -111,6 +88,7 @@
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
+  color: white;
 }
 
 /* CHANGED: Reduced font-size and margin */
@@ -138,6 +116,7 @@
   border-radius: 20px;
   font-size: 13px;
   font-weight: 600;
+  color: white;
 }
 
 /* Timer Section */
@@ -158,6 +137,7 @@
 
 .timerIcon {
   opacity: 0.9;
+  color: white;
 }
 
 .timerContent {
@@ -171,6 +151,7 @@
   opacity: 0.9;
   text-transform: uppercase;
   letter-spacing: 1px;
+  color: white;
 }
 
 /* CHANGED: Reduced font-size from 24px to 20px */
@@ -179,6 +160,7 @@
   font-weight: 700;
   font-family: "Courier New", monospace;
   letter-spacing: 2px;
+  color: white;
 }
 
 .timerDigit {
@@ -197,10 +179,10 @@
 
 /* CHANGED: Reduced padding */
 .productsSection {
-  background: var(--card-bg);
+  background: var(--bg-primary);
   border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px var(--section-shadow);
+  box-shadow: 0 2px 8px var(--shadow);
   transition: background-color 0.3s ease;
 }
 
@@ -239,7 +221,7 @@
 
 /* Footer */
 .footer {
-  background: var(--card-bg);
+  background: var(--bg-primary);
   border-top: 1px solid var(--border-color);
   padding: 32px 20px;
   margin-top: auto;
@@ -315,9 +297,9 @@
 .errorContent {
   text-align: center;
   padding: 24px;
-  background: var(--card-bg);
+  background: var(--bg-primary);
   border-radius: 16px;
-  box-shadow: 0 4px 12px var(--section-shadow);
+  box-shadow: 0 4px 12px var(--shadow);
   transition: background-color 0.3s ease;
 }
 
