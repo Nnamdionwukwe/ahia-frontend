@@ -34,7 +34,7 @@ const BottomNav = () => {
       id: "you",
       label: "You",
       icon: FiUser,
-      path: isAuthenticated ? "/settings" : "/auth",
+      path: isAuthenticated ? "/account-profile" : "/auth",
       badge: null, // You can add notification count here if you have one
     },
     {

@@ -1,0 +1,389 @@
+/* AccountProfile.module.css */
+
+.container {
+  min-height: 100vh;
+  background-color: var(--bg-secondary);
+  padding-bottom: 100px;
+  transition: background-color 0.3s ease;
+}
+
+/* Header */
+.header {
+  background-color: var(--bg-primary);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.profileSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.profileImage {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileName {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.headerIcons {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.notificationBadge {
+  position: relative;
+  display: flex;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: #ff6f00;
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Notification Banner */
+.notificationBanner {
+  background-color: var(--bg-primary);
+  margin: 8px 16px;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.bannerIcon {
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.bannerContent {
+  flex: 1;
+}
+
+.bannerContent p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.bannerActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.okButton {
+  background-color: #ff6f00;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 8px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.okButton:hover {
+  background-color: #ff5f00;
+  transform: translateY(-2px);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Credit Section */
+.creditSection {
+  background-color: var(--bg-primary);
+  margin: 0 16px 8px;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.creditCard {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.creditValue {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: #ff6f00;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 700;
+}
+
+/* Menu Section */
+.menuSection {
+  background-color: var(--bg-primary);
+  margin: 8px 16px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.menuItem {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.menuItem:last-child {
+  border-bottom: none;
+}
+
+.menuItem:hover {
+  background-color: var(--bg-secondary);
+}
+
+.menuIcon {
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.menuLabel {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.countBadge {
+  background-color: #ff6f00;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.countSubtext {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.menuChevron {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+/* Bottom Navigation Tabs */
+.bottomNavTabs {
+  background-color: var(--bg-primary);
+  margin: 8px 16px;
+  padding: 16px;
+  border-radius: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.bottomTab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.bottomTab:hover {
+  transform: translateY(-2px);
+}
+
+.bottomTab span {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Cart Sections */
+.cartSections {
+  padding: 0 16px;
+  gap: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.cartSection {
+  background-color: var(--bg-primary);
+  border-radius: 12px;
+  padding: 12px;
+  transition: background-color 0.3s ease;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.sectionCategory {
+  background-color: #ff6f00;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  flex: 1;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.itemsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.itemCard {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background-color: var(--bg-secondary);
+}
+
+.itemImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemLabel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 10px;
+  padding: 4px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding-bottom: 80px;
+  }
+
+  .profileName {
+    font-size: 20px;
+  }
+
+  .header {
+    padding: 12px;
+  }
+
+  .profileImage {
+    width: 50px;
+    height: 50px;
+  }
+
+  .bottomNavTabs {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .itemsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .creditSection {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .creditCard {
+    width: 100%;
+  }
+
+  .profileSection {
+    gap: 8px;
+  }
+
+  .profileName {
+    font-size: 18px;
+  }
+
+  .bannerContent p {
+    font-size: 12px;
+  }
+
+  .menuLabel {
+    font-size: 13px;
+  }
+
+  .bottomTab span {
+    font-size: 11px;
+  }
+}
