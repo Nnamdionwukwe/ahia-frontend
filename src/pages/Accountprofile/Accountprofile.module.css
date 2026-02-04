@@ -276,6 +276,15 @@
   gap: 8px;
   margin-bottom: 12px;
   font-size: 12px;
+  cursor: pointer;
+}
+
+.sectionChevron {
+  transition: transform 0.2s ease;
+}
+
+.sectionHeader:hover .sectionChevron {
+  transform: translateX(2px);
 }
 
 .sectionCategory {

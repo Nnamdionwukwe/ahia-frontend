@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Bell,
   Eye,
@@ -12,11 +12,18 @@ import {
   X,
   ShoppingBag,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import styles from "./AccountProfile.module.css";
+import useCartStore from "../../store/cartStore";
 
 const AccountProfile = () => {
+  const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
+  const { items: cartItems, fetchCart } = useCartStore();
+
+  useEffect(() => {
+    fetchCart();
+  }, [fetchCart]);
 
   const profile = {
     name: "Nnamdi Onwukwe",
@@ -28,26 +35,52 @@ const AccountProfile = () => {
     reviews: 19,
   };
 
-  const cartItems = [
+  // Filter cart items into ALMOST GONE and PRICE DOWN categories
+  const almostGoneItems = cartItems.filter((item) => {
+    const stock = parseInt(item.available_stock || item.stock || 0);
+    return stock > 0 && stock <= 20;
+  });
+
+  const priceDownItems = cartItems.filter((item) => {
+    const discount =
+      item.sale_discount ||
+      item.discount_percentage ||
+      item.variant_discount ||
+      0;
+    return discount > 0;
+  });
+
+  // Format sections for display
+  const cartSections = [
     {
       id: 1,
       category: "ALMOST GONE",
-      title: "5 items in cart",
-      items: [
-        { image: "https://via.placeholder.com/100", label: "Almost sold out" },
-        { image: "https://via.placeholder.com/100", label: "Only 19 left" },
-        { image: "https://via.placeholder.com/100", label: "Almost sold out" },
-      ],
+      count: almostGoneItems.length,
+      items: almostGoneItems.slice(0, 3).map((item) => {
+        const stock = parseInt(item.available_stock || item.stock || 0);
+        return {
+          image: item.image_url || item.image,
+          label: stock <= 10 ? `Only ${stock} left` : "Almost sold out",
+          productId: item.product_id,
+        };
+      }),
     },
     {
       id: 2,
       category: "PRICE DOWN",
-      title: "3 items in cart",
-      items: [
-        { image: "https://via.placeholder.com/100", label: "" },
-        { image: "https://via.placeholder.com/100", label: "" },
-        { image: "https://via.placeholder.com/100", label: "" },
-      ],
+      count: priceDownItems.length,
+      items: priceDownItems.slice(0, 3).map((item) => {
+        const discount =
+          item.sale_discount ||
+          item.discount_percentage ||
+          item.variant_discount ||
+          0;
+        return {
+          image: item.image_url || item.image,
+          label: discount > 0 ? `-${discount}%` : "",
+          productId: item.product_id,
+        };
+      }),
     },
   ];
 
@@ -56,12 +89,6 @@ const AccountProfile = () => {
     { icon: Gift, label: "Play & Earn" },
     { icon: MapPin, label: "Addresses" },
     { icon: Heart, label: "Following" },
-  ];
-
-  const menuItems = [
-    { icon: ShoppingBag, label: "Your orders", count: null },
-    { icon: MessageCircle, label: "Messages", count: 65 },
-    { icon: Star, label: "Reviews", count: "19 awaiting review" },
   ];
 
   return (
@@ -145,38 +172,69 @@ const AccountProfile = () => {
       {/* Bottom Navigation Tabs */}
       <div className={styles.bottomNavTabs}>
         {bottomTabs.map((tab, idx) => (
-          <div key={idx} className={styles.bottomTab}>
+          <div
+            key={idx}
+            className={styles.bottomTab}
+            onClick={() =>
+              navigate(
+                `/${tab.label
+                  .toLowerCase()
+                  .replace(" & ", "-")
+                  .replace(/ /g, "-")}`,
+              )
+            }
+          >
             <tab.icon size={24} />
             <span>{tab.label}</span>
           </div>
         ))}
       </div>
 
-      {/* Cart Sections */}
+      {/* Cart Sections - Loop through actual cart items */}
       <div className={styles.cartSections}>
-        {cartItems.map((section) => (
-          <div key={section.id} className={styles.cartSection}>
-            <div className={styles.sectionHeader}>
-              <span className={styles.sectionCategory}>{section.category}</span>
-              <span className={styles.sectionTitle}>{section.title}</span>
-              <ChevronRight size={20} />
-            </div>
-            <div className={styles.itemsGrid}>
-              {section.items.slice(0, 3).map((item, idx) => (
-                <div key={idx} className={styles.itemCard}>
-                  <img
-                    src={item.image}
-                    alt={`Item ${idx}`}
-                    className={styles.itemImage}
+        {cartSections.map(
+          (section) =>
+            section.count > 0 && (
+              <div key={section.id} className={styles.cartSection}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.sectionCategory}>
+                    {section.category}
+                  </span>
+                  <span className={styles.sectionTitle}>
+                    {section.count} items in cart
+                  </span>
+                  <ChevronRight
+                    size={20}
+                    onClick={() => navigate("/cart")}
+                    className={styles.sectionChevron}
+                    style={{ cursor: "pointer" }}
                   />
-                  {item.label && (
-                    <span className={styles.itemLabel}>{item.label}</span>
-                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+                <div className={styles.itemsGrid}>
+                  {section.items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className={styles.itemCard}
+                      onClick={() => navigate(`/product/${item.productId}`)}
+                    >
+                      <img
+                        src={item.image}
+                        alt={`Item ${idx}`}
+                        className={styles.itemImage}
+                        onError={(e) => {
+                          e.target.src =
+                            "https://via.placeholder.com/100?text=No+Image";
+                        }}
+                      />
+                      {item.label && (
+                        <span className={styles.itemLabel}>{item.label}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ),
+        )}
       </div>
     </div>
   );
