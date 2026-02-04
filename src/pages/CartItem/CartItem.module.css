@@ -195,12 +195,12 @@
 }
 
 .quantityButton {
-  padding: 8px 16px;
+  padding: 5px 10px;
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   background: white;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 11px;
   display: flex;
   align-items: center;
   gap: 4px;
