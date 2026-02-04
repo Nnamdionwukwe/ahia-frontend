@@ -27,6 +27,7 @@ import SeasonalSaleDetail from "./pages/SeasonalSaleDetails/SeasonalSaleDetails"
 import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
 import AccountProfile from "./pages/Accountprofile/Accountprofile";
+import SettingsPage from "./pages/Settings/Settingspage";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -78,6 +79,13 @@ const App = () => {
               path="/account-profile"
               element={
                 isAuthenticated ? <AccountProfile /> : <Navigate to="/auth" />
+              }
+            />
+
+            <Route
+              path="/account-profile"
+              element={
+                isAuthenticated ? <SettingsPage /> : <Navigate to="/auth" />
               }
             />
             <Route path="*" element={<Navigate to="/" />} />
