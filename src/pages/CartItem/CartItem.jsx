@@ -186,7 +186,7 @@ const CartItem = ({ item }) => {
               )}
 
               <div className={styles.priceRow}>
-                {item.sale.count === 16 && (
+                {item.sale && item.sale.is_last_day && (
                   <div className={styles.lastDayBadge}>
                     <span className={styles.fireIcon}>🔥</span>
                     Last day
@@ -202,7 +202,7 @@ const CartItem = ({ item }) => {
 
               {item.sale && (
                 <div className={styles.afterPromo}>
-                  after applying promos & credit to ₦
+                  after applying credit to ₦
                   {(finalPrice * 0.9).toLocaleString()} ›
                 </div>
               )}
