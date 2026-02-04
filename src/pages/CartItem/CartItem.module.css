@@ -86,11 +86,12 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin: -5px 0px;
+  color: var(--text-primary);
 }
 
 .variantInfo {
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .saleBadge {
@@ -102,7 +103,6 @@
 }
 
 .bigSale {
-  /* background: linear-gradient(135deg, #ff6f00, #ff8f00); */
   color: #f57c00;
   padding: 3px 8px;
   border-radius: 4px;
@@ -125,7 +125,7 @@
 
 .originalPrice {
   text-decoration: line-through;
-  color: #999;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: bold;
   margin-bottom: 2px;
@@ -157,7 +157,7 @@
 .finalPrice {
   font-size: 16px;
   font-weight: 700;
-  color: #000;
+  color: var(--text-primary);
 }
 
 .discountBadge {
@@ -171,7 +171,7 @@
 
 .afterPromo {
   font-size: 11px;
-  color: #666;
+  color: var(--text-secondary);
   margin-top: 4px;
 }
 
@@ -196,14 +196,20 @@
 
 .quantityButton {
   padding: 2px 6px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  background: white;
+  background: var(--bg-primary);
   cursor: pointer;
   font-size: 11px;
   display: flex;
   align-items: center;
   gap: 4px;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.quantityButton:hover:not(:disabled) {
+  background: var(--bg-secondary);
 }
 
 .quantityButton:disabled {
@@ -222,12 +228,13 @@
 }
 
 .quantityModal {
-  background: white;
+  background: var(--bg-primary);
   width: 100%;
   border-radius: 16px 16px 0 0;
   max-height: 80vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease-out;
+  transition: background-color 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -244,12 +251,14 @@
   justify-content: space-between;
   align-items: center;
   padding: 16px 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .modalHeader h3 {
   font-size: 18px;
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 .closeButton {
@@ -258,26 +267,36 @@
   border: none;
   cursor: pointer;
   padding: 4px;
+  color: var(--text-primary);
 }
 
 .quantityInput {
   padding: 16px 20px;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .quantityInput label {
   display: block;
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 8px;
 }
 
 .quantityInput input {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   font-size: 14px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
+}
+
+.quantityInput input:focus {
+  outline: none;
+  border-color: #ff6f00;
 }
 
 .quantityOptions {
@@ -287,21 +306,27 @@
 .deleteOption {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: white;
+  background: var(--bg-primary);
   cursor: pointer;
   font-size: 14px;
   margin-bottom: 12px;
   text-align: left;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.deleteOption:hover {
+  background: var(--bg-secondary);
 }
 
 .quantityOption {
   width: 100%;
   padding: 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: white;
+  background: var(--bg-primary);
   cursor: pointer;
   font-size: 14px;
   margin-bottom: 8px;
@@ -309,6 +334,12 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+}
+
+.quantityOption:hover:not(:disabled) {
+  background: var(--bg-secondary);
 }
 
 .quantityOption.selected {
@@ -327,13 +358,13 @@
    ========================================= */
 .swipeContainer {
   position: relative;
-  overflow: hidden; /* hides the delete button until card swipes left */
+  overflow: hidden;
   margin: 5px 0px;
   border-radius: 12px;
 }
 
 .cartItem {
-  background: white;
+  background: var(--bg-primary);
   padding: 16px;
   border-radius: 12px;
   display: flex;
@@ -341,7 +372,7 @@
   position: relative;
   transition: opacity 0.3s;
   will-change: transform;
-  z-index: 2; /* sits above the delete button */
+  z-index: 2;
 }
 
 .swipeDeleteButton {
@@ -355,7 +386,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 0 12px 12px 0;
-  z-index: 1; /* sits behind the cart item */
+  z-index: 1;
 }
 
 .swipeDeleteButton button {
