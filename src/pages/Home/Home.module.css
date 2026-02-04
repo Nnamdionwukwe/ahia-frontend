@@ -2,8 +2,9 @@
 
 .container {
   min-height: 100vh;
-  background: #f5f5f5;
+  background: var(--bg-secondary);
   padding-bottom: 80px; /* Space for bottom nav */
+  transition: background-color 0.3s ease;
 }
 
 .content {
@@ -18,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
+  background: var(--bg-secondary);
 }
 
 .loadingContent {
@@ -28,8 +29,8 @@
 .spinner {
   width: 60px;
   height: 60px;
-  border: 5px solid #f3f3f3;
-  border-top: 5px solid #ff6b35;
+  border: 5px solid var(--border-color);
+  border-top: 5px solid var(--warning-color);
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
@@ -46,7 +47,7 @@
 
 .loadingText {
   font-size: 18px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -57,34 +58,34 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: #f5f5f5;
+  background: var(--bg-secondary);
 }
 
 .errorContent {
-  background: white;
+  background: var(--bg-primary);
   padding: 50px 40px;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px var(--shadow);
   text-align: center;
   max-width: 500px;
   width: 100%;
 }
 
 .errorIcon {
-  color: #f74040;
+  color: var(--danger-color);
   margin-bottom: 20px;
 }
 
 .errorTitle {
   font-size: 28px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
 .errorMessage {
   font-size: 16px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0 0 30px 0;
   line-height: 1.6;
 }
@@ -115,10 +116,10 @@
 /* Seasonal Sale Section */
 .seasonalSaleSection {
   margin-bottom: 60px;
-  background: white;
+  background: var(--bg-primary);
   border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px var(--shadow);
 }
 
 .seasonalBanner {
@@ -153,12 +154,12 @@
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 12px 0;
-  color: #222;
+  color: var(--text-primary);
 }
 
 .seasonalInfo p {
   font-size: 16px;
-  color: #555;
+  color: var(--text-secondary);
   margin: 0 0 20px 0;
   line-height: 1.5;
 }
@@ -185,21 +186,23 @@
 }
 
 .productCountBadge {
-  background: rgba(0, 0, 0, 0.1);
-  color: #333;
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
 .seasonalEndDate {
   text-align: right;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--card-bg);
   padding: 20px;
   border-radius: 12px;
   min-width: 150px;
+  border: 1px solid var(--border-color);
 }
 
 .seasonalEndDate .label {
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 8px;
@@ -208,16 +211,16 @@
 .seasonalEndDate .date {
   font-size: 18px;
   font-weight: 700;
-  color: #222;
+  color: var(--text-primary);
 }
 
 /* Featured Section */
 .featuredSection {
   margin-bottom: 60px;
-  /* background: white; */
-  /* border-radius: 20px; */
-  /* padding: 30px; */
-  /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06); */
+}
+
+.featuredSection1 {
+  margin-bottom: 60px;
 }
 
 .sectionHeader {
@@ -226,7 +229,7 @@
   align-items: center;
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .sectionTitle {
@@ -243,7 +246,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px var(--shadow);
 }
 
 .iconBoxRed {
@@ -258,12 +261,12 @@
   font-size: 2rem;
   font-weight: 800;
   margin: 0 0 8px 0;
-  color: #222;
+  color: var(--text-primary);
 }
 
 .titleText p {
   margin: 0;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
   font-weight: 500;
 }
@@ -282,15 +285,15 @@
   text-align: center;
   margin-top: 30px;
   padding-top: 20px;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--border-color);
 }
 
 .viewMoreBtn,
 .loadMoreBtn {
   padding: 14px 32px;
-  background: white;
-  color: #ff6b35;
-  border: 2px solid #ff6b35;
+  background: var(--bg-primary);
+  color: var(--warning-color);
+  border: 2px solid var(--warning-color);
   border-radius: 12px;
   font-size: 16px;
   font-weight: 600;
@@ -300,7 +303,7 @@
 
 .viewMoreBtn:hover,
 .loadMoreBtn:hover {
-  background: #ff6b35;
+  background: var(--warning-color);
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
@@ -324,14 +327,15 @@
 .emptyContent {
   text-align: center;
   max-width: 500px;
-  background: white;
+  background: var(--bg-primary);
   padding: 60px 40px;
   border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 20px var(--shadow);
 }
 
 .emptyIcon {
-  color: #e0e0e0;
+  color: var(--text-secondary);
+  opacity: 0.3;
   margin-bottom: 24px;
   animation: float 3s ease-in-out infinite;
 }
@@ -349,13 +353,13 @@
 .emptyTitle {
   font-size: 28px;
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
   margin: 0 0 12px 0;
 }
 
 .emptyMessage {
   font-size: 16px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 0 0 30px 0;
   line-height: 1.6;
 }
@@ -398,7 +402,6 @@
 
   .seasonalSaleSection,
   .featuredSection {
-    /* padding: 20px; */
     margin-bottom: 30px;
   }
 
@@ -430,7 +433,6 @@
 
   .seasonalSaleSection,
   .featuredSection {
-    /* padding: 16px; */
     border-radius: 16px;
   }
 
@@ -493,7 +495,6 @@
   }
 
   .content {
-    /* padding: 12px; */
     margin-top: 0px;
   }
 
@@ -535,7 +536,20 @@
   }
 }
 
-/* Smooth transitions */
-* {
-  transition: background-color 0.3s ease;
+/* Dark Mode Specific Adjustments */
+[data-theme="dark"] .seasonalBanner,
+.dark .seasonalBanner {
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .errorContent,
+.dark .errorContent,
+[data-theme="dark"] .emptyContent,
+.dark .emptyContent {
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .seasonalSaleSection,
+.dark .seasonalSaleSection {
+  border: 1px solid var(--border-color);
 }
