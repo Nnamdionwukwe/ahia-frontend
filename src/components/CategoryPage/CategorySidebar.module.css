@@ -1,12 +1,15 @@
 .sidebar {
   width: 160px;
-  background-color: white;
-  border-right: 1px solid #e5e7eb;
+  background-color: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
   position: sticky;
   top: 128px;
   height: calc(100vh - 128px);
   overflow-y: auto;
   flex-shrink: 0;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .sidebar::-webkit-scrollbar {
@@ -14,25 +17,28 @@
 }
 
 .sidebar::-webkit-scrollbar-track {
-  background: #f3f4f6;
+  background: var(--bg-secondary);
 }
 
 .sidebar::-webkit-scrollbar-thumb {
-  background: #d1d5db;
+  background: var(--border-color);
   border-radius: 3px;
 }
 
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--text-secondary);
 }
 
 .sidebarHeader {
   padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--bg-primary);
   z-index: 10;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .featuredBadge {
@@ -52,21 +58,23 @@
 
 .categoryItem {
   padding: 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--border-color);
   font-size: 12px;
   cursor: pointer;
   transition: all 0.2s;
   display: flex;
   align-items: center;
   gap: 8px;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 }
 
 .categoryItem:hover {
-  background-color: #f9fafb;
+  background-color: var(--bg-secondary);
 }
 
 .categoryItem.active {
-  background-color: #fff7ed;
+  background-color: var(--primary-bg);
   border-left: 3px solid #f97316;
   padding-left: 9px;
   color: #f97316;

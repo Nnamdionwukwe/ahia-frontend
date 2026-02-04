@@ -74,7 +74,6 @@ const App = () => {
             />
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-          {/* <BottomNav /> */}
         </div>
       </Router>
     </GoogleOAuthProvider>
