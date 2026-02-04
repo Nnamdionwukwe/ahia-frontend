@@ -166,7 +166,6 @@ const CartItem = ({ item }) => {
             {item.sale && (
               <div className={styles.saleBadge}>
                 <span className={styles.bigSale}>Big sale</span>
-                {item.sale.name && <span className={styles.saleIcon}>⏰</span>}
                 <span className={styles.lastDays}>
                   Last{" "}
                   {Math.ceil(
@@ -187,7 +186,7 @@ const CartItem = ({ item }) => {
               )}
 
               <div className={styles.priceRow}>
-                {item.sale && (
+                {item.sale.count === 16 && (
                   <div className={styles.lastDayBadge}>
                     <span className={styles.fireIcon}>🔥</span>
                     Last day

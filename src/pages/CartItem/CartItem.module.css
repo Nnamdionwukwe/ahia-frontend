@@ -116,6 +116,7 @@
 .lastDays {
   color: #f57c00;
   font-weight: 500;
+  margin-left: -10px;
 }
 
 .priceSection {
