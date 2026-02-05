@@ -26,7 +26,6 @@ import FlashSaleDetail from "./pages/FlashSaleDetail";
 import SeasonalSaleDetail from "./pages/SeasonalSaleDetails/SeasonalSaleDetails";
 import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
-import SettingsPage from "./pages/Settings/SettingsPage";
 import AccountProfile from "./pages/Accountprofile/Accountprofile";
 
 const App = () => {
@@ -82,12 +81,12 @@ const App = () => {
               }
             />
 
-            <Route
+            {/* <Route
               path="/settings-page"
               element={
                 isAuthenticated ? <SettingsPage /> : <Navigate to="/auth" />
               }
-            />
+            /> */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
         </div>
