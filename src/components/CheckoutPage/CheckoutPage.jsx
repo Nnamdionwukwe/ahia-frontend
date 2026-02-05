@@ -13,6 +13,7 @@ import {
 import styles from "./CheckoutPage.module.css";
 import useCartStore from "../../store/cartStore";
 import useAuthStore from "../../store/authStore";
+import ItemDetailsModal from "./ItemDetailsModal";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -26,6 +27,8 @@ const CheckoutPage = () => {
   const [shippingMethod, setShippingMethod] = useState("standard");
   const [paymentMethod, setPaymentMethod] = useState("bank-transfer");
   const [giftMessage, setGiftMessage] = useState("Hope you enjoy this gift!");
+  const [showItemDetails, setShowItemDetails] = useState(false);
+const [isDarkMode, setIsDarkMode] = useState(false)
 
   // Get cart data
   const selectedItems = items.filter((item) => item.is_selected);
@@ -143,7 +146,12 @@ const CheckoutPage = () => {
             {/* Item Details */}
             <section className={styles.section}>
               <div className={styles.sectionLabel}>Item details ({orderData.itemCount})</div>
-              <button className={styles.viewDetailsBtn}>View details ></button>
+              <button 
+  className={styles.viewDetailsBtn}
+  onClick={() => setShowItemDetails(true)}
+>
+  View details >
+</button>
               <div className={styles.itemPreview}>
                 {selectedItems.slice(0, 4).map((item, idx) => (
                   <div key={idx} className={styles.itemThumb}>
@@ -432,6 +440,15 @@ const CheckoutPage = () => {
           </div>
         </div>
       )}
+
+      CheckoutPage:
+{showItemDetails && (
+  <ItemDetailsModal
+    items={selectedItems}
+    onClose={() => setShowItemDetails(false)}
+    isDarkMode={isDarkMode}
+  />
+)}
     </div>
   );
 };
