@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ChevronLeft,
@@ -7,14 +7,18 @@ import {
   CreditCard,
   Lock,
   Gift,
-  Clock,
   AlertCircle,
   Check,
 } from "lucide-react";
 import styles from "./CheckoutPage.module.css";
+import useCartStore from "../../store/cartStore";
+import useAuthStore from "../../store/authStore";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
+  const { items, getSelectedTotals, getAlmostSoldOutCount } = useCartStore();
+  const { user } = useAuthStore();
+
   const [currentStep, setCurrentStep] = useState("shipping");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
@@ -23,76 +27,77 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("bank-transfer");
   const [giftMessage, setGiftMessage] = useState("Hope you enjoy this gift!");
 
-  const orderData = {
-    itemsTotal: 989998,
-    itemsDiscount: -552556,
-    subtotalAfterDiscount: 437442,
-    limitedDiscount: -34884,
-    subtotal: 402558,
-    shipping: 0,
-    credit: -1600,
-    orderTotal: 400958,
-    itemCount: 21,
-    savings: 587440,
-    timeRemaining: "11:53:01",
-  };
+  // Get cart data
+  const selectedItems = items.filter((item) => item.is_selected);
+  const selectedTotals = getSelectedTotals();
+  const almostGoneCount = getAlmostSoldOutCount();
 
-  const shippingAddress = {
+  // Shipping address from user profile
+  const shippingAddress = user?.address || {
     name: "Nnamdi Michael Onwukwe",
     phone: "+234 803 774 8573",
     address: "The loft apartment, Patients Effiong Street",
     city: "Abuja, Federal Capital Territory Nigeria",
   };
 
-  const cartItems = [
-    {
-      id: 1,
-      name: "360-degree Rotating Portable Stand",
-      color: "Silvery",
-      price: 10474,
-      originalPrice: 23592,
-      image: "https://via.placeholder.com/100",
-      quantity: 1,
-      badge: "ONLY 19 LEFT",
-    },
-    {
-      id: 2,
-      name: "Freedom Lettering Hot Transfer Iron",
-      price: 1523,
-      originalPrice: 2430,
-      image: "https://via.placeholder.com/100",
-      quantity: 1,
-      badge: "Extra ₦655 off",
-    },
-    {
-      id: 3,
-      name: "Anmite 16-inch Portable Touch Monitor",
-      price: 152568,
-      originalPrice: 414271,
-      image: "https://via.placeholder.com/100",
-      quantity: 1,
-      badge: "ALMOST SOLD OUT",
-    },
-    {
-      id: 4,
-      name: "HITOZON Professional Wireless Laval",
-      price: 16267,
-      originalPrice: 44591,
-      image: "https://via.placeholder.com/100",
-      quantity: 1,
-      badge: "Last day",
-    },
-  ];
+  const orderData = {
+    itemsTotal: selectedTotals.subtotal,
+    itemsDiscount: selectedTotals.discount,
+    subtotalAfterDiscount: selectedTotals.subtotal - selectedTotals.discount,
+    limitedDiscount: -34884,
+    subtotal: (selectedTotals.subtotal - selectedTotals.discount) - 34884,
+    shipping: 0,
+    credit: -1600,
+    orderTotal: (selectedTotals.subtotal - selectedTotals.discount) - 34884 - 1600,
+    itemCount: selectedItems.length,
+    savings: selectedTotals.discount,
+    timeRemaining: "11:53:01",
+  };
 
   const handleContinuePayment = () => {
     setShowConfirmCancel(false);
     setCurrentStep("payment");
   };
 
-  const handleScanCard = () => {
-    // Implementation for card scanning
-    console.log("Scan card");
+  const handleSubmitOrder = async () => {
+    if (currentStep === "shipping") {
+      setShowConfirmCancel(true);
+    } else {
+      // Process payment
+      navigate("/order-success");
+    }
   };
+
+  const handleScanCard = () => {
+    console.log("Scan card initiated");
+  };
+
+  if (selectedItems.length === 0) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <button
+            className={styles.backButton}
+            onClick={() => navigate(-1)}
+            title="Go back"
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <h1 className={styles.headerTitle}>Checkout</h1>
+          <div className={styles.headerSpacer} />
+        </div>
+        <div className={styles.emptyCheckout}>
+          <p>No items selected for checkout</p>
+          <button
+            className={styles.shopNowButton}
+            onClick={() => navigate("/cart")}
+          >
+            Back to Cart
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -140,10 +145,20 @@ const CheckoutPage = () => {
               <div className={styles.sectionLabel}>Item details ({orderData.itemCount})</div>
               <button className={styles.viewDetailsBtn}>View details ></button>
               <div className={styles.itemPreview}>
-                {cartItems.slice(0, 4).map((item, idx) => (
+                {selectedItems.slice(0, 4).map((item, idx) => (
                   <div key={idx} className={styles.itemThumb}>
-                    <img src={item.image} alt={item.name} />
-                    <span className={styles.itemBadge}>{item.badge}</span>
+                    <img
+                      src={item.image_url || item.image}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.target.src = "https://via.placeholder.com/100?text=No+Image";
+                      }}
+                    />
+                    <span className={styles.itemBadge}>
+                      {parseInt(item.available_stock || item.stock || 0) <= 20
+                        ? "Almost sold out"
+                        : "In stock"}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -248,7 +263,7 @@ const CheckoutPage = () => {
             <section className={styles.section}>
               <div className={styles.savingsBox}>
                 <Check size={20} style={{ color: "#10b981" }} />
-                <span>Eligible to save an extra ₦34,884 on this order</span>
+                <span>Eligible to save an extra ₦{Math.abs(orderData.limitedDiscount).toLocaleString()} on this order</span>
                 <span className={styles.timer}>11:54:44</span>
               </div>
             </section>
@@ -317,7 +332,7 @@ const CheckoutPage = () => {
         <div className={styles.summaryDivider} />
         <div className={styles.summaryTotal}>
           <span>Order total:</span>
-          <span>₦{orderData.orderTotal.toLocaleString()}</span>
+          <span>₦{Math.max(orderData.orderTotal, 0).toLocaleString()}</span>
         </div>
         <div className={styles.timelineBox}>
           <span className={styles.savings}>💎 ₦{orderData.savings.toLocaleString()} OFF</span>
@@ -328,15 +343,11 @@ const CheckoutPage = () => {
       {/* Submit Button */}
       <button
         className={styles.submitButton}
-        onClick={
-          currentStep === "shipping"
-            ? () => setShowConfirmCancel(true)
-            : () => navigate("/order-success")
-        }
+        onClick={handleSubmitOrder}
       >
         {currentStep === "shipping"
           ? `Submit order (${orderData.itemCount})`
-          : `Pay ₦${orderData.orderTotal.toLocaleString()}`}
+          : `Pay ₦${Math.max(orderData.orderTotal, 0).toLocaleString()}`}
       </button>
 
       {/* Confirm Cancel Modal */}
