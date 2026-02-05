@@ -59,21 +59,54 @@ const CartItem = ({ item }) => {
   const isAlmostGone = stock > 0 && stock <= 20;
   const isSoldOut = stock <= 0;
 
-  // Get the image URL with fallback options
+  // ✅ IMPROVED: Get the correct image URL with multiple fallback options
   const getImageUrl = () => {
-    return item.image_url || item.image || item.product_image || "";
+    // Priority order for images:
+    // 1. Variant-specific image (if variant is selected)
+    // 2. Cart item image_url
+    // 3. Product images array (first image)
+    // 4. Default product image
+
+    if (item.variant_image_url) {
+      return item.variant_image_url;
+    }
+
+    if (item.image_url) {
+      return item.image_url;
+    }
+
+    // If product has images array, get first one
+    if (item.images && Array.isArray(item.images) && item.images.length > 0) {
+      return item.images[0];
+    }
+
+    // Fallback to product_image or image property
+    return item.product_image || item.image || "";
   };
 
   const handleImageError = (e) => {
     if (!imageError) {
       setImageError(true);
-      // Try alternative image sources
-      if (item.image && e.target.src !== item.image) {
-        e.target.src = item.image;
-      } else if (item.product_image && e.target.src !== item.product_image) {
-        e.target.src = item.product_image;
+
+      // Try alternative image sources in order
+      const fallbackImages = [
+        item.variant_image_url,
+        item.image_url,
+        item.images && item.images[0],
+        item.product_image,
+        item.image,
+      ].filter(Boolean); // Remove null/undefined values
+
+      // Find next available image that hasn't been tried yet
+      const currentSrc = e.target.src;
+      const nextImage = fallbackImages.find(
+        (img) => img && !currentSrc.includes(img),
+      );
+
+      if (nextImage) {
+        e.target.src = nextImage;
       } else {
-        // Use inline SVG placeholder
+        // Use inline SVG placeholder as last resort
         e.target.src =
           'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f5f5f5" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
       }
@@ -156,6 +189,11 @@ const CartItem = ({ item }) => {
               onError={handleImageError}
               loading="lazy"
               crossOrigin="anonymous"
+              style={{
+                objectFit: "cover",
+                width: "100%",
+                height: "100%",
+              }}
             />
             {isAlmostGone && !isSoldOut && (
               <div className={styles.almostSoldOutBadge}>ALMOST SOLD OUT</div>
@@ -183,7 +221,8 @@ const CartItem = ({ item }) => {
             {(item.color || item.size) && (
               <div className={styles.variantInfo}>
                 {item.color && <span>{item.color}</span>}
-                {item.size && <span> x{item.quantity}</span>}
+                {item.size && <span> • Size: {item.size}</span>}
+                {item.quantity && <span> • Qty: {item.quantity}</span>}
               </div>
             )}
 
