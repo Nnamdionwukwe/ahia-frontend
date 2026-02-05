@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiSettings, FiHeart, FiMenu, FiX } from "react-icons/fi";
+import { FiSettings, FiHeart, FiHeadphones, FiX } from "react-icons/fi";
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
 import useCartStore from "../../store/cartStore";
@@ -38,10 +38,10 @@ const Header = ({ onMenuClick }) => {
 
           {/* Wishlist */}
           <Link to="/wishlist" className={styles.iconBtn} title="Wishlist">
-            <FiHeart size={24} />
+            <FiHeadphones size={24} />
           </Link>
 
-          {/* Cart */}
+          {/* Settings */}
           <Link to="/settings" className={styles.cartBtn} title="Settings">
             <FiSettings size={24} />
             {itemCount > 0 && <span className={styles.badge}>{itemCount}</span>}
