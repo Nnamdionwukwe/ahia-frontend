@@ -220,7 +220,7 @@ const [isDarkMode, setIsDarkMode] = useState(false)
                   checked={paymentMethod === "card"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
                 />
-                <span>💳 Card</span>
+                <span onClick={() => setCurrentStep("payment")}>💳 Card</span>
               </label>
               <label className={styles.radioOption}>
                 <input
@@ -441,7 +441,6 @@ const [isDarkMode, setIsDarkMode] = useState(false)
         </div>
       )}
 
-      CheckoutPage:
 {showItemDetails && (
   <ItemDetailsModal
     items={selectedItems}
