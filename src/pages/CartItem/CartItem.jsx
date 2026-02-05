@@ -22,6 +22,7 @@ const CartItem = ({ item }) => {
   const [swipeX, setSwipeX] = useState(0);
   const [startX, setStartX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const MAX_SWIPE = -80;
 
@@ -57,6 +58,27 @@ const CartItem = ({ item }) => {
   const stock = parseInt(item.available_stock || 0);
   const isAlmostGone = stock > 0 && stock <= 20;
   const isSoldOut = stock <= 0;
+
+  // Get the image URL with fallback options
+  const getImageUrl = () => {
+    return item.image_url || item.image || item.product_image || "";
+  };
+
+  const handleImageError = (e) => {
+    if (!imageError) {
+      setImageError(true);
+      // Try alternative image sources
+      if (item.image && e.target.src !== item.image) {
+        e.target.src = item.image;
+      } else if (item.product_image && e.target.src !== item.product_image) {
+        e.target.src = item.product_image;
+      } else {
+        // Use inline SVG placeholder
+        e.target.src =
+          'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f5f5f5" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
+      }
+    }
+  };
 
   const handleQuantityChange = (newQuantity) => {
     if (newQuantity <= 0) {
@@ -128,9 +150,12 @@ const CartItem = ({ item }) => {
             onClick={() => navigate(`/product/${item.product_id}`)}
           >
             <img
-              src={item.image_url}
-              alt={item.name}
+              src={getImageUrl()}
+              alt={item.name || "Product"}
               className={styles.productImage}
+              onError={handleImageError}
+              loading="lazy"
+              crossOrigin="anonymous"
             />
             {isAlmostGone && !isSoldOut && (
               <div className={styles.almostSoldOutBadge}>ALMOST SOLD OUT</div>
