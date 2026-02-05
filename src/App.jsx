@@ -21,12 +21,11 @@ import CartPage from "./pages/Cart/CartPage";
 import "./App.css";
 import SearchHeader from "./components/SearchHeader/SearchHeader";
 import FlashSalesList from "./pages/FlashSalesList/FlashSalesList";
-import FlashSaleCard from "./components/FlashSaleCard/FlashSaleCard";
 import FlashSaleDetail from "./pages/FlashSaleDetail";
 import SeasonalSaleDetail from "./pages/SeasonalSaleDetails/SeasonalSaleDetails";
 import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
-import AccountProfile from "./pages/Accountprofile/Accountprofile";
+import Profile from "./pages/Accountprofile/Profile";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -76,9 +75,7 @@ const App = () => {
 
             <Route
               path="/account-profile"
-              element={
-                isAuthenticated ? <AccountProfile /> : <Navigate to="/auth" />
-              }
+              element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />}
             />
 
             {/* <Route

@@ -13,11 +13,11 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import styles from "./AccountProfile.module.css";
+import styles from "./Profile.module.css";
 import useCartStore from "../../store/cartStore";
 import Header from "../../components/Header/Header";
 
-const AccountProfile = () => {
+const Profile = () => {
   const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(true);
   const { items: cartItems, fetchCart } = useCartStore();
@@ -257,4 +257,4 @@ const MenuItem = ({ icon: Icon, label, count, subtext }) => (
   </div>
 );
 
-export default AccountProfile;
+export default Profile;
