@@ -27,16 +27,12 @@ const Header = ({ onMenuClick }) => {
 
         {/* Actions */}
         <div className={styles.actions}>
-          {/* Theme Toggle */}
-          <button
-            className={styles.iconBtn}
-            onClick={toggleTheme}
-            title={isDark ? "Dark mode" : "Light mode"}
-          >
-            {isDark ? "🌙" : "☀️"}
-          </button>
-
           {/* Wishlist */}
+          <Link to="/wishlist" className={styles.iconBtn} title="Wishlist">
+            <FiHeart size={24} />
+          </Link>
+
+          {/* Support */}
           <Link to="/wishlist" className={styles.iconBtn} title="Wishlist">
             <FiHeadphones size={24} />
           </Link>
