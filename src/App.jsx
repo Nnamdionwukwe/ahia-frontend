@@ -27,6 +27,7 @@ import SeasonalSalesList from "./pages/SeasonalSalesList/SeasonalSalesList";
 import CategoryPage from "./components/CategoryPage/CategoryPage";
 import Profile from "./pages/Accountprofile/Profile";
 import ProfileCard from "./pages/Accountprofile/ProfileCard";
+import CheckoutPage from "./components/CheckoutPage/CheckoutPage";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -53,6 +54,13 @@ const App = () => {
             <Route
               path="/cart"
               element={isAuthenticated ? <CartPage /> : <Navigate to="/auth" />}
+            />
+
+            <Route
+              path="/checkout"
+              element={
+                isAuthenticated ? <CheckoutPage /> : <Navigate to="/auth" />
+              }
             />
             <Route path="/flash-sales" element={<FlashSalesList />} />
 
