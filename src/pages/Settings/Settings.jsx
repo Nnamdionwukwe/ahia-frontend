@@ -1,82 +1,236 @@
-// src/pages/Settings.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  ChevronLeft,
+  Shield,
+  Lock,
+  HelpCircle,
+  CheckCircle,
+  CreditCard,
+  Globe,
+  MessageSquare,
+  DollarSign,
+  Bell,
+  Info,
+  FileText,
+  Share2,
+  LogOut,
+} from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
-import { FiSun, FiMoon } from "react-icons/fi";
-import styles from "./Settings.module.css";
-import Header from "../../components/Header/Header";
-import BottomNav from "../../components/BottomNav/BottomNav";
+import styles from "./SettingsPage.module.css";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const isDark = useThemeStore((state) => state.isDark);
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
 
-  if (!user) {
-    navigate("/auth");
-    return null;
-  }
+  const [selectedCountry, setSelectedCountry] = useState("NG");
+  const [selectedLanguage, setSelectedLanguage] = useState("English");
+  const [selectedCurrency, setSelectedCurrency] = useState("NGN");
+
+  const securitySections = [
+    {
+      icon: Shield,
+      title: "Account security",
+      color: "#10b981",
+    },
+    {
+      icon: Lock,
+      title: "Privacy",
+      color: "#10b981",
+    },
+    {
+      icon: HelpCircle,
+      title: "Permissions",
+      color: "#10b981",
+    },
+    {
+      icon: CheckCircle,
+      title: "Safety center",
+      color: "#10b981",
+    },
+  ];
+
+  const menuItems = [
+    {
+      title: "Your payment methods",
+      icon: CreditCard,
+      arrow: true,
+    },
+    {
+      title: "Country & region",
+      icon: Globe,
+      value: selectedCountry,
+    },
+    {
+      title: "Language",
+      icon: MessageSquare,
+      value: selectedLanguage,
+    },
+    {
+      title: "Currency",
+      icon: DollarSign,
+      value: selectedCurrency,
+    },
+    {
+      title: "Notifications",
+      icon: Bell,
+      arrow: true,
+    },
+    {
+      title: "About this app",
+      icon: Info,
+      arrow: true,
+    },
+    {
+      title: "Legal terms & policies",
+      icon: FileText,
+      arrow: true,
+    },
+    {
+      title: "Share this app",
+      icon: Share2,
+      arrow: true,
+    },
+    {
+      title: "Switch accounts",
+      icon: Globe,
+      arrow: true,
+    },
+  ];
 
   const handleLogout = () => {
-    logout();
-    navigate("/auth");
+    if (window.confirm("Are you sure you want to sign out?")) {
+      logout();
+      navigate("/auth");
+    }
+  };
+
+  const handleMenuItemClick = (title) => {
+    switch (title.toLowerCase()) {
+      case "your payment methods":
+        navigate("/settings/payment-methods");
+        break;
+      case "notifications":
+        navigate("/settings/notifications");
+        break;
+      case "about this app":
+        navigate("/settings/about");
+        break;
+      case "legal terms & policies":
+        navigate("/settings/legal");
+        break;
+      case "share this app":
+        // Share functionality
+        if (navigator.share) {
+          navigator.share({
+            title: "Temu",
+            text: "Download the Temu app and get amazing deals!",
+            url: "https://temu.app",
+          });
+        }
+        break;
+      case "switch accounts":
+        navigate("/auth");
+        break;
+      default:
+        break;
+    }
   };
 
   return (
-    <>
-      <Header />
-      <BottomNav />
-
-      <div className={styles.container}>
-        <div className={styles.card}>
-          <h1>Settings</h1>
-
-          {/* User Info */}
-          <section className={styles.section}>
-            <h2>Account</h2>
-            <div className={styles.item}>
-              <label>Phone Number:</label>
-              <span>{user.phone_number}</span>
-            </div>
-            <div className={styles.item}>
-              <label>Full Name:</label>
-              <span>{user.full_name}</span>
-            </div>
-          </section>
-
-          {/* Theme Settings */}
-          <section className={styles.section}>
-            <h2>Appearance</h2>
-            <div className={styles.themeToggle}>
-              <label>Dark Mode</label>
-              <button
-                className={`${styles.toggleBtn} ${isDark ? styles.active : ""}`}
-                onClick={toggleTheme}
-              >
-                {isDark ? <FiMoon size={20} /> : <FiSun size={20} />}
-                <span>{isDark ? "Dark" : "Light"}</span>
-              </button>
-            </div>
-          </section>
-
-          {/* Delivery Addresses */}
-          <section className={styles.section}>
-            <h2>Delivery Addresses</h2>
-            <button className={styles.btnSecondary}>Add Address</button>
-          </section>
-
-          {/* Logout */}
-          <section className={`${styles.section} ${styles.danger}`}>
-            <button className={styles.btnDanger} onClick={handleLogout}>
-              Sign Out
-            </button>
-          </section>
-        </div>
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <button
+          className={styles.backButton}
+          onClick={() => navigate(-1)}
+          title="Go back"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <h1 className={styles.headerTitle}>Settings</h1>
+        <div className={styles.headerSpacer} />
       </div>
-    </>
+
+      {/* Content */}
+      <div className={styles.content}>
+        {/* Security Section */}
+        <section className={styles.section}>
+          <h2 className={styles.sectionHeading}>
+            <span className={styles.securityTitle}>
+              Your account is protected
+            </span>
+          </h2>
+          <p className={styles.sectionDescription}>
+            Temu protects your personal information and keeps it private, safe
+            and secure.
+          </p>
+
+          <div className={styles.securityGrid}>
+            {securitySections.map((item, idx) => (
+              <button
+                key={idx}
+                className={styles.securityCard}
+                onClick={() => handleMenuItemClick(item.title)}
+              >
+                <div
+                  className={styles.securityIcon}
+                  style={{ color: item.color }}
+                >
+                  <item.icon size={28} />
+                </div>
+                <span className={styles.securityTitle}>{item.title}</span>
+                <ChevronLeft
+                  size={20}
+                  className={styles.securityChevron}
+                  style={{ color: item.color }}
+                />
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* Menu Items Section */}
+        <section className={styles.section}>
+          {menuItems.map((item, idx) => (
+            <button
+              key={idx}
+              className={styles.menuItem}
+              onClick={() => handleMenuItemClick(item.title)}
+            >
+              <item.icon size={20} className={styles.menuIcon} />
+              <span className={styles.menuTitle}>{item.title}</span>
+              <span className={styles.menuValue}>
+                {item.value}
+                {item.arrow && <ChevronLeft size={20} />}
+              </span>
+            </button>
+          ))}
+        </section>
+
+        {/* Sign Out Section */}
+        <section className={styles.section}>
+          <button className={styles.signOutButton} onClick={handleLogout}>
+            <LogOut size={20} className={styles.signOutIcon} />
+            <span>Sign out</span>
+          </button>
+        </section>
+
+        {/* Theme Toggle (Optional - for demonstration) */}
+        <section className={styles.section}>
+          <button className={styles.menuItem} onClick={toggleTheme}>
+            <Bell size={20} className={styles.menuIcon} />
+            <span className={styles.menuTitle}>
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </span>
+            <span className={styles.menuValue}>{isDark ? "🌙" : "☀️"}</span>
+          </button>
+        </section>
+      </div>
+    </div>
   );
 };
 

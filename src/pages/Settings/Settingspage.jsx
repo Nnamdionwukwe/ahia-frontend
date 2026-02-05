@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
-import styles from "./Settingspage.module.css";
+import styles from "./SettingsPage.module.css";
 
 const SettingsPage = () => {
   const navigate = useNavigate();

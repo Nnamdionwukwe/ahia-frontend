@@ -49,11 +49,7 @@ const Header = ({ onMenuClick }) => {
 
           {/* User */}
           {user ? (
-            <Link
-              to="/settings-page"
-              className={styles.userBtn}
-              title="Settings Page"
-            >
+            <Link to="/settings" className={styles.userBtn} title="Settings">
               {user.full_name?.charAt(0).toUpperCase()}
             </Link>
           ) : (
