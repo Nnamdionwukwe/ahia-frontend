@@ -106,13 +106,24 @@ const [isDarkMode, setIsDarkMode] = useState(false)
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button
+      
+
+
+
+         {currentStep === "payment" ?       <button
+            className={styles.backButton}
+            onClick={() => setShowConfirmCancel(true)}
+            title="Go back"
+          >
+            <ChevronLeft size={24} />
+          </button> :   <button
           className={styles.backButton}
           onClick={() => navigate(-1)}
           title="Go back"
         >
           <ChevronLeft size={24} />
-        </button>
+        </button>}
+
         <h1 className={styles.headerTitle}>
           {currentStep === "shipping" ? "Checkout" : "Payment"} ({orderData.itemCount})
         </h1>
@@ -282,7 +293,8 @@ const [isDarkMode, setIsDarkMode] = useState(false)
         {currentStep === "payment" && (
           <>
             <section className={styles.section}>
-              <h3 className={styles.sectionTitle}>Payment</h3>
+           
+
               <div className={styles.cardInputGroup}>
                 <label>* Card number</label>
                 <div className={styles.cardNumberInput}>
@@ -398,7 +410,7 @@ const [isDarkMode, setIsDarkMode] = useState(false)
             </button>
             <button
               className={styles.tertiaryButton}
-              onClick={() => setShowConfirmCancel(false)}
+             onClick={() => navigate("/cart")}
             >
               Cancel
             </button>
