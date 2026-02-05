@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FiShoppingCart, FiHeart, FiMenu, FiX } from "react-icons/fi";
+import { FiSettings, FiHeart, FiMenu, FiX } from "react-icons/fi";
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
 import useCartStore from "../../store/cartStore";
@@ -42,8 +42,8 @@ const Header = ({ onMenuClick }) => {
           </Link>
 
           {/* Cart */}
-          <Link to="/cart" className={styles.cartBtn} title="Shopping Cart">
-            <FiShoppingCart size={24} />
+          <Link to="/settings" className={styles.cartBtn} title="Settings">
+            <FiSettings size={24} />
             {itemCount > 0 && <span className={styles.badge}>{itemCount}</span>}
           </Link>
 
