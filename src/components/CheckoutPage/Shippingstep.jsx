@@ -37,7 +37,7 @@ export default function ShippingStep({
           className={styles.viewDetailsBtn}
           onClick={() => setShowItemDetails(true)}
         >
-          View details &gt;
+          View details
         </button>
         <div className={styles.itemPreview}>
           {selectedItems.slice(0, 4).map((item, idx) => (
