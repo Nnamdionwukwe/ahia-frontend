@@ -1,4 +1,4 @@
-// stores/cartStore.js
+// stores/cartStore.js - WITH SELECTED IMAGE SUPPORT
 import { create } from "zustand";
 import axios from "axios";
 
@@ -44,8 +44,13 @@ const useCartStore = create((set, get) => ({
     }
   },
 
-  // Add item to cart
-  addToCart: async (productId, variantId = null, quantity = 1) => {
+  // ✅ UPDATED: Add item to cart with selected image URL
+  addToCart: async (
+    productId,
+    variantId = null,
+    quantity = 1,
+    selectedImageUrl = null,
+  ) => {
     try {
       const token = localStorage.getItem("accessToken");
 
@@ -53,9 +58,19 @@ const useCartStore = create((set, get) => ({
         throw new Error("Please login to add items to cart");
       }
 
-      const payload = variantId
-        ? { product_id: productId, product_variant_id: variantId, quantity }
-        : { product_id: productId, quantity };
+      // ✅ Build payload with optional selected_image_url
+      const payload = {
+        product_id: productId,
+        quantity,
+      };
+
+      if (variantId) {
+        payload.product_variant_id = variantId;
+      }
+
+      if (selectedImageUrl) {
+        payload.selected_image_url = selectedImageUrl; // ✅ Include selected image
+      }
 
       await axios.post(`${API_URL}/api/cart/add`, payload, {
         headers: { Authorization: `Bearer ${token}` },
@@ -82,13 +97,13 @@ const useCartStore = create((set, get) => ({
       await axios.put(
         `${API_URL}/api/cart/${itemId}/quantity`,
         { quantity },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       // Update local state optimistically
       set((state) => ({
         items: state.items.map((item) =>
-          item.id === itemId ? { ...item, quantity } : item
+          item.id === itemId ? { ...item, quantity } : item,
         ),
       }));
 
@@ -114,13 +129,13 @@ const useCartStore = create((set, get) => ({
       await axios.put(
         `${API_URL}/api/cart/${itemId}/select`,
         { is_selected: newIsSelected },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       // Update local state
       set((state) => {
         const updatedItems = state.items.map((i) =>
-          i.id === itemId ? { ...i, is_selected: newIsSelected } : i
+          i.id === itemId ? { ...i, is_selected: newIsSelected } : i,
         );
         const selectedCount = updatedItems.filter((i) => i.is_selected).length;
 
@@ -145,7 +160,7 @@ const useCartStore = create((set, get) => ({
       await axios.put(
         `${API_URL}/api/cart/select-all`,
         { is_selected: newIsSelected },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       // Update local state
@@ -175,7 +190,7 @@ const useCartStore = create((set, get) => ({
       set((state) => {
         const updatedItems = state.items.filter((item) => item.id !== itemId);
         const selectedCount = updatedItems.filter(
-          (item) => item.is_selected
+          (item) => item.is_selected,
         ).length;
 
         return {
@@ -233,7 +248,7 @@ const useCartStore = create((set, get) => ({
       itemCount: selectedItems.length,
       totalQuantity: selectedItems.reduce(
         (sum, item) => sum + item.quantity,
-        0
+        0,
       ),
     };
   },

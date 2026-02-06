@@ -10,7 +10,7 @@ import { FiShoppingCart } from "react-icons/fi";
 const ProductCard = ({ product }) => {
   const [showVariantModal, setShowVariantModal] = useState(false);
   const navigate = useNavigate();
-  const addToCart = useCartStore((state) => state.addToCart); // ✅ Changed from addItem to addToCart
+  const addToCart = useCartStore((state) => state.addToCart);
   const accessToken = useAuthStore((state) => state.accessToken);
   const [adding, setAdding] = useState(false);
 
@@ -30,7 +30,8 @@ const ProductCard = ({ product }) => {
     navigate(`/product/${product.id}`);
   };
 
-  const handleAddToCart = async (variantId, quantity) => {
+  // ✅ Updated to receive selectedImageUrl from modal
+  const handleAddToCart = async (variantId, quantity, selectedImageUrl) => {
     if (!accessToken) {
       alert("Please login to add items to cart");
       navigate("/auth");
@@ -44,12 +45,17 @@ const ProductCard = ({ product }) => {
 
     setAdding(true);
     try {
-      // ✅ Updated to use addToCart with correct parameters
-      const result = await addToCart(product.id, variantId, quantity);
+      // ✅ Pass the selected image URL to the cart store
+      const result = await addToCart(
+        product.id,
+        variantId,
+        quantity,
+        selectedImageUrl,
+      );
 
       if (result.success) {
         alert("Added to cart!");
-        setShowVariantModal(false); // Close modal on success
+        setShowVariantModal(false);
       } else {
         alert(result.error || "Failed to add to cart");
       }
@@ -70,6 +76,11 @@ const ProductCard = ({ product }) => {
               src={product.images[0]}
               alt={product.name}
               className={styles.image}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23f5f5f5" width="200" height="200"/%3E%3Ctext fill="%23999" x="50%25" y="50%25" text-anchor="middle" dy=".3em" font-family="sans-serif" font-size="14"%3ENo Image%3C/text%3E%3C/svg%3E';
+              }}
             />
           ) : (
             <div className={styles.placeholder}>No Image</div>

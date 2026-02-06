@@ -15,7 +15,7 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
     size: null,
   });
 
-  // NEW: State to manage the currently displayed image
+  // State to manage the currently displayed image
   const [selectedImage, setSelectedImage] = useState(
     product?.images?.[0] || null,
   );
@@ -43,7 +43,7 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
           color: variant.color,
           size: variant.size,
         });
-        // NEW: Update image if variant has specific image
+        // Update image if variant has specific image
         if (variant.image_url) {
           setSelectedImage(variant.image_url);
         }
@@ -76,9 +76,21 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
       setSelectedVariant(matchingVariant || null);
 
-      // NEW: Automatically update image if the found variant has a specific image
+      // ✅ Automatically update image when variant changes
       if (matchingVariant?.image_url) {
         setSelectedImage(matchingVariant.image_url);
+      } else if (matchingVariant && product.images && selectedOptions.color) {
+        // ✅ Map color to image index (same logic as backend)
+        const uniqueColors = [
+          ...new Set(variants.map((v) => v.color).filter(Boolean)),
+        ];
+        const colorIndex = uniqueColors.indexOf(selectedOptions.color);
+
+        if (colorIndex !== -1 && product.images[colorIndex]) {
+          setSelectedImage(product.images[colorIndex]);
+        } else {
+          setSelectedImage(product.images[0]);
+        }
       } else if (!matchingVariant && product.images?.[0]) {
         // Fallback to first product image if no variant match
         setSelectedImage(product.images[0]);
@@ -88,6 +100,16 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
   const handleColorSelect = (color) => {
     setSelectedOptions((prev) => ({ ...prev, color }));
+
+    // ✅ Update image immediately when color is selected
+    const uniqueColors = [
+      ...new Set(variants.map((v) => v.color).filter(Boolean)),
+    ];
+    const colorIndex = uniqueColors.indexOf(color);
+
+    if (product.images && colorIndex !== -1 && product.images[colorIndex]) {
+      setSelectedImage(product.images[colorIndex]);
+    }
   };
 
   const handleSizeSelect = (size) => {
@@ -107,9 +129,14 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
       return;
     }
 
-    // Call the passed in onAddToCart function with variant id and quantity
-    onAddToCart(selectedVariant.id, quantity);
+    // ✅ Pass the selected image URL along with variant and quantity
+    onAddToCart(selectedVariant.id, quantity, selectedImage);
     onClose();
+  };
+
+  // ✅ Manual image selection from gallery
+  const handleImageSelect = (imageUrl) => {
+    setSelectedImage(imageUrl);
   };
 
   const calculatePrice = () => {
@@ -138,24 +165,37 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
           <div className={styles.imageContainer}>
             <div className={styles.productImage}>
               {selectedImage ? (
-                <img src={selectedImage} alt={product.name} />
+                <img
+                  src={selectedImage}
+                  alt={product.name}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = product.images?.[0] || "";
+                  }}
+                />
               ) : (
                 <div className={styles.noImage}>No Image</div>
               )}
             </div>
 
-            {/* NEW: Image Gallery / Thumbnail Strip */}
+            {/* Image Gallery / Thumbnail Strip */}
             {product.images && product.images.length > 1 && (
               <div className={styles.imageGallery}>
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedImage(img)}
+                    onClick={() => handleImageSelect(img)}
                     className={`${styles.galleryThumb} ${
                       selectedImage === img ? styles.galleryThumbActive : ""
                     }`}
                   >
-                    <img src={img} alt={`Variant ${idx}`} />
+                    <img
+                      src={img}
+                      alt={`Variant ${idx}`}
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                      }}
+                    />
                   </button>
                 ))}
               </div>
