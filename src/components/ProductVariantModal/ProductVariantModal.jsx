@@ -15,8 +15,15 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
     size: null,
   });
 
+  // NEW: State to manage the currently displayed image
+  const [selectedImage, setSelectedImage] = useState(
+    product?.images?.[0] || null,
+  );
+
   useEffect(() => {
     if (isOpen && product) {
+      // Reset image when modal opens
+      setSelectedImage(product.images?.[0] || null);
       fetchVariants();
     }
   }, [isOpen, product]);
@@ -36,6 +43,10 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
           color: variant.color,
           size: variant.size,
         });
+        // NEW: Update image if variant has specific image
+        if (variant.image_url) {
+          setSelectedImage(variant.image_url);
+        }
       }
     } catch (error) {
       console.error("Failed to fetch variants:", error);
@@ -64,8 +75,16 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
       });
 
       setSelectedVariant(matchingVariant || null);
+
+      // NEW: Automatically update image if the found variant has a specific image
+      if (matchingVariant?.image_url) {
+        setSelectedImage(matchingVariant.image_url);
+      } else if (!matchingVariant && product.images?.[0]) {
+        // Fallback to first product image if no variant match
+        setSelectedImage(product.images[0]);
+      }
     }
-  }, [selectedOptions, variants]);
+  }, [selectedOptions, variants, product]);
 
   const handleColorSelect = (color) => {
     setSelectedOptions((prev) => ({ ...prev, color }));
@@ -116,13 +135,33 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
         {/* Product Info */}
         <div className={styles.productInfo}>
-          <div className={styles.productImage}>
-            {product.images?.[0] ? (
-              <img src={product.images[0]} alt={product.name} />
-            ) : (
-              <div className={styles.noImage}>No Image</div>
+          <div className={styles.imageContainer}>
+            <div className={styles.productImage}>
+              {selectedImage ? (
+                <img src={selectedImage} alt={product.name} />
+              ) : (
+                <div className={styles.noImage}>No Image</div>
+              )}
+            </div>
+
+            {/* NEW: Image Gallery / Thumbnail Strip */}
+            {product.images && product.images.length > 1 && (
+              <div className={styles.imageGallery}>
+                {product.images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`${styles.galleryThumb} ${
+                      selectedImage === img ? styles.galleryThumbActive : ""
+                    }`}
+                  >
+                    <img src={img} alt={`Variant ${idx}`} />
+                  </button>
+                ))}
+              </div>
             )}
           </div>
+
           <div className={styles.productDetails}>
             <h3>{product.name}</h3>
             <div className={styles.price}>
