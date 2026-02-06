@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./PaymentStep.module.css";
+import styles from "./Paymentstep.module.css";
 
 export default function PaymentStep({ shippingAddress }) {
   return (
