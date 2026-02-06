@@ -1,0 +1,93 @@
+/* CheckOutHeader.module.css */
+
+.header {
+  background-color: var(--bg-primary);
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.backButton:hover {
+  background-color: var(--bg-secondary);
+}
+
+.backButton:active {
+  transform: scale(0.95);
+}
+
+.headerTitle {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: center;
+}
+
+.headerSpacer {
+  width: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 12px;
+  }
+
+  .headerTitle {
+    font-size: 16px;
+  }
+
+  .headerSpacer {
+    width: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 10px;
+  }
+
+  .headerTitle {
+    font-size: 14px;
+  }
+
+  .headerSpacer {
+    width: 28px;
+  }
+
+  .backButton {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .headerTitle {
+    font-size: 13px;
+  }
+
+  .headerSpacer {
+    width: 24px;
+  }
+}

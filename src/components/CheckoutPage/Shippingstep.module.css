@@ -1,0 +1,271 @@
+/* ShippingStep.module.css */
+
+/* Sections */
+.section {
+  background-color: var(--bg-primary);
+  padding: 16px;
+  margin: 8px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.section h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sectionHeader {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sectionHeader svg {
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.sectionHeader div {
+  flex: 1;
+}
+
+.sectionHeader h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sectionHeader p {
+  margin: 2px 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.addressDetail {
+  color: #ff6f00;
+  font-weight: 500;
+}
+
+.sectionLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.viewDetailsBtn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  float: right;
+  transition: color 0.2s ease;
+}
+
+.viewDetailsBtn:hover {
+  color: var(--text-primary);
+}
+
+.itemPreview {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  clear: both;
+}
+
+.itemThumb {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--bg-secondary);
+  flex-shrink: 0;
+}
+
+.itemThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.itemBadge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 9px;
+  padding: 2px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.sectionTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.safetyTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #10b981;
+  margin-bottom: 12px;
+}
+
+.safetyGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.safetyItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.safetyItem span {
+  font-size: 11px;
+  color: var(--text-primary);
+}
+
+/* Radio Options */
+.radioOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.radioOption:last-child {
+  border-bottom: none;
+}
+
+.radioOption input {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.radioOption span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radioDetail {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+/* Gift Button */
+.giftButton {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.giftButton:hover {
+  background-color: var(--border-color);
+}
+
+/* Savings Box */
+.savingsBox {
+  background-color: #fef3c7;
+  border: 1px solid #fcd34d;
+  color: #92400e;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.timer {
+  margin-left: auto;
+  font-family: monospace;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .section {
+    margin: 6px;
+    padding: 12px;
+  }
+
+  .safetyGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section {
+    margin: 4px;
+    padding: 10px;
+  }
+
+  .safetyGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .itemPreview {
+    gap: 6px;
+  }
+
+  .itemThumb {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 360px) {
+  .section {
+    padding: 8px;
+  }
+
+  .itemThumb {
+    width: 45px;
+    height: 45px;
+  }
+}

@@ -1,0 +1,153 @@
+/* OrderSummary.module.css */
+
+.orderSummary {
+  background-color: var(--bg-primary);
+  padding: 16px;
+  margin: 8px;
+  border-radius: 8px;
+  border-top: 1px solid var(--border-color);
+  transition: background-color 0.3s ease;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.summaryRow span:first-child {
+  color: var(--text-primary);
+}
+
+.discount {
+  color: #ff6f00;
+  font-weight: 600;
+}
+
+.free {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.credit {
+  color: #ff6f00;
+  font-weight: 600;
+}
+
+.summaryDivider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 8px 0;
+}
+
+.summaryTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.timelineBox {
+  background-color: #1a1a1a;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.savings {
+  color: #10b981;
+}
+
+.expiresIn {
+  margin-left: auto;
+  font-family: monospace;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .orderSummary {
+    margin: 6px;
+    padding: 12px;
+  }
+
+  .summaryRow {
+    padding: 6px 0;
+  }
+
+  .summaryTotal {
+    padding: 10px 0;
+    font-size: 15px;
+  }
+
+  .timelineBox {
+    padding: 10px;
+    font-size: 12px;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .orderSummary {
+    margin: 4px;
+    padding: 10px;
+  }
+
+  .summaryRow {
+    padding: 6px 0;
+    font-size: 12px;
+  }
+
+  .summaryTotal {
+    padding: 10px 0;
+    font-size: 14px;
+  }
+
+  .timelineBox {
+    flex-wrap: wrap;
+    padding: 8px;
+    font-size: 11px;
+    gap: 8px;
+  }
+
+  .savings {
+    flex: 1;
+    min-width: 100%;
+  }
+
+  .expiresIn {
+    flex: 1;
+    min-width: 100%;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 360px) {
+  .orderSummary {
+    padding: 8px;
+  }
+
+  .summaryRow {
+    padding: 5px 0;
+    font-size: 11px;
+  }
+
+  .summaryTotal {
+    padding: 8px 0;
+    font-size: 13px;
+  }
+
+  .timelineBox {
+    padding: 8px;
+    font-size: 10px;
+  }
+}
