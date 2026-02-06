@@ -1,4 +1,3 @@
-
 import { MapPin, Gift, Lock, AlertCircle, Check } from "lucide-react";
 import styles from "./Shippingstep.module.css";
 
@@ -31,12 +30,14 @@ export default function ShippingStep({
 
       {/* Item Details */}
       <section className={styles.section}>
-        <div className={styles.sectionLabel}>Item details ({orderData.itemCount})</div>
+        <div className={styles.sectionLabel}>
+          Item details ({orderData.itemCount})
+        </div>
         <button
           className={styles.viewDetailsBtn}
           onClick={() => setShowItemDetails(true)}
         >
-          View details >
+          View details &gt;
         </button>
         <div className={styles.itemPreview}>
           {selectedItems.slice(0, 4).map((item, idx) => (
@@ -45,7 +46,8 @@ export default function ShippingStep({
                 src={item.image_url || item.image}
                 alt={item.name}
                 onError={(e) => {
-                  e.target.src = "https://via.placeholder.com/100?text=No+Image";
+                  e.target.src =
+                    "https://via.placeholder.com/100?text=No+Image";
                 }}
               />
               <span className={styles.itemBadge}>
@@ -70,7 +72,9 @@ export default function ShippingStep({
             onChange={(e) => setShippingMethod(e.target.value)}
           />
           <span>Standard: FREE</span>
-          <span className={styles.radioDetail}>Delivery: Arrives in NG in as little as 7 days</span>
+          <span className={styles.radioDetail}>
+            Delivery: Arrives in NG in as little as 7 days
+          </span>
         </label>
         <label className={styles.radioOption}>
           <input
@@ -157,7 +161,10 @@ export default function ShippingStep({
       <section className={styles.section}>
         <div className={styles.savingsBox}>
           <Check size={20} style={{ color: "#10b981" }} />
-          <span>Eligible to save an extra ₦{Math.abs(orderData.limitedDiscount).toLocaleString()} on this order</span>
+          <span>
+            Eligible to save an extra ₦
+            {Math.abs(orderData.limitedDiscount).toLocaleString()} on this order
+          </span>
           <span className={styles.timer}>11:54:44</span>
         </div>
       </section>
