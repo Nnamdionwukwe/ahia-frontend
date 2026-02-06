@@ -1,6 +1,6 @@
 
 import { MapPin, Gift, Lock, AlertCircle, Check } from "lucide-react";
-import styles from "./ShippingStep.module.css";
+import styles from "./Shippingstep.module.css";
 
 export default function ShippingStep({
   shippingAddress,
