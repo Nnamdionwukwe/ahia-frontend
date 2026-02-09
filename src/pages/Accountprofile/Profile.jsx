@@ -12,7 +12,7 @@ import {
   X,
   ShoppingBag,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
 import useCartStore from "../../store/cartStore";
 import Header from "../../components/Header/Header";
@@ -95,24 +95,6 @@ const Profile = () => {
   return (
     <div className={styles.container}>
       {/* Header */}
-      {/* <div className={styles.header}>
-        <div className={styles.profileSection}>
-          <img
-            src={profile.avatar}
-            alt="Profile"
-            className={styles.profileImage}
-          />
-          <h1 className={styles.profileName}>{profile.name}</h1>
-        </div>
-        <div className={styles.headerIcons}>
-          <div className={styles.notificationBadge}>
-            <Bell size={24} />
-            <span className={styles.badge}>{profile.notificationCount}</span>
-          </div>
-          <Eye size={24} />
-        </div>
-      </div> */}
-
       <Header />
 
       {/* Notification Banner */}
@@ -158,7 +140,9 @@ const Profile = () => {
 
       {/* Menu Items */}
       <div className={styles.menuSection}>
-        <MenuItem icon={ShoppingBag} label="Your orders" count={null} />
+        <Link to="/order-details" className={styles.menuItemLink}>
+          <MenuItem icon={ShoppingBag} label="Your orders" count={null} />
+        </Link>
         <MenuItem
           icon={MessageCircle}
           label="Messages"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   X,
   MapPin,
@@ -15,23 +16,27 @@ import useAuthStore from "../../store/authStore";
 import ItemDetailsModal from "./ItemDetailsModal";
 import CheckOutHeader from "./CheckOutHeader";
 import ShippingStep from "./Shippingstep";
-import PaymentStep from "./Paymentstep";
 import OrderSummary from "./OrderSummary";
+import PaymentStep from "./Paymentstep";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, getSelectedTotals, getAlmostSoldOutCount } = useCartStore();
-  const { user } = useAuthStore();
+  const { user, accessToken } = useAuthStore();
 
   const [currentStep, setCurrentStep] = useState("shipping");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [shippingMethod, setShippingMethod] = useState("standard");
-  const [paymentMethod, setPaymentMethod] = useState("bank-transfer");
+  const [paymentMethod, setPaymentMethod] = useState("paystack");
   const [giftMessage, setGiftMessage] = useState("Hope you enjoy this gift!");
   const [showItemDetails, setShowItemDetails] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [creatingOrder, setCreatingOrder] = useState(false);
+  const [orderId, setOrderId] = useState(null);
 
   // Get cart data
   const selectedItems = items.filter((item) => item.is_selected);
@@ -40,8 +45,8 @@ const CheckoutPage = () => {
 
   // Shipping address from user profile
   const shippingAddress = user?.address || {
-    name: "Nnamdi Michael Onwukwe",
-    phone: "+234 803 774 8573",
+    name: user?.full_name || "Nnamdi Michael Onwukwe",
+    phone: user?.phone_number || "+234 803 774 8573",
     address: "The loft apartment, Patients Effiong Street",
     city: "Abuja, Federal Capital Territory Nigeria",
   };
@@ -61,23 +66,94 @@ const CheckoutPage = () => {
     timeRemaining: "11:53:01",
   };
 
-  const handleContinuePayment = () => {
+  // Create order in database
+  const createOrder = async () => {
+    setCreatingOrder(true);
+    try {
+      // Prepare delivery address
+      const deliveryAddress = `${shippingAddress.address}, ${shippingAddress.city}`;
+
+      const response = await axios.post(
+        `${API_URL}/api/orders/checkout`,
+        {
+          delivery_address: deliveryAddress,
+          payment_method: "paystack",
+          promo_code: null,
+          shipping_method: shippingMethod,
+          gift_message: giftMessage || null,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.data.success && response.data.order) {
+        setOrderId(response.data.order.id);
+        // setCurrentStep("payment");
+        return response.data.order.id;
+      } else {
+        throw new Error("Failed to create order");
+      }
+    } catch (error) {
+      console.error("Order creation error:", error);
+      alert(
+        error.response?.data?.error ||
+          "Failed to create order. Please try again.",
+      );
+      return null;
+    } finally {
+      setCreatingOrder(false);
+    }
+  };
+
+  const handleContinuePayment = async () => {
     setShowConfirmCancel(false);
-    setCurrentStep("payment");
+
+    // Create order before moving to payment
+    const newOrderId = await createOrder();
+
+    if (!newOrderId) {
+      // Order creation failed, stay on shipping step
+      return;
+    }
+    setOrderId(newOrderId); // Use setTimeout to ensure state is set before changing step
+    setTimeout(() => {
+      setCurrentStep("payment");
+    }, 0);
+    // navigate(`/order-success?reference=${reference}&order_id=${orderId}`);
   };
 
   const handleSubmitOrder = async () => {
     if (currentStep === "shipping") {
       setShowConfirmCancel(true);
     } else {
-      // Process payment
-      navigate("/order-success");
+      // Already on payment step, order is created
+      // Payment will be handled by PaymentStep component
     }
   };
 
   const handleScanCard = () => {
     console.log("Scan card initiated");
   };
+
+  if (!accessToken) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.emptyCheckout}>
+          <p>Please login to continue</p>
+          <button
+            className={styles.shopNowButton}
+            onClick={() => navigate("/auth")}
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (selectedItems.length === 0) {
     return (
@@ -119,7 +195,6 @@ const CheckoutPage = () => {
             safeguarded
           </span>
         </div>
-
         {/* Shipping Step */}
         {currentStep === "shipping" && (
           <ShippingStep
@@ -136,9 +211,14 @@ const CheckoutPage = () => {
           />
         )}
 
-        {/* Payment Step */}
+        {/* // In your render, use a local variable check */}
         {currentStep === "payment" && (
-          <PaymentStep shippingAddress={shippingAddress} />
+          <PaymentStep
+            shippingAddress={shippingAddress}
+            orderData={orderData}
+            orderId={orderId}
+            user={user}
+          />
         )}
       </div>
 
@@ -146,10 +226,16 @@ const CheckoutPage = () => {
       <OrderSummary orderData={orderData} />
 
       {/* Submit Button */}
-      <button className={styles.submitButton} onClick={handleSubmitOrder}>
-        {currentStep === "shipping"
-          ? `Submit order (${orderData.itemCount})`
-          : `Pay ₦${Math.max(orderData.orderTotal, 0).toLocaleString()}`}
+      <button
+        className={styles.submitButton}
+        onClick={handleSubmitOrder}
+        disabled={creatingOrder}
+      >
+        {creatingOrder
+          ? "Creating order..."
+          : currentStep === "shipping"
+            ? `Submit order (${orderData.itemCount})`
+            : `Pay ₦${Math.max(orderData.orderTotal, 0).toLocaleString()}`}
       </button>
 
       {/* Confirm Cancel Modal */}
@@ -162,11 +248,10 @@ const CheckoutPage = () => {
             >
               <X size={24} />
             </button>
-            <h3>Are you sure you want to cancel payment?</h3>
+            <h3>Proceed to Payment?</h3>
             <p>
-              Details will need to be filled in again if you leave now, you can
-              continue entering card details or scan your card. Scan card is
-              fast and simple!
+              You're about to create an order for {orderData.itemCount} items.
+              Click "Continue to pay" to proceed with Paystack payment.
             </p>
             <div className={styles.modalBenefits}>
               <div>
@@ -177,19 +262,22 @@ const CheckoutPage = () => {
                 <Lock size={24} />
                 <span>Safe payment</span>
               </div>
+              <div>
+                <CreditCard size={24} />
+                <span>Multiple payment options</span>
+              </div>
             </div>
             <button
               className={styles.primaryButton}
               onClick={handleContinuePayment}
+              disabled={creatingOrder}
             >
-              Continue to pay
-            </button>
-            <button className={styles.secondaryButton} onClick={handleScanCard}>
-              📷 Scan card
+              {creatingOrder ? "Creating order..." : "Continue to pay"}
             </button>
             <button
               className={styles.tertiaryButton}
-              onClick={() => navigate("/cart")}
+              onClick={() => setShowConfirmCancel(false)}
+              disabled={creatingOrder}
             >
               Cancel
             </button>

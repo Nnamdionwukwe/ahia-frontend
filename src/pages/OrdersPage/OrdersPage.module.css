@@ -1,0 +1,129 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--bg-secondary, #f3f4f6);
+  padding: 16px;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.filterBtn {
+  padding: 8px 16px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  border-radius: 20px;
+  background: var(--bg-primary, #fff);
+  color: var(--text-secondary);
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.filterBtn.active {
+  background: var(--text-primary, #000);
+  color: #fff;
+  border-color: var(--text-primary);
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.orderCard {
+  background: var(--bg-primary);
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.orderInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.imagePlaceholder {
+  width: 48px;
+  height: 48px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orderId {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.orderDate {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.statusPending {
+  background: #fef3c7;
+  color: #92400e;
+}
+.statusProcessing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+.statusCompleted {
+  background: #d1fae5;
+  color: #065f46;
+}
+.statusCancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.statusReview {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.orderMeta {
+  text-align: right;
+}
+
+.orderAmount {
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.arrow {
+  color: var(--text-secondary);
+  margin-left: 8px;
+}
