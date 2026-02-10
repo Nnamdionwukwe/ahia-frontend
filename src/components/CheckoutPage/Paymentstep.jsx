@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
-import styles from "./Shippingstep.module.css";
+import styles from "./PaymentStep.module.css";
 import useAuthStore from "../../store/authStore";
 import useCartStore from "../../store/cartStore";
 
