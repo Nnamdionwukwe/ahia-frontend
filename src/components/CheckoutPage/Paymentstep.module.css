@@ -1,82 +1,300 @@
-/* PaymentStep.module.css */
+/* Paymentstep.module.css */
 
+/* ========================================
+   SECTION CONTAINER
+======================================== */
 .section {
   background-color: var(--bg-primary);
-  padding: 20px;
+  padding: 24px;
   margin: 8px;
-  border-radius: 8px;
-  transition: background-color 0.3s ease;
+  border-radius: 12px;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
-.paymentHeader {
+/* ========================================
+   CARD LOGOS
+======================================== */
+.cardLogos {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.cardLogos img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.cardLogos img:hover {
+  opacity: 1;
+}
+
+/* ========================================
+   ERROR BANNER
+======================================== */
+.errorBanner {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-theme="dark"] .errorBanner,
+.dark .errorBanner {
+  background-color: #4a1818;
+  border-color: #8b1a1a;
+  color: #ff6b6b;
+}
+
+/* ========================================
+   CARD INPUT GROUP
+======================================== */
+.cardInputGroup {
   margin-bottom: 20px;
 }
 
-.paymentHeader h3 {
-  margin: 0 0 8px 0;
-  font-size: 18px;
+.cardInputGroup label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
+  margin-bottom: 8px;
 }
 
-.secureText {
-  margin: 0;
-  font-size: 13px;
+.scanCardLabel {
+  background: none;
+  border: none;
+  color: #ff6f00;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.scanCardLabel:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+.helpIcon {
+  margin-left: 4px;
   color: var(--text-secondary);
+  cursor: help;
+  font-size: 12px;
+}
+
+.editButton {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: auto;
+  transition: opacity 0.2s ease;
+}
+
+.editButton:hover {
+  opacity: 0.7;
+}
+
+/* ========================================
+   CARD NUMBER INPUT
+======================================== */
+.cardNumberInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.cardNumberInput:focus-within {
+  border-color: #ff6f00;
+  box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.1);
+}
+
+.cardNumberInput.error {
+  border-color: var(--danger-color);
+}
+
+.cardIconWrapper {
+  display: flex;
+  align-items: center;
+  color: var(--text-secondary);
+}
+
+.cardIcon {
+  color: var(--text-secondary);
+}
+
+.cardInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  padding: 0;
+}
+
+.cardInput::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+.checkIcon {
+  color: #10b981;
+  animation: scaleIn 0.3s ease;
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.scanButton {
+  padding: 8px 12px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.scanButton:hover {
+  background-color: var(--border-color);
+  transform: translateY(-1px);
+}
+
+/* ========================================
+   CARD INPUT ROW (Expiry & CVV)
+======================================== */
+.cardInputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cardInputGroup input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 16px;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.cardInputGroup input:focus {
+  border-color: #ff6f00;
+  box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.1);
+}
+
+.cardInputGroup input.error {
+  border-color: var(--danger-color);
+}
+
+.cardInputGroup input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.6;
+}
+
+/* ========================================
+   CVV INPUT
+======================================== */
+.cvvInput {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.cvvInput input {
+  padding-right: 40px;
+}
+
+.lockIcon {
+  position: absolute;
+  right: 12px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+/* ========================================
+   ERROR TEXT
+======================================== */
+.errorText {
+  margin: 6px 0 0 0;
+  color: var(--danger-color);
+  font-size: 13px;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.errorBanner {
-  background-color: #fee;
-  border: 1px solid #fcc;
-  color: #c33;
-  padding: 12px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-}
-
-/* Paystack Payment Option */
-.paymentOption {
+/* ========================================
+   ADDRESS PREVIEW
+======================================== */
+.addressPreview {
+  padding: 12px 16px;
+  background-color: var(--bg-secondary);
   border: 2px solid var(--border-color);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-  transition: all 0.2s ease;
+  border-radius: 8px;
+  margin-top: 8px;
 }
 
-.paymentOption:hover {
-  border-color: #ff6f00;
-  box-shadow: 0 2px 8px rgba(255, 111, 0, 0.1);
-}
-
-.paystackInfo {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.paystackLogo {
-  width: 120px;
-  height: auto;
-}
-
-.paystackInfo div h4 {
-  margin: 0 0 4px 0;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.paystackInfo div p {
+.addressPreview p {
   margin: 0;
-  font-size: 13px;
-  color: var(--text-secondary);
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.5;
 }
 
+/* ========================================
+   PAYSTACK BUTTON
+======================================== */
 .paystackButton {
   width: 100%;
   padding: 16px;
@@ -84,7 +302,7 @@
   color: white;
   border: none;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -92,11 +310,17 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  margin-top: 24px;
+  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.2);
 }
 
 .paystackButton:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.3);
+  box-shadow: 0 6px 16px rgba(255, 111, 0, 0.3);
+}
+
+.paystackButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .paystackButton:disabled {
@@ -118,88 +342,15 @@
   }
 }
 
-/* Payment Summary */
-.paymentSummary {
-  background-color: var(--bg-secondary);
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
-.paymentSummary h4 {
-  margin: 0 0 12px 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.summaryRow {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-  font-size: 14px;
-  color: var(--text-primary);
-}
-
-.summaryRow span:first-child {
-  color: var(--text-secondary);
-}
-
-.discount {
-  color: #10b981;
-  font-weight: 600;
-}
-
-.credit {
-  color: #ff6f00;
-  font-weight: 600;
-}
-
-.summaryDivider {
-  height: 1px;
-  background-color: var(--border-color);
-  margin: 12px 0;
-}
-
-.summaryTotal {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px 0 0 0;
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-/* Card Input Group */
-.cardInputGroup {
-  margin-bottom: 16px;
-}
-
-.cardInputGroup label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 8px;
-}
-
-.addressText {
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-primary);
-  line-height: 1.6;
-  padding: 12px;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-}
-
-/* Security Badges */
+/* ========================================
+   SECURITY BADGES
+======================================== */
 .securityBadges {
   display: flex;
   justify-content: space-around;
-  gap: 12px;
-  margin-top: 20px;
-  padding-top: 20px;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 24px;
   border-top: 1px solid var(--border-color);
 }
 
@@ -207,93 +358,96 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   font-size: 12px;
   color: var(--text-secondary);
+  text-align: center;
 }
 
-.badge span:first-child {
-  font-size: 20px;
+.badge svg {
+  color: #10b981;
 }
 
-/* Card Number Input (Legacy - kept for compatibility) */
-.cardNumberInput {
-  display: flex;
-  gap: 8px;
+.badge span {
+  font-weight: 600;
 }
 
-.cardNumberInput input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+/* ========================================
+   DARK MODE
+======================================== */
+[data-theme="dark"] .section,
+.dark .section {
+  background-color: var(--bg-primary);
+}
+
+[data-theme="dark"] .cardLogos,
+.dark .cardLogos {
   background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 14px;
 }
 
-.scanButton {
-  padding: 12px 16px;
+[data-theme="dark"] .cardNumberInput,
+.dark .cardNumberInput,
+[data-theme="dark"] .cardInputGroup input,
+.dark .cardInputGroup input {
+  background-color: var(--input-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .addressPreview,
+.dark .addressPreview {
   background-color: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  color: var(--text-primary);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s ease;
+  border-color: var(--border-color);
 }
 
-.scanButton:hover {
-  background-color: var(--border-color);
+[data-theme="dark"] .cardLogos img,
+.dark .cardLogos img {
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
 }
 
-.cardInputRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
+[data-theme="dark"] .cardLogos img:hover,
+.dark .cardLogos img:hover {
+  opacity: 0.8;
 }
 
-.cardInputGroup input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 14px;
-}
-
-/* Responsive */
+/* ========================================
+   RESPONSIVE
+======================================== */
 @media (max-width: 768px) {
   .section {
     margin: 6px;
     padding: 16px;
   }
 
-  .paystackLogo {
-    width: 100px;
+  .cardLogos {
+    gap: 8px;
+    padding: 12px;
   }
 
-  .paystackInfo {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .securityBadges {
-    flex-direction: column;
-  }
-
-  .badge {
-    flex-direction: row;
-    justify-content: flex-start;
+  .cardLogos img {
+    height: 24px;
   }
 
   .cardInputRow {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+
+  .securityBadges {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .badge {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .paystackButton {
+    font-size: 16px;
+    padding: 14px;
   }
 }
 
@@ -303,29 +457,31 @@
     padding: 12px;
   }
 
-  .paymentSummary {
-    padding: 12px;
+  .cardLogos {
+    gap: 6px;
+    padding: 10px;
+  }
+
+  .cardLogos img {
+    height: 20px;
+  }
+
+  .cardInput {
+    font-size: 14px;
   }
 
   .paystackButton {
-    padding: 14px;
     font-size: 15px;
-  }
-
-  .summaryTotal {
-    font-size: 16px;
+    padding: 12px;
   }
 }
 
-/* Dark mode support */
-[data-theme="dark"] .section,
-.dark .section {
-  background: var(--bg-primary, #2d2d2d);
-}
-
-[data-theme="dark"] .errorBanner,
-.dark .errorBanner {
-  background-color: #4a1818;
-  border-color: #8b1a1a;
-  color: #ff6b6b;
+/* ========================================
+   SMOOTH TRANSITIONS
+======================================== */
+* {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
