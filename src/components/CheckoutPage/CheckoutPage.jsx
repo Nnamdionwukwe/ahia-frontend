@@ -24,6 +24,7 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { items, getSelectedTotals, getAlmostSoldOutCount } = useCartStore();
+  const selectedTotals = getSelectedTotals();
   const { user, accessToken } = useAuthStore();
 
   const [currentStep, setCurrentStep] = useState("shipping");
@@ -40,7 +41,7 @@ const CheckoutPage = () => {
 
   // Get cart data
   const selectedItems = items.filter((item) => item.is_selected);
-  const selectedTotals = getSelectedTotals();
+  // const selectedTotals = getSelectedTotals();
   const almostGoneCount = getAlmostSoldOutCount();
 
   // Shipping address from user profile
@@ -75,7 +76,7 @@ const CheckoutPage = () => {
     subtotal: subtotal,
     shipping: shipping,
     credit: credit,
-    orderTotal: orderTotal,
+    orderTotal: selectedTotals.total || 0,
     itemCount: selectedItems.length,
     savings: itemsDiscount + Math.abs(limitedDiscount) + Math.abs(credit), // Total savings
     timeRemaining: "11:53:01",
