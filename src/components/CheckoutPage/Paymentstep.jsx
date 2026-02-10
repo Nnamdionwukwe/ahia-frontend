@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Loader2, CreditCard, Lock, Shield, Check } from "lucide-react";
+import { Loader2, CreditCard, Lock, Shield, Check, Mail } from "lucide-react";
 import styles from "./Paymentstep.module.css";
 import useAuthStore from "../../store/authStore";
 import useCartStore from "../../store/cartStore";
@@ -15,6 +15,10 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
   const [loading, setLoading] = useState(false);
   const [paystackPublicKey, setPaystackPublicKey] = useState("");
   const [error, setError] = useState("");
+
+  // Email state - since user object doesn't have email
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState(false);
 
   // Card input states
   const [cardDetails, setCardDetails] = useState({
@@ -64,6 +68,17 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       }
     };
   }, [paystackPublicKey]);
+
+  // Email validation
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    setEmailError(false);
+  };
 
   // Card number formatting (spaces every 4 digits)
   const formatCardNumber = (value) => {
@@ -126,8 +141,16 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       return;
     }
 
-    if (!user?.email) {
-      setError("User email not found. Please update your profile.");
+    // Validate email
+    if (!email || !validateEmail(email)) {
+      setEmailError(true);
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Validate card inputs before proceeding
+    if (!validateCardInputs()) {
+      setError("Please fill in all card details correctly");
       return;
     }
 
@@ -139,7 +162,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       const initResponse = await axios.post(
         `${API_URL}/api/payments/initialize`,
         {
-          email: user.email,
+          email: email,
           amount: Math.max(orderData.orderTotal, 0),
           order_id: orderId,
           metadata: {
@@ -171,10 +194,10 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
 
       const { reference } = initResponse.data.data;
 
-      // Step 2: Open Paystack popup
+      // Step 2: Open Paystack popup with card payment
       const handler = window.PaystackPop.setup({
         key: paystackPublicKey,
-        email: user.email,
+        email: email,
         amount: Math.round(Math.max(orderData.orderTotal, 0) * 100),
         ref: reference,
         metadata: {
@@ -227,6 +250,9 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
         verifyResponse.data.success &&
         verifyResponse.data.data.status === "success"
       ) {
+        // Clear card details on success
+        setCardDetails({ cardNumber: "", expiryDate: "", cvv: "" });
+        setEmail("");
         navigate(`/order-success?reference=${reference}&order_id=${orderId}`);
       } else {
         setError("Payment verification failed. Please contact support.");
@@ -241,19 +267,10 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
     }
   };
 
-  const handleScanCard = () => {
-    // Trigger Paystack popup directly (Paystack will handle card scanning)
-    handlePaystackPayment();
-  };
-
   return (
     <section className={styles.section}>
       {/* Card Logos */}
       <div className={styles.cardLogos}>
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Old_Visa_Logo.svg"
-          alt="Verve"
-        />
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/0/04/Visa.svg"
           alt="Visa"
@@ -266,22 +283,6 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
           src="https://upload.wikimedia.org/wikipedia/commons/f/fa/American_Express_logo_%282018%29.svg"
           alt="American Express"
         />
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
-          alt="Discover"
-        />
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg"
-          alt="Maestro"
-        />
-        <img
-          src="https://upload.wikimedia.org/wikipedia/en/f/f3/Diners_Club_Logo3.svg"
-          alt="Diners Club"
-        />
-        <img
-          src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg"
-          alt="JCB"
-        />
       </div>
 
       {error && (
@@ -290,16 +291,53 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
         </div>
       )}
 
+      {/* Email Input */}
+      <div className={styles.cardInputGroup}>
+        <label>* Email address</label>
+        <div
+          className={`${styles.cardNumberInput} ${
+            emailError ? styles.error : ""
+          }`}
+        >
+          <div className={styles.cardIconWrapper}>
+            <Mail size={20} className={styles.cardIcon} />
+          </div>
+          <input
+            type="email"
+            placeholder="your.email@example.com"
+            value={email}
+            onChange={handleEmailChange}
+            className={styles.cardInput}
+            disabled={loading}
+          />
+          {email && validateEmail(email) && (
+            <Check size={20} className={styles.checkIcon} />
+          )}
+        </div>
+        {emailError && (
+          <p className={styles.errorText}>
+            ! Please enter a valid email address.
+          </p>
+        )}
+      </div>
+
       {/* Card Number */}
       <div className={styles.cardInputGroup}>
         <label>
           * Card number
-          <button className={styles.scanCardLabel} onClick={handleScanCard}>
+          <button
+            className={styles.scanCardLabel}
+            onClick={handlePaystackPayment}
+            type="button"
+            disabled={loading}
+          >
             📷 Scan card
           </button>
         </label>
         <div
-          className={`${styles.cardNumberInput} ${cardErrors.cardNumber ? styles.error : ""}`}
+          className={`${styles.cardNumberInput} ${
+            cardErrors.cardNumber ? styles.error : ""
+          }`}
         >
           <div className={styles.cardIconWrapper}>
             <CreditCard size={20} className={styles.cardIcon} />
@@ -311,6 +349,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
             onChange={handleCardNumberChange}
             maxLength={19}
             className={styles.cardInput}
+            disabled={loading}
           />
           {cardDetails.cardNumber.replace(/\s/g, "").length >= 13 && (
             <Check size={20} className={styles.checkIcon} />
@@ -332,7 +371,11 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
             onChange={handleExpiryChange}
             maxLength={5}
             className={cardErrors.expiryDate ? styles.error : ""}
+            disabled={loading}
           />
+          {cardErrors.expiryDate && (
+            <p className={styles.errorText}>! Invalid expiry date.</p>
+          )}
         </div>
         <div className={styles.cardInputGroup}>
           <label>
@@ -349,9 +392,11 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
               onChange={handleCvvChange}
               maxLength={4}
               className={cardErrors.cvv ? styles.error : ""}
+              disabled={loading}
             />
             <Lock size={16} className={styles.lockIcon} />
           </div>
+          {cardErrors.cvv && <p className={styles.errorText}>! Invalid CVV.</p>}
         </div>
       </div>
 
@@ -362,7 +407,6 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
           <span className={styles.helpIcon} title="Address for billing">
             (?)
           </span>
-          <button className={styles.editButton}>Edit</button>
         </label>
         <div className={styles.addressPreview}>
           <p>
@@ -371,21 +415,24 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
         </div>
       </div>
 
-      {/* Pay Button */}
-      {/* <button
-        className={styles.paystackButton}
+      {/* Pay Now Button */}
+      <button
+        className={styles.payButton}
         onClick={handlePaystackPayment}
         disabled={loading || !paystackPublicKey}
       >
         {loading ? (
           <>
-            <Loader2 className={styles.spinner} size={20} />
+            <Loader2 size={20} className={styles.spinner} />
             Processing...
           </>
         ) : (
-          <>Pay ₦{Math.max(orderData.orderTotal, 0).toLocaleString()}</>
+          <>
+            <Lock size={20} />
+            Pay ₦{Math.max(orderData.orderTotal, 0).toLocaleString()}
+          </>
         )}
-      </button> */}
+      </button>
 
       {/* Security Badges */}
       <div className={styles.securityBadges}>
