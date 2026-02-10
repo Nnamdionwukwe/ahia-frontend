@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -18,7 +18,7 @@ import ItemDetailsModal from "./ItemDetailsModal";
 import CheckOutHeader from "./CheckOutHeader";
 import ShippingStep from "./Shippingstep";
 import OrderSummary from "./OrderSummary";
-import PaymentStep from "./Paymentstep";
+import PaymentStep from "./Paymentstep"; // Ensure filename matches
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -29,6 +29,7 @@ const CheckoutPage = () => {
   const { user, accessToken } = useAuthStore();
 
   const [currentStep, setCurrentStep] = useState("shipping");
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const [shippingMethod, setShippingMethod] = useState("standard");
@@ -37,15 +38,19 @@ const CheckoutPage = () => {
   const [showItemDetails, setShowItemDetails] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [creatingOrder, setCreatingOrder] = useState(false);
+  const [orderId, setOrderId] = useState(() => {
+    // Try to get orderId from sessionStorage on mount
+    return sessionStorage.getItem("currentOrderId") || null;
+  });
   const [loading, setLoading] = useState(false);
+
   const [paystackPublicKey, setPaystackPublicKey] = useState("");
 
-  // Use ref to store orderId for immediate access
-  const orderIdRef = useRef(null);
-  const [orderId, setOrderId] = useState(null);
+  // const [orderId, setOrderId] = useState(null);
 
   // Get cart data
   const selectedItems = items.filter((item) => item.is_selected);
+  // const selectedTotals = getSelectedTotals();
   const almostGoneCount = getAlmostSoldOutCount();
 
   // Shipping address from user profile
@@ -56,15 +61,21 @@ const CheckoutPage = () => {
     city: "Abuja, Federal Capital Territory Nigeria",
   };
 
-  // Calculate order totals
+  // --- EXPLICIT CALCULATION ---
   const itemsTotal = selectedTotals.subtotal || 0;
   const itemsDiscount = selectedTotals.discount || 0;
+
+  // Calculate step by step
   const subtotalAfterDiscount = itemsTotal - itemsDiscount;
-  const limitedDiscount = -34884;
+  const limitedDiscount = -34884; // Adjust this value dynamically if needed
   const subtotal = subtotalAfterDiscount + limitedDiscount;
   const shipping = 0;
   const credit = -1600;
+
+  // Final Order Total
   const orderTotal = subtotal + shipping + credit;
+
+  // --- END CALCULATION ---
 
   const orderData = {
     itemsTotal: itemsTotal,
@@ -76,11 +87,74 @@ const CheckoutPage = () => {
     credit: credit,
     orderTotal: selectedTotals.total || 0,
     itemCount: selectedItems.length,
-    savings: itemsDiscount + Math.abs(limitedDiscount) + Math.abs(credit),
+    savings: itemsDiscount + Math.abs(limitedDiscount) + Math.abs(credit), // Total savings
     timeRemaining: "11:53:01",
   };
 
-  // Fetch Paystack public key
+  // Create order in database
+  const createOrder = async () => {
+    setCreatingOrder(true);
+    try {
+      const deliveryAddress = `${shippingAddress.address}, ${shippingAddress.city}`;
+
+      const response = await axios.post(
+        `${API_URL}/api/orders/checkout`,
+        {
+          delivery_address: deliveryAddress,
+          payment_method: "paystack",
+          promo_code: null,
+          shipping_method: shippingMethod,
+          gift_message: giftMessage || null,
+          total_amount: Math.max(orderTotal, 0),
+          discount_amount: Math.abs(limitedDiscount) + Math.abs(credit),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            "Content-Type": "application/json",
+          },
+        },
+      );
+
+      if (response.data.success && response.data.order) {
+        const id = response.data.order.id || response.data.order._id;
+
+        console.log("Order created with ID:", id);
+
+        if (!id) {
+          throw new Error("Order ID not found in API response");
+        }
+
+        // Store in both state and sessionStorage
+        setOrderId(id);
+        sessionStorage.setItem("currentOrderId", id);
+        setCurrentStep("payment");
+        return id;
+      } else {
+        throw new Error("Failed to create order");
+      }
+    } catch (error) {
+      console.error("Order creation error:", error);
+      alert(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to create order. Please try again.",
+      );
+      return null;
+    } finally {
+      setCreatingOrder(false);
+    }
+  };
+
+  // Clear sessionStorage on successful payment
+  // Add this useEffect
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      sessionStorage.removeItem("currentOrderId");
+    };
+  }, []);
+
   useEffect(() => {
     const fetchPublicKey = async () => {
       try {
@@ -112,102 +186,16 @@ const CheckoutPage = () => {
     };
   }, [paystackPublicKey]);
 
-  // Create order in database
-  const createOrder = async () => {
-    setCreatingOrder(true);
-    try {
-      const deliveryAddress = `${shippingAddress.address}, ${shippingAddress.city}`;
-
-      const response = await axios.post(
-        `${API_URL}/api/orders/checkout`,
-        {
-          delivery_address: deliveryAddress,
-          payment_method: "paystack",
-          promo_code: null,
-          shipping_method: shippingMethod,
-          gift_message: giftMessage || null,
-          total_amount: Math.max(orderTotal, 0),
-          discount_amount: Math.abs(limitedDiscount) + Math.abs(credit),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
-          },
-        },
-      );
-
-      if (response.data.success && response.data.order) {
-        const id = response.data.order.id || response.data.order._id;
-
-        console.log("✅ Order created with ID:", id);
-
-        if (!id) {
-          throw new Error("Order ID not found in API response");
-        }
-
-        // Store in ref for immediate access
-        orderIdRef.current = id;
-
-        // Store in state
-        setOrderId(id);
-
-        // Store in sessionStorage as backup
-        sessionStorage.setItem("currentOrderId", id);
-
-        return id;
-      } else {
-        throw new Error("Failed to create order");
-      }
-    } catch (error) {
-      console.error("Order creation error:", error);
-      alert(
-        error.response?.data?.error ||
-          error.message ||
-          "Failed to create order. Please try again.",
-      );
-      return null;
-    } finally {
-      setCreatingOrder(false);
-    }
-  };
-
-  // Handle continue to payment
-  const handleContinuePayment = async () => {
-    setShowConfirmCancel(false);
-
-    // Create order
-    const newOrderId = await createOrder();
-
-    if (!newOrderId) {
-      alert("Failed to create order. Please try again.");
-      return;
-    }
-
-    console.log("✅ Moving to payment step with orderId:", newOrderId);
-
-    // Move to payment step AFTER order is created
-    setCurrentStep("payment");
-  };
-
-  // Paystack payment handler
+  // Add the handlePaystackPayment function
   const handlePaystackPayment = async () => {
-    // Use ref to get the most current orderId
-    const currentOrderId = orderIdRef.current || orderId;
-
     if (!paystackPublicKey) {
       alert("Payment gateway not ready. Please refresh the page.");
       return;
     }
 
-    if (!currentOrderId) {
+    if (!orderId) {
       alert("Order ID is missing. Please go back and try again.");
-      console.error(
-        "Missing orderId. Ref:",
-        orderIdRef.current,
-        "State:",
-        orderId,
-      );
+      console.error("Missing orderId:", orderId);
       return;
     }
 
@@ -221,7 +209,7 @@ const CheckoutPage = () => {
           ? `${user.phone_number.replace(/[^0-9]/g, "")}@customer.ahia.com`
           : `customer_${user?.id}@ahia.com`);
 
-      console.log("💳 Initializing payment for orderId:", currentOrderId);
+      console.log("Initializing payment for orderId:", orderId);
 
       // Step 1: Initialize payment
       const initResponse = await axios.post(
@@ -229,7 +217,7 @@ const CheckoutPage = () => {
         {
           email: email,
           amount: Math.max(orderData.orderTotal, 0),
-          order_id: currentOrderId,
+          order_id: orderId,
           metadata: {
             user_id: user.id,
             user_name: user.full_name || shippingAddress.name,
@@ -299,7 +287,7 @@ const CheckoutPage = () => {
     }
   };
 
-  // Verify payment
+  // Add verify payment function
   const verifyPayment = async (reference) => {
     try {
       const verifyResponse = await axios.get(
@@ -315,12 +303,10 @@ const CheckoutPage = () => {
         verifyResponse.data.success &&
         verifyResponse.data.data.status === "success"
       ) {
-        const verifiedOrderId =
-          verifyResponse.data.data.order_id || orderIdRef.current || orderId;
+        const verifiedOrderId = verifyResponse.data.data.order_id || orderId;
 
         // Clear session storage
         sessionStorage.removeItem("currentOrderId");
-        orderIdRef.current = null;
 
         setLoading(false);
         navigate(
@@ -339,21 +325,57 @@ const CheckoutPage = () => {
     }
   };
 
-  // Handle submit order button
+  // Add bank transfer handler
+  const handleBankTransfer = async () => {
+    alert("Bank transfer instructions will be shown here");
+  };
+
+  const handleContinuePayment = async () => {
+    setShowConfirmCancel(false);
+
+    // Create order before moving to payment
+    const newOrderId = await createOrder();
+
+    console.log("Created order ID:", newOrderId); // Debug log
+
+    if (!newOrderId) {
+      console.log("Order ID is null, staying on shipping");
+      alert("Failed to create order. Please try again.");
+      return;
+    }
+
+    // Make sure orderId is set before moving to payment step
+    setOrderId(newOrderId);
+
+    console.log("Setting orderId state to:", newOrderId); // Debug log
+
+    // Don't call setCurrentStep here - it's already called in createOrder
+    // The state update happens there
+  };
+
   const handleSubmitOrder = async () => {
     if (currentStep === "shipping") {
+      // Show confirmation modal
       setShowConfirmCancel(true);
     } else if (currentStep === "payment") {
       // Trigger payment based on selected payment method
-      if (paymentMethod === "paystack" || paymentMethod === "card") {
+      if (paymentMethod === "paystack") {
+        // Call the Paystack payment function from PaymentStep
         handlePaystackPayment();
       } else if (paymentMethod === "bank-transfer") {
-        alert("Bank transfer instructions will be shown here");
+        // Handle bank transfer
+        handleBankTransfer();
+      } else if (paymentMethod === "card") {
+        // Handle direct card payment
+        handlePaystackPayment();
       }
     }
   };
 
-  // Guard clauses
+  const handleScanCard = () => {
+    console.log("Scan card initiated");
+  };
+
   if (!accessToken) {
     return (
       <div className={styles.container}>
@@ -393,7 +415,7 @@ const CheckoutPage = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
+      {/* Header Component */}
       <CheckOutHeader
         currentStep={currentStep}
         orderData={orderData}
@@ -427,23 +449,14 @@ const CheckoutPage = () => {
           />
         )}
 
-        {/* Payment Step - Only render when we have orderId */}
-        {currentStep === "payment" && (orderIdRef.current || orderId) && (
+        {/* Payment Step */}
+        {currentStep === "payment" && (
           <PaymentStep
             shippingAddress={shippingAddress}
             orderData={orderData}
-            orderId={orderIdRef.current || orderId}
+            orderId={orderId}
             user={user}
-            onPayment={handlePaystackPayment}
           />
-        )}
-
-        {/* Loading state for payment step */}
-        {currentStep === "payment" && !orderIdRef.current && !orderId && (
-          <div className={styles.loadingPayment}>
-            <Loader2 className={styles.spinner} size={48} />
-            <p>Preparing payment...</p>
-          </div>
         )}
       </div>
 
@@ -451,14 +464,22 @@ const CheckoutPage = () => {
       <OrderSummary orderData={orderData} />
 
       {/* Submit Button */}
+      {/* <button
+        className={styles.submitButton}
+        onClick={handleSubmitOrder}
+        disabled={creatingOrder}
+      >
+        {creatingOrder
+          ? "Creating order..."
+          : currentStep === "shipping"
+            ? `Submit order (${orderData.itemCount})`
+            : `Pay ₦${Math.max(orderData.orderTotal, 0).toLocaleString()}`}
+      </button> */}
+
       <button
         className={styles.submitButton}
         onClick={handleSubmitOrder}
-        disabled={
-          creatingOrder ||
-          loading ||
-          (currentStep === "payment" && !orderIdRef.current && !orderId)
-        }
+        disabled={creatingOrder || loading}
       >
         {loading ? (
           <>
