@@ -1,53 +1,6 @@
-/* ============================
-   1. THEME VARIABLES (Light & Dark)
-   ============================ */
-
-:root {
-  /* Light Mode (Default) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #1a1a1a;
-  --text-secondary: #666666;
-  --border-color: #e0e0e0;
-  --shadow: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="dark"],
-.dark {
-  /* Dark Mode */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --border-color: #3a3a3a;
-  --shadow: rgba(0, 0, 0, 0.3);
-}
-
-/* Semantic Colors */
-:root,
-[data-theme="dark"] {
-  --primary-color: #3498db;
-  --primary-bg: #eef2ff;
-  --success-color: #27ae60;
-  --danger-color: #e74c3c;
-  --warning-color: #f39c12;
-}
-
-/* Transitions */
-* {
-  transition:
-    background-color 0.3s ease,
-    color 0.3s ease,
-    border-color 0.3s ease;
-}
-
-/* ============================
-   2. COMPONENT STYLES
-   ============================ */
-
 .container {
   min-height: 100vh;
-  background-color: var(--bg-secondary);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -56,14 +9,14 @@
 }
 
 .modal {
-  background-color: var(--bg-primary);
+  background: white;
   border-radius: 12px;
   max-width: 600px;
   width: 100%;
   padding: 24px;
   position: relative;
   margin: 40px auto;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .closeButton {
@@ -74,19 +27,19 @@
   border: none;
   cursor: pointer;
   padding: 8px;
-  color: var(--text-secondary);
+  color: #666;
   transition: color 0.2s;
 }
 
 .closeButton:hover {
-  color: var(--text-primary);
+  color: #000;
 }
 
 .timerIcon {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
-  color: var(--warning-color);
+  color: #ff6b00;
 }
 
 .header {
@@ -106,11 +59,10 @@
   font-weight: 500;
   line-height: 1.4;
   margin: 0;
-  color: var(--text-primary);
 }
 
 .timer {
-  color: var(--warning-color);
+  color: #ff6b00;
   font-weight: 600;
 }
 
@@ -120,17 +72,17 @@
   gap: 12px;
   margin-bottom: 24px;
   font-size: 14px;
-  color: var(--text-primary);
+  color: #333;
 }
 
 .separator {
-  color: var(--border-color);
+  color: #ccc;
 }
 
 .viewOrder {
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: #000;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -145,11 +97,10 @@
 }
 
 .bankDetails {
-  background-color: var(--bg-secondary);
+  background: #f9f9f9;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 16px;
-  border: 1px solid var(--border-color);
 }
 
 .detailRow {
@@ -163,7 +114,7 @@
 .detailRow label {
   display: block;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666;
   margin-bottom: 6px;
 }
 
@@ -177,7 +128,7 @@
 .value {
   font-size: 20px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #000;
 }
 
 .copyButton {
@@ -185,18 +136,18 @@
   border: none;
   cursor: pointer;
   padding: 4px;
-  color: var(--text-secondary);
+  color: #666;
   display: flex;
   align-items: center;
   transition: color 0.2s;
 }
 
 .copyButton:hover {
-  color: var(--text-primary);
+  color: #000;
 }
 
 .copied {
-  color: var(--success-color);
+  color: #00c853;
 }
 
 .warning {
@@ -205,15 +156,10 @@
   gap: 8px;
   margin-top: 16px;
   padding-top: 16px;
-  border-top: 1px solid var(--border-color);
-  color: var(--warning-color);
+  border-top: 1px solid #e0e0e0;
+  color: #ff6b00;
   font-size: 14px;
   font-weight: 500;
-  background-color: rgba(243, 156, 18, 0.1); /* Light warning bg */
-}
-
-[data-theme="dark"] .warning {
-  background-color: rgba(255, 111, 0, 0.1); /* Dark warning bg */
 }
 
 .warning svg {
@@ -227,7 +173,7 @@
   cursor: pointer;
   padding: 12px 0;
   font-size: 14px;
-  color: var(--text-primary);
+  color: #000;
   text-align: left;
   display: flex;
   align-items: center;
@@ -237,22 +183,21 @@
 
 .helpButton:hover {
   text-decoration: underline;
-  color: var(--primary-color);
 }
 
 .helpIcon {
   font-size: 16px;
-  color: var(--text-secondary);
+  color: #666;
 }
 
 .walletButton {
   width: 100%;
   background: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   padding: 14px 16px;
   font-size: 14px;
-  color: var(--text-primary);
+  color: #000;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -262,7 +207,7 @@
 }
 
 .walletButton:hover {
-  background-color: var(--bg-secondary);
+  background-color: #f5f5f5;
 }
 
 .walletButton svg:last-child {
@@ -275,7 +220,7 @@
   border: none;
   padding: 12px 0;
   font-size: 14px;
-  color: var(--text-primary);
+  color: #000;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -307,31 +252,30 @@
 }
 
 .infoBox {
-  background-color: var(--bg-secondary);
+  background: #fff9f0;
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
   display: flex;
   gap: 12px;
-  border: 1px solid var(--border-color);
 }
 
 .infoBox svg {
   flex-shrink: 0;
   margin-top: 2px;
-  color: var(--warning-color);
+  color: #ff6b00;
 }
 
 .infoBox p {
   font-size: 13px;
   line-height: 1.6;
   margin: 0;
-  color: var(--text-primary);
+  color: #333;
 }
 
 .highlight {
-  color: var(--primary-color);
-  font-weight: 600;
+  color: #ff6b00;
+  font-weight: 500;
 }
 
 .paymentLogo {
@@ -339,12 +283,11 @@
   display: inline-block;
   margin: 0 4px;
   vertical-align: middle;
-  filter: grayscale(100%); /* Optional: makes logos look better in dark mode */
 }
 
 .changePaymentButton {
   width: 100%;
-  background: var(--primary-color);
+  background: #ff6b00;
   color: white;
   border: none;
   border-radius: 24px;
@@ -357,11 +300,11 @@
 }
 
 .changePaymentButton:hover {
-  filter: brightness(1.1);
+  background: #e55f00;
 }
 
 .footerInfo {
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid #e0e0e0;
   padding-top: 20px;
   margin-bottom: 24px;
 }
@@ -379,29 +322,28 @@
 .footerItem svg {
   flex-shrink: 0;
   margin-top: 2px;
-  color: var(--text-secondary);
+  color: #666;
 }
 
 .footerItem p {
   font-size: 13px;
   line-height: 1.6;
   margin: 0;
-  color: var(--text-secondary);
+  color: #666;
 }
 
 .explore {
   padding-top: 20px;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid #e0e0e0;
 }
 
 .explore h3 {
   font-size: 16px;
   font-weight: 600;
   margin: 0;
-  color: var(--text-primary);
+  color: #000;
 }
 
-/* Loading and Error States */
 .loading,
 .error {
   text-align: center;
@@ -409,7 +351,7 @@
 }
 
 .loading .spinner {
-  color: var(--warning-color);
+  color: #ff6b00;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
 }
@@ -417,12 +359,12 @@
 .loading p,
 .error p {
   font-size: 16px;
-  color: var(--text-primary);
+  color: #666;
   margin-bottom: 20px;
 }
 
 .error button {
-  background-color: var(--primary-color);
+  background: #ff6b00;
   color: white;
   border: none;
   border-radius: 24px;
@@ -433,10 +375,9 @@
 }
 
 .error button:hover {
-  filter: brightness(1.1);
+  background: #e55f00;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
   .container {
     padding: 10px;
