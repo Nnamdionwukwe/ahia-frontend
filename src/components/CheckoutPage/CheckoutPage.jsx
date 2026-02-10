@@ -44,6 +44,9 @@ const CheckoutPage = () => {
   const orderIdRef = useRef(null);
   const [orderId, setOrderId] = useState(null);
 
+  // Store card validation function from PaymentStep
+  const cardValidationRef = useRef(null);
+
   // Get cart data
   const selectedItems = items.filter((item) => item.is_selected);
   const almostGoneCount = getAlmostSoldOutCount();
@@ -170,24 +173,6 @@ const CheckoutPage = () => {
     } finally {
       setCreatingOrder(false);
     }
-  };
-
-  // Handle continue to payment
-  const handleContinuePayment = async () => {
-    setShowConfirmCancel(false);
-
-    // Create order
-    const newOrderId = await createOrder();
-
-    if (!newOrderId) {
-      alert("Failed to create order. Please try again.");
-      return;
-    }
-
-    console.log("✅ Moving to payment step with orderId:", newOrderId);
-
-    // Move to payment step AFTER order is created
-    setCurrentStep("payment");
   };
 
   // Paystack payment handler
@@ -339,12 +324,36 @@ const CheckoutPage = () => {
     }
   };
 
-  // Handle submit order button
+  // Handle submit order button - Validate card then create order
   const handleSubmitOrder = async () => {
     if (currentStep === "shipping") {
-      setShowConfirmCancel(true);
+      // Just move to payment step - don't create order yet
+      console.log("✅ Moving to payment step");
+      setCurrentStep("payment");
     } else if (currentStep === "payment") {
-      // Trigger payment based on selected payment method
+      // Validate card details first
+      if (cardValidationRef.current) {
+        const isValid = cardValidationRef.current();
+        if (!isValid) {
+          alert("Please fill in all card details correctly before proceeding.");
+          return;
+        }
+      }
+
+      // Card details are valid - create order
+      const newOrderId = await createOrder();
+
+      if (!newOrderId) {
+        alert("Failed to create order. Please try again.");
+        return;
+      }
+
+      console.log(
+        "✅ Order created after card validation, opening Paystack with orderId:",
+        newOrderId,
+      );
+
+      // Open Paystack payment window
       if (paymentMethod === "paystack" || paymentMethod === "card") {
         handlePaystackPayment();
       } else if (paymentMethod === "bank-transfer") {
@@ -427,23 +436,18 @@ const CheckoutPage = () => {
           />
         )}
 
-        {/* Payment Step - Only render when we have orderId */}
-        {currentStep === "payment" && (orderIdRef.current || orderId) && (
+        {/* Payment Step - Show when on payment step */}
+        {currentStep === "payment" && (
           <PaymentStep
             shippingAddress={shippingAddress}
             orderData={orderData}
             orderId={orderIdRef.current || orderId}
             user={user}
             onPayment={handlePaystackPayment}
+            onValidateCard={(validateFn) => {
+              cardValidationRef.current = validateFn;
+            }}
           />
-        )}
-
-        {/* Loading state for payment step */}
-        {currentStep === "payment" && !orderIdRef.current && !orderId && (
-          <div className={styles.loadingPayment}>
-            <Loader2 className={styles.spinner} size={48} />
-            <p>Preparing payment...</p>
-          </div>
         )}
       </div>
 
@@ -454,11 +458,7 @@ const CheckoutPage = () => {
       <button
         className={styles.submitButton}
         onClick={handleSubmitOrder}
-        disabled={
-          creatingOrder ||
-          loading ||
-          (currentStep === "payment" && !orderIdRef.current && !orderId)
-        }
+        disabled={creatingOrder || loading}
       >
         {loading ? (
           <>
@@ -474,7 +474,7 @@ const CheckoutPage = () => {
         )}
       </button>
 
-      {/* Confirm Cancel Modal */}
+      {/* Confirm Cancel Modal - Only shows when user tries to leave */}
       {showConfirmCancel && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -484,38 +484,33 @@ const CheckoutPage = () => {
             >
               <X size={24} />
             </button>
-            <h3>Proceed to Payment?</h3>
+            <h3>⚠️ Incomplete Checkout</h3>
             <p>
-              You're about to create an order for {orderData.itemCount} items.
-              Click "Continue to pay" to proceed with Paystack payment.
+              You haven't completed your checkout yet. Are you sure you want to
+              leave? You have {orderData.itemCount} items in your cart with a
+              total of ₦{Math.max(orderData.orderTotal, 0).toLocaleString()}.
             </p>
             <div className={styles.modalBenefits}>
               <div>
-                <Check size={24} />
-                <span>Security privacy</span>
+                <AlertCircle size={24} />
+                <span>Your cart items will be saved</span>
               </div>
               <div>
-                <Lock size={24} />
-                <span>Safe payment</span>
-              </div>
-              <div>
-                <CreditCard size={24} />
-                <span>Multiple payment options</span>
+                <Clock size={24} />
+                <span>Limited time offers may expire</span>
               </div>
             </div>
             <button
               className={styles.primaryButton}
-              onClick={handleContinuePayment}
-              disabled={creatingOrder}
+              onClick={() => setShowConfirmCancel(false)}
             >
-              {creatingOrder ? "Creating order..." : "Continue to pay"}
+              Continue checkout
             </button>
             <button
               className={styles.tertiaryButton}
-              onClick={() => setShowConfirmCancel(false)}
-              disabled={creatingOrder}
+              onClick={() => navigate("/cart")}
             >
-              Cancel
+              Leave anyway
             </button>
           </div>
         </div>

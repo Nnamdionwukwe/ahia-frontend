@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Loader2, CreditCard, Lock, Shield, Check } from "lucide-react";
 import styles from "./Paymentstep.module.css";
 
-const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
+const PaymentStep = ({
+  shippingAddress,
+  orderData,
+  orderId,
+  onPayment,
+  user,
+  onValidateCard,
+}) => {
   const [loading, setLoading] = useState(false);
 
   // Card input states
@@ -19,11 +26,21 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
 
   // Debug orderId
   useEffect(() => {
-    console.log("✅ PaymentStep received orderId:", orderId);
-    if (!orderId) {
-      console.error("❌ PaymentStep: No orderId provided!");
+    if (orderId) {
+      console.log("✅ PaymentStep received orderId:", orderId);
+    } else {
+      console.log(
+        "⏳ PaymentStep: Order will be created when payment is initiated",
+      );
     }
   }, [orderId]);
+
+  // Pass validation function to parent
+  useEffect(() => {
+    if (onValidateCard) {
+      onValidateCard(validateCardDetails);
+    }
+  }, [cardDetails, onValidateCard]);
 
   // Card number formatting (spaces every 4 digits)
   const formatCardNumber = (value) => {
@@ -70,16 +87,18 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
     setCardErrors({ ...cardErrors, cvv: false });
   };
 
-  const handlePayment = () => {
-    if (!orderId) {
-      alert("Order ID is missing. Please go back and try again.");
-      return;
-    }
+  // Validate card details
+  const validateCardDetails = () => {
+    const errors = {
+      cardNumber: cardDetails.cardNumber.replace(/\s/g, "").length < 13,
+      expiryDate: cardDetails.expiryDate.length < 5,
+      cvv: cardDetails.cvv.length < 3,
+    };
 
-    // Call parent's payment handler
-    if (onPayment) {
-      onPayment();
-    }
+    setCardErrors(errors);
+
+    // Return true if all fields are valid
+    return !errors.cardNumber && !errors.expiryDate && !errors.cvv;
   };
 
   return (
@@ -100,25 +119,9 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
         />
       </div>
 
-      {!orderId && (
-        <div className={styles.errorBanner}>
-          <span>⚠️ Waiting for order information...</span>
-        </div>
-      )}
-
       {/* Card Number */}
       <div className={styles.cardInputGroup}>
-        <label>
-          * Card number
-          <button
-            className={styles.scanCardLabel}
-            onClick={handlePayment}
-            type="button"
-            disabled={loading || !orderId}
-          >
-            📷 Scan card
-          </button>
-        </label>
+        <label>* Card number</label>
         <div
           className={`${styles.cardNumberInput} ${
             cardErrors.cardNumber ? styles.error : ""
@@ -134,7 +137,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
             onChange={handleCardNumberChange}
             maxLength={19}
             className={styles.cardInput}
-            disabled={loading || !orderId}
+            disabled={loading}
           />
           {cardDetails.cardNumber.replace(/\s/g, "").length >= 13 && (
             <Check size={20} className={styles.checkIcon} />
@@ -156,7 +159,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
             onChange={handleExpiryChange}
             maxLength={5}
             className={cardErrors.expiryDate ? styles.error : ""}
-            disabled={loading || !orderId}
+            disabled={loading}
           />
           {cardErrors.expiryDate && (
             <p className={styles.errorText}>! Invalid expiry date.</p>
@@ -177,7 +180,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
               onChange={handleCvvChange}
               maxLength={4}
               className={cardErrors.cvv ? styles.error : ""}
-              disabled={loading || !orderId}
+              disabled={loading}
             />
             <Lock size={16} className={styles.lockIcon} />
           </div>
@@ -200,7 +203,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
         </div>
       </div>
 
-      {/* Order Info Display */}
+      {/* Order Info Display - Only show after order is created */}
       {orderId && (
         <div className={styles.orderInfo}>
           <p className={styles.orderIdText}>
@@ -226,7 +229,8 @@ const PaymentStep = ({ shippingAddress, orderData, orderId, onPayment }) => {
       </div>
 
       <p className={styles.helpText}>
-        Click the "Pay" button at the bottom to complete your purchase securely.
+        Fill in your card details above or click "Pay" to open a secure payment
+        window where you can complete your purchase with Paystack.
       </p>
     </section>
   );
