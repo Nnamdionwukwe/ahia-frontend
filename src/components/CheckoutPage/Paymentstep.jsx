@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Loader2, CreditCard, Lock, Shield, Check, Mail } from "lucide-react";
+import { Loader2, CreditCard, Lock, Shield, Check } from "lucide-react";
 import styles from "./Paymentstep.module.css";
 import useAuthStore from "../../store/authStore";
 import useCartStore from "../../store/cartStore";
@@ -15,10 +15,6 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
   const [loading, setLoading] = useState(false);
   const [paystackPublicKey, setPaystackPublicKey] = useState("");
   const [error, setError] = useState("");
-
-  // Email state - since user object doesn't have email
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState(false);
 
   // Card input states
   const [cardDetails, setCardDetails] = useState({
@@ -35,6 +31,31 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
   // Get selected items and totals
   const selectedItems = items.filter((item) => item.is_selected);
   const selectedTotals = getSelectedTotals();
+
+  // Auto-generate email from phone number or use default
+  const getEmail = () => {
+    if (user?.email) {
+      return user.email;
+    }
+    // Generate email from phone number
+    if (user?.phone_number) {
+      const cleanPhone = user.phone_number.replace(/[^0-9]/g, "");
+      return `${cleanPhone}@customer.ahia.com`;
+    }
+    // Fallback email
+    return `customer_${user?.id}@ahia.com`;
+  };
+
+  const email = getEmail();
+
+  // Debug orderId
+  useEffect(() => {
+    console.log("PaymentStep mounted with orderId:", orderId);
+    console.log("Using email:", email);
+    if (!orderId) {
+      console.error("PaymentStep: No orderId provided!");
+    }
+  }, [orderId, email]);
 
   // Fetch Paystack public key on mount
   useEffect(() => {
@@ -68,17 +89,6 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       }
     };
   }, [paystackPublicKey]);
-
-  // Email validation
-  const validateEmail = (email) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-    setEmailError(false);
-  };
 
   // Card number formatting (spaces every 4 digits)
   const formatCardNumber = (value) => {
@@ -141,10 +151,9 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       return;
     }
 
-    // Validate email
-    if (!email || !validateEmail(email)) {
-      setEmailError(true);
-      setError("Please enter a valid email address");
+    if (!orderId) {
+      setError("Order ID is missing. Please go back and try again.");
+      console.error("Missing orderId in PaymentStep");
       return;
     }
 
@@ -252,8 +261,25 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       ) {
         // Clear card details on success
         setCardDetails({ cardNumber: "", expiryDate: "", cvv: "" });
-        setEmail("");
-        navigate(`/order-success?reference=${reference}&order_id=${orderId}`);
+
+        // Get order_id from verification response or use the prop
+        const verifiedOrderId = verifyResponse.data.data.order_id || orderId;
+
+        console.log("Payment verified, orderId:", verifiedOrderId);
+
+        if (!verifiedOrderId) {
+          console.error("No order ID found after payment verification");
+          setError(
+            "Order ID missing. Please contact support with reference: " +
+              reference,
+          );
+          setLoading(false);
+          return;
+        }
+
+        navigate(
+          `/order-success?reference=${reference}&order_id=${verifiedOrderId}`,
+        );
       } else {
         setError("Payment verification failed. Please contact support.");
         setLoading(false);
@@ -290,36 +316,6 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
           <span>⚠️ {error}</span>
         </div>
       )}
-
-      {/* Email Input */}
-      <div className={styles.cardInputGroup}>
-        <label>* Email address</label>
-        <div
-          className={`${styles.cardNumberInput} ${
-            emailError ? styles.error : ""
-          }`}
-        >
-          <div className={styles.cardIconWrapper}>
-            <Mail size={20} className={styles.cardIcon} />
-          </div>
-          <input
-            type="email"
-            placeholder="your.email@example.com"
-            value={email}
-            onChange={handleEmailChange}
-            className={styles.cardInput}
-            disabled={loading}
-          />
-          {email && validateEmail(email) && (
-            <Check size={20} className={styles.checkIcon} />
-          )}
-        </div>
-        {emailError && (
-          <p className={styles.errorText}>
-            ! Please enter a valid email address.
-          </p>
-        )}
-      </div>
 
       {/* Card Number */}
       <div className={styles.cardInputGroup}>
@@ -419,7 +415,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       <button
         className={styles.payButton}
         onClick={handlePaystackPayment}
-        disabled={loading || !paystackPublicKey}
+        disabled={loading || !paystackPublicKey || !orderId}
       >
         {loading ? (
           <>

@@ -37,7 +37,12 @@ const CheckoutPage = () => {
   const [showItemDetails, setShowItemDetails] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [creatingOrder, setCreatingOrder] = useState(false);
-  const [orderId, setOrderId] = useState(null);
+  const [orderId, setOrderId] = useState(() => {
+    // Try to get orderId from sessionStorage on mount
+    return sessionStorage.getItem("currentOrderId") || null;
+  });
+
+  // const [orderId, setOrderId] = useState(null);ß
 
   // Get cart data
   const selectedItems = items.filter((item) => item.is_selected);
@@ -88,7 +93,6 @@ const CheckoutPage = () => {
     try {
       const deliveryAddress = `${shippingAddress.address}, ${shippingAddress.city}`;
 
-      // IMPORTANT: Send the calculated totals to backend
       const response = await axios.post(
         `${API_URL}/api/orders/checkout`,
         {
@@ -97,9 +101,8 @@ const CheckoutPage = () => {
           promo_code: null,
           shipping_method: shippingMethod,
           gift_message: giftMessage || null,
-          // Send frontend calculated totals
           total_amount: Math.max(orderTotal, 0),
-          discount_amount: Math.abs(limitedDiscount) + Math.abs(credit), // Total discount applied
+          discount_amount: Math.abs(limitedDiscount) + Math.abs(credit),
         },
         {
           headers: {
@@ -110,14 +113,17 @@ const CheckoutPage = () => {
       );
 
       if (response.data.success && response.data.order) {
-        // Handle both Mongo (_id) and standard (id)
         const id = response.data.order.id || response.data.order._id;
+
+        console.log("Order created with ID:", id);
 
         if (!id) {
           throw new Error("Order ID not found in API response");
         }
 
+        // Store in both state and sessionStorage
         setOrderId(id);
+        sessionStorage.setItem("currentOrderId", id);
         setCurrentStep("payment");
         return id;
       } else {
@@ -136,16 +142,30 @@ const CheckoutPage = () => {
     }
   };
 
+  // Clear sessionStorage on successful payment
+  // Add this useEffect
+  useEffect(() => {
+    return () => {
+      // Cleanup on unmount
+      sessionStorage.removeItem("currentOrderId");
+    };
+  }, []);
+  // In CheckoutPage.jsx
   const handleContinuePayment = async () => {
     setShowConfirmCancel(false);
 
     // Create order before moving to payment
     const newOrderId = await createOrder();
 
+    console.log("Created order ID:", newOrderId); // Debug log
+
     if (!newOrderId) {
       console.log("Order ID is null, staying on shipping");
+      alert("Failed to create order. Please try again.");
       return;
     }
+
+    console.log("Setting orderId state to:", newOrderId); // Debug log
   };
 
   const handleSubmitOrder = async () => {

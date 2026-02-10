@@ -42,7 +42,7 @@ export default function ShippingStep({
         <div className={styles.itemPreview}>
           {selectedItems.slice(0, 4).map((item, idx) => (
             <div key={idx} className={styles.itemThumb}>
-              <img
+              {/* <img
                 src={item.image_url || item.image}
                 alt={item.name}
                 onError={(e) => {
@@ -50,6 +50,22 @@ export default function ShippingStep({
                     "https://via.placeholder.com/100?text=No+Image";
                 }}
               />
+               */}
+              <img
+                src={
+                  item.images?.[0] || item.image_url || "/placeholder-image.jpg"
+                }
+                alt={item.name}
+                onError={(e) => {
+                  console.error(
+                    "Image failed to load:",
+                    item.images?.[0] || item.image_url,
+                  );
+                  e.target.src = "/placeholder-image.jpg"; // Fallback image
+                  e.target.onerror = null; // Prevent infinite loop
+                }}
+              />
+
               <span className={styles.itemBadge}>
                 {parseInt(item.available_stock || item.stock || 0) <= 20
                   ? "Almost sold out"
