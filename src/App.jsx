@@ -32,6 +32,7 @@ import OrderSuccessPage from "./pages/OrderSuccessPage/OrderSuccessPage";
 import OrderSuccess from "./pages/OrderSuccessPage/OrderSuccess";
 import OrderDetailsPage from "./pages/OrdersPage/OrderDetailsPage";
 import OrdersPage from "./pages/OrdersPage/OrdersPage";
+import BankTransferPayment from "./pages/Banktransferpayment/Banktransferpayment";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -67,6 +68,7 @@ const App = () => {
               }
             />
             <Route path="/order-success" element={<OrderSuccess />} />
+            <Route path="/bank-transfer" element={<BankTransferPayment />} />
             <Route path="/orders/:id" element={<OrderDetailsPage />} />
 
             <Route path="/order-details" element={<OrdersPage />} />

@@ -332,7 +332,53 @@ const CheckoutPage = () => {
       console.log("✅ Moving to payment step");
       setCurrentStep("payment");
     } else if (currentStep === "payment") {
-      // Validate card details first
+      // Check payment method
+      if (paymentMethod === "bank-transfer") {
+        // Bank transfer flow - create order and initialize bank transfer
+        const newOrderId = await createOrder();
+
+        if (!newOrderId) {
+          alert("Failed to create order. Please try again.");
+          return;
+        }
+
+        console.log("✅ Order created, initializing bank transfer");
+
+        // Initialize bank transfer
+        try {
+          const response = await axios.post(
+            `${API_URL}/api/payments/bank-transfer/initialize`,
+            {
+              order_id: newOrderId,
+              amount: Math.max(orderData.orderTotal, 0),
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+                "Content-Type": "application/json",
+              },
+            },
+          );
+
+          if (response.data.success) {
+            // Navigate to bank transfer page
+            navigate(
+              `/bank-transfer?reference=${response.data.data.reference}&order_id=${newOrderId}`,
+            );
+          } else {
+            throw new Error("Failed to initialize bank transfer");
+          }
+        } catch (error) {
+          console.error("Bank transfer initialization error:", error);
+          alert(
+            error.response?.data?.message ||
+              "Failed to initialize bank transfer. Please try again.",
+          );
+        }
+        return;
+      }
+
+      // For card/Paystack - validate card details first
       if (cardValidationRef.current) {
         const isValid = cardValidationRef.current();
         if (!isValid) {
@@ -357,8 +403,6 @@ const CheckoutPage = () => {
       // Open Paystack payment window
       if (paymentMethod === "paystack" || paymentMethod === "card") {
         handlePaystackPayment();
-      } else if (paymentMethod === "bank-transfer") {
-        alert("Bank transfer instructions will be shown here");
       }
     }
   };
