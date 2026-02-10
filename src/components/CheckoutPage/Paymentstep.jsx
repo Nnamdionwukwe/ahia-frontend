@@ -227,11 +227,6 @@ const PaymentStep = ({
           <span>Secure Payment</span>
         </div>
       </div>
-
-      <p className={styles.helpText}>
-        Fill in your card details above or click "Pay" to open a secure payment
-        window where you can complete your purchase with Paystack.
-      </p>
     </section>
   );
 };
