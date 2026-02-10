@@ -372,7 +372,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
       </div>
 
       {/* Pay Button */}
-      <button
+      {/* <button
         className={styles.paystackButton}
         onClick={handlePaystackPayment}
         disabled={loading || !paystackPublicKey}
@@ -385,7 +385,7 @@ const PaymentStep = ({ shippingAddress, orderData, orderId }) => {
         ) : (
           <>Pay ₦{Math.max(orderData.orderTotal, 0).toLocaleString()}</>
         )}
-      </button>
+      </button> */}
 
       {/* Security Badges */}
       <div className={styles.securityBadges}>

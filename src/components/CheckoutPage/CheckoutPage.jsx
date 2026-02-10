@@ -17,7 +17,7 @@ import ItemDetailsModal from "./ItemDetailsModal";
 import CheckOutHeader from "./CheckOutHeader";
 import ShippingStep from "./Shippingstep";
 import OrderSummary from "./OrderSummary";
-import PaymentStep from "./Paymentstep";
+import PaymentStep from "./Paymentstep"; // Ensure filename matches
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -51,18 +51,33 @@ const CheckoutPage = () => {
     city: "Abuja, Federal Capital Territory Nigeria",
   };
 
+  // --- EXPLICIT CALCULATION ---
+  const itemsTotal = selectedTotals.subtotal || 0;
+  const itemsDiscount = selectedTotals.discount || 0;
+
+  // Calculate step by step
+  const subtotalAfterDiscount = itemsTotal - itemsDiscount;
+  const limitedDiscount = -34884; // Adjust this value dynamically if needed
+  const subtotal = subtotalAfterDiscount + limitedDiscount;
+  const shipping = 0;
+  const credit = -1600;
+
+  // Final Order Total
+  const orderTotal = subtotal + shipping + credit;
+
+  // --- END CALCULATION ---
+
   const orderData = {
-    itemsTotal: selectedTotals.subtotal,
-    itemsDiscount: selectedTotals.discount,
-    subtotalAfterDiscount: selectedTotals.subtotal - selectedTotals.discount,
-    limitedDiscount: -34884,
-    subtotal: selectedTotals.subtotal - selectedTotals.discount - 34884,
-    shipping: 0,
-    credit: -1600,
-    orderTotal:
-      selectedTotals.subtotal - selectedTotals.discount - 34884 - 1600,
+    itemsTotal: itemsTotal,
+    itemsDiscount: itemsDiscount,
+    subtotalAfterDiscount: subtotalAfterDiscount,
+    limitedDiscount: limitedDiscount,
+    subtotal: subtotal,
+    shipping: shipping,
+    credit: credit,
+    orderTotal: orderTotal,
     itemCount: selectedItems.length,
-    savings: selectedTotals.discount,
+    savings: itemsDiscount + Math.abs(limitedDiscount) + Math.abs(credit), // Total savings
     timeRemaining: "11:53:01",
   };
 
@@ -70,9 +85,9 @@ const CheckoutPage = () => {
   const createOrder = async () => {
     setCreatingOrder(true);
     try {
-      // Prepare delivery address
       const deliveryAddress = `${shippingAddress.address}, ${shippingAddress.city}`;
 
+      // IMPORTANT: Send the calculated totals to backend
       const response = await axios.post(
         `${API_URL}/api/orders/checkout`,
         {
@@ -81,6 +96,9 @@ const CheckoutPage = () => {
           promo_code: null,
           shipping_method: shippingMethod,
           gift_message: giftMessage || null,
+          // Send frontend calculated totals
+          total_amount: Math.max(orderTotal, 0),
+          discount_amount: Math.abs(limitedDiscount) + Math.abs(credit), // Total discount applied
         },
         {
           headers: {
@@ -91,9 +109,16 @@ const CheckoutPage = () => {
       );
 
       if (response.data.success && response.data.order) {
-        setOrderId(response.data.order.id);
-        // setCurrentStep("payment");
-        return response.data.order.id;
+        // Handle both Mongo (_id) and standard (id)
+        const id = response.data.order.id || response.data.order._id;
+
+        if (!id) {
+          throw new Error("Order ID not found in API response");
+        }
+
+        setOrderId(id);
+        setCurrentStep("payment");
+        return id;
       } else {
         throw new Error("Failed to create order");
       }
@@ -101,6 +126,7 @@ const CheckoutPage = () => {
       console.error("Order creation error:", error);
       alert(
         error.response?.data?.error ||
+          error.message ||
           "Failed to create order. Please try again.",
       );
       return null;
@@ -116,22 +142,17 @@ const CheckoutPage = () => {
     const newOrderId = await createOrder();
 
     if (!newOrderId) {
-      // Order creation failed, stay on shipping step
+      console.log("Order ID is null, staying on shipping");
       return;
     }
-    setOrderId(newOrderId); // Use setTimeout to ensure state is set before changing step
-    setTimeout(() => {
-      setCurrentStep("payment");
-    }, 0);
-    // navigate(`/order-success?reference=${reference}&order_id=${orderId}`);
   };
 
   const handleSubmitOrder = async () => {
     if (currentStep === "shipping") {
       setShowConfirmCancel(true);
     } else {
-      // Already on payment step, order is created
-      // Payment will be handled by PaymentStep component
+      // Already on payment step
+      console.log("Already on payment step");
     }
   };
 
@@ -195,6 +216,7 @@ const CheckoutPage = () => {
             safeguarded
           </span>
         </div>
+
         {/* Shipping Step */}
         {currentStep === "shipping" && (
           <ShippingStep
@@ -211,7 +233,7 @@ const CheckoutPage = () => {
           />
         )}
 
-        {/* // In your render, use a local variable check */}
+        {/* Payment Step */}
         {currentStep === "payment" && (
           <PaymentStep
             shippingAddress={shippingAddress}
