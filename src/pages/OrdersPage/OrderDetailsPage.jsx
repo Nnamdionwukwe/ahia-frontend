@@ -1,200 +1,314 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
-  MapPin,
-  Package,
   ChevronLeft,
-  AlertTriangle,
+  Package,
+  Truck,
+  MapPin,
+  CreditCard,
+  Clock,
   CheckCircle,
+  Copy,
+  Download,
 } from "lucide-react";
-import useAuthStore from "../../store/authStore";
 import styles from "./OrderDetailsPage.module.css";
+import useAuthStore from "../../store/authStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const OrderDetailsPage = () => {
-  const { id } = useParams(); // Get order ID from URL
+  const { orderId } = useParams();
   const navigate = useNavigate();
   const { accessToken } = useAuthStore();
 
   const [order, setOrder] = useState(null);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [cancelling, setCancelling] = useState(false);
-  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     fetchOrderDetails();
-  }, [id]);
+  }, [orderId]);
 
   const fetchOrderDetails = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await axios.get(`${API_URL}/api/orders/${id}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+      const response = await axios.get(`${API_URL}/api/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       setOrder(response.data.order);
       setItems(response.data.items || []);
     } catch (error) {
       console.error("Failed to fetch order details:", error);
-      setError("Order not found");
+      alert("Failed to load order details");
+      navigate("/orders");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleCancelOrder = async () => {
-    if (!window.confirm("Are you sure you want to cancel this order?")) {
-      return;
-    }
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
-    try {
-      setCancelling(true);
-      const response = await axios.put(
-        `${API_URL}/api/orders/${id}/cancel`,
-        {},
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
+  const formatCurrency = (amount) => {
+    return `₦${Number(amount).toLocaleString()}`;
+  };
 
-      if (response.data.success) {
-        setOrder(response.data.order);
-        alert("Order cancelled successfully");
-      }
-    } catch (error) {
-      alert(error.response?.data?.error || "Failed to cancel order");
-    } finally {
-      setCancelling(false);
-    }
+  const copyOrderId = () => {
+    navigator.clipboard.writeText(order.id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: "#ff6f00",
+      processing: "#2196f3",
+      shipped: "#9c27b0",
+      delivered: "#4caf50",
+      cancelled: "#f44336",
+      refunded: "#ff9800",
+    };
+    return colors[status] || "#666";
+  };
+
+  const getStatusSteps = () => {
+    const allSteps = [
+      { id: "pending", label: "Order placed", icon: Package },
+      { id: "processing", label: "Processing", icon: Clock },
+      { id: "shipped", label: "Shipped", icon: Truck },
+      { id: "delivered", label: "Delivered", icon: CheckCircle },
+    ];
+
+    const statusIndex = allSteps.findIndex((step) => step.id === order?.status);
+    return allSteps.map((step, index) => ({
+      ...step,
+      completed: index <= statusIndex,
+      active: index === statusIndex,
+    }));
   };
 
   if (loading) {
-    return <div className={styles.loading}>Loading order details...</div>;
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>
+          <div className={styles.spinner} />
+          <p>Loading order details...</p>
+        </div>
+      </div>
+    );
   }
 
   if (!order) {
     return (
       <div className={styles.container}>
-        <p>{error || "Order not found"}</p>
+        <div className={styles.error}>
+          <p>Order not found</p>
+          <button onClick={() => navigate("/orders")}>Back to Orders</button>
+        </div>
       </div>
     );
   }
 
+  const statusSteps = getStatusSteps();
+
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.header}>
-        <button onClick={() => navigate("/orders")} className={styles.backBtn}>
+      <header className={styles.header}>
+        <button
+          className={styles.backButton}
+          onClick={() => navigate("/orders")}
+        >
           <ChevronLeft size={24} />
         </button>
         <h1>Order Details</h1>
-      </div>
+        <button className={styles.iconButton}>
+          <Download size={20} />
+        </button>
+      </header>
 
-      {/* Status Banner */}
-      <div
-        className={`${styles.statusBanner} ${
-          order.status === "cancelled" ? styles.cancelled : styles.active
-        }`}
-      >
-        {order.status === "cancelled" ? (
-          <AlertTriangle size={24} />
-        ) : (
-          <CheckCircle size={24} />
-        )}
-        <div>
-          <h2 className={styles.statusTitle}>
-            {order.status.toUpperCase().replace("_", " ")}
-          </h2>
-          <p className={styles.statusSub}>
-            Order Placed on {new Date(order.created_at).toLocaleDateString()}
-          </p>
+      {/* Order Status */}
+      <section className={styles.statusSection}>
+        <div className={styles.statusHeader}>
+          <h2>Order Status</h2>
+          <span
+            className={styles.statusBadge}
+            style={{ backgroundColor: getStatusColor(order.status) }}
+          >
+            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+          </span>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className={styles.content}>
-        {/* Shipping Address */}
-        <section className={styles.section}>
-          <h3>Delivery Address</h3>
-          <p className={styles.address}>
-            <MapPin size={16} className={styles.icon} />
-            {order.delivery_address}
-          </p>
-        </section>
-
-        {/* Items List */}
-        <section className={styles.section}>
-          <h3>Items ({items.length})</h3>
-          <div className={styles.itemList}>
-            {items.map((item) => (
-              <div key={item.id} className={styles.item}>
-                <div className={styles.itemImage}>
-                  {item.images && item.images.length > 0 ? (
-                    <img src={item.images[0]} alt={item.name} />
-                  ) : (
-                    <Package size={32} color="#ccc" />
-                  )}
+        <div className={styles.timeline}>
+          {statusSteps.map((step, index) => {
+            const Icon = step.icon;
+            return (
+              <div
+                key={step.id}
+                className={`${styles.timelineStep} ${
+                  step.completed ? styles.completed : ""
+                } ${step.active ? styles.active : ""}`}
+              >
+                <div className={styles.stepIcon}>
+                  <Icon size={20} />
                 </div>
-                <div className={styles.itemDetails}>
-                  <h4>{item.name}</h4>
-                  <p className={styles.variant}>
-                    {item.color && <span>{item.color}</span>}
-                    {item.size && <span> · {item.size}</span>}
-                  </p>
-                  <div className={styles.itemMeta}>
-                    <span className={styles.qty}>Qty: {item.quantity}</span>
-                    <span className={styles.price}>
-                      ₦{parseFloat(item.unit_price).toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-                <div className={styles.itemTotal}>
-                  ₦{parseFloat(item.subtotal).toLocaleString()}
-                </div>
+                <p>{step.label}</p>
+                {index < statusSteps.length - 1 && (
+                  <div className={styles.stepLine} />
+                )}
               </div>
-            ))}
-          </div>
-        </section>
+            );
+          })}
+        </div>
 
-        {/* Payment Info */}
-        <section className={styles.section}>
-          <h3>Payment Info</h3>
-          <div className={styles.summaryRow}>
-            <span>Subtotal</span>
-            <span>₦{parseFloat(order.total_amount).toLocaleString()}</span>
-          </div>
-          {order.discount_amount > 0 && (
-            <div className={styles.summaryRow}>
-              <span>Discount</span>
-              <span className={styles.discount}>
-                -₦{parseFloat(order.discount_amount).toLocaleString()}
-              </span>
-            </div>
-          )}
-          <div className={styles.totalRow}>
-            <span>Total</span>
+        {order.estimated_delivery && (
+          <div className={styles.estimatedDelivery}>
+            <Clock size={16} />
             <span>
-              ₦
-              {(
-                parseFloat(order.total_amount) -
-                parseFloat(order.discount_amount)
-              ).toLocaleString()}
+              Estimated delivery: {formatDate(order.estimated_delivery)}
             </span>
           </div>
-        </section>
+        )}
+      </section>
 
-        {/* Cancel Button (Only for pending orders) */}
-        {order.status === "pending" && (
-          <button
-            className={styles.cancelBtn}
-            onClick={handleCancelOrder}
-            disabled={cancelling}
+      {/* Order Info */}
+      <section className={styles.infoSection}>
+        <div className={styles.infoRow}>
+          <span>Order ID</span>
+          <div className={styles.orderIdCopy}>
+            <span>{order.id.substring(0, 8)}...</span>
+            <button onClick={copyOrderId}>
+              <Copy size={16} />
+              {copied && <span className={styles.copiedText}>Copied!</span>}
+            </button>
+          </div>
+        </div>
+        <div className={styles.infoRow}>
+          <span>Order Date</span>
+          <strong>{formatDate(order.created_at)}</strong>
+        </div>
+        <div className={styles.infoRow}>
+          <span>Payment Method</span>
+          <strong>{order.payment_method}</strong>
+        </div>
+        <div className={styles.infoRow}>
+          <span>Payment Status</span>
+          <strong
+            style={{
+              color: order.payment_status === "paid" ? "#4caf50" : "#ff6f00",
+            }}
           >
-            {cancelling ? "Cancelling..." : "Cancel Order"}
+            {order.payment_status}
+          </strong>
+        </div>
+      </section>
+
+      {/* Delivery Address */}
+      <section className={styles.addressSection}>
+        <h3>
+          <MapPin size={20} />
+          Delivery Address
+        </h3>
+        <p>{order.delivery_address}</p>
+      </section>
+
+      {/* Order Items */}
+      <section className={styles.itemsSection}>
+        <h3>Order Items ({items.length})</h3>
+        {items.map((item, index) => (
+          <div key={index} className={styles.orderItem}>
+            <img src={item.images?.[0] || "/placeholder.png"} alt={item.name} />
+            <div className={styles.itemInfo}>
+              <h4>{item.name}</h4>
+              <p>
+                {item.color && `Color: ${item.color}`}
+                {item.size && ` • Size: ${item.size}`}
+              </p>
+              <p className={styles.itemQuantity}>Qty: {item.quantity}</p>
+            </div>
+            <div className={styles.itemPrice}>
+              <p className={styles.price}>{formatCurrency(item.unit_price)}</p>
+              <p className={styles.subtotal}>
+                Subtotal: {formatCurrency(item.subtotal)}
+              </p>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Order Summary */}
+      <section className={styles.summarySection}>
+        <h3>Order Summary</h3>
+        <div className={styles.summaryRow}>
+          <span>Subtotal</span>
+          <span>
+            {formatCurrency(order.total_amount + order.discount_amount)}
+          </span>
+        </div>
+        {order.discount_amount > 0 && (
+          <div className={styles.summaryRow}>
+            <span>Discount</span>
+            <span className={styles.discount}>
+              -{formatCurrency(order.discount_amount)}
+            </span>
+          </div>
+        )}
+        <div className={styles.summaryRow}>
+          <span>Shipping</span>
+          <span>Free</span>
+        </div>
+        <div className={styles.summaryDivider} />
+        <div className={`${styles.summaryRow} ${styles.total}`}>
+          <strong>Total</strong>
+          <strong>{formatCurrency(order.total_amount)}</strong>
+        </div>
+      </section>
+
+      {/* Actions */}
+      <section className={styles.actionsSection}>
+        {order.status === "pending" && order.payment_status === "pending" && (
+          <button
+            className={styles.primaryButton}
+            onClick={() => navigate(`/checkout/payment?order_id=${order.id}`)}
+          >
+            Complete Payment
           </button>
         )}
-      </div>
+        {order.status === "delivered" && (
+          <>
+            <button className={styles.secondaryButton}>Return/Refund</button>
+            <button className={styles.primaryButton}>Leave a Review</button>
+          </>
+        )}
+        {order.status === "pending" && (
+          <button
+            className={styles.dangerButton}
+            onClick={() => {
+              if (
+                window.confirm("Are you sure you want to cancel this order?")
+              ) {
+                // Handle cancel
+              }
+            }}
+          >
+            Cancel Order
+          </button>
+        )}
+        <button className={styles.secondaryButton}>Contact Support</button>
+      </section>
     </div>
   );
 };

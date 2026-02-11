@@ -1,189 +1,530 @@
+/* OrderDetailsPage.module.css */
+
 .container {
   min-height: 100vh;
-  background-color: var(--bg-secondary, #f3f4f6);
-  padding-bottom: 40px;
+  background-color: var(--bg-secondary);
+  padding-bottom: 80px;
 }
 
+/* ========================================
+   HEADER
+======================================== */
 .header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: space-between;
   padding: 16px;
-  background: var(--bg-primary);
+  background-color: var(--bg-primary);
   border-bottom: 1px solid var(--border-color);
 }
 
-.backBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-primary);
-}
-
 .header h1 {
+  margin: 0;
   font-size: 18px;
   font-weight: 700;
-  margin: 0;
+  color: var(--text-primary);
+  flex: 1;
+  text-align: center;
 }
 
-.statusBanner {
+.backButton,
+.iconButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 24px;
-  margin: 16px;
-  border-radius: 12px;
-  color: #fff;
+  justify-content: center;
 }
 
-.statusBanner.active {
-  background: linear-gradient(135deg, #10b981, #059669);
-}
-
-.statusBanner.cancelled {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-}
-
-.statusTitle {
-  margin: 0;
-  font-size: 20px;
-}
-
-.statusSub {
-  margin: 4px 0 0 0;
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-.content {
-  padding: 0 16px;
-}
-
-.section {
-  background: var(--bg-primary);
+/* ========================================
+   SECTIONS
+======================================== */
+.statusSection,
+.infoSection,
+.addressSection,
+.itemsSection,
+.summarySection,
+.actionsSection {
+  background-color: var(--bg-primary);
+  margin: 8px;
   padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 12px;
+  border-radius: 8px;
 }
 
-.section h3 {
-  font-size: 14px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin: 0 0 12px 0;
+.statusSection h2,
+.addressSection h3,
+.itemsSection h3,
+.summarySection h3 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.address {
+/* ========================================
+   STATUS SECTION
+======================================== */
+.statusHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.statusBadge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.timeline {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  margin: 0;
-  color: var(--text-primary);
-  font-size: 14px;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  position: relative;
 }
 
-.icon {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.itemList {
+.timelineStep {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  align-items: center;
+  gap: 8px;
+  position: relative;
 }
 
-.item {
+.stepIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: var(--bg-secondary);
+  border: 2px solid var(--border-color);
   display: flex;
-  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  z-index: 2;
 }
 
-.itemImage {
-  width: 60px;
-  height: 60px;
+.timelineStep.completed .stepIcon {
+  background-color: #4caf50;
+  border-color: #4caf50;
+  color: white;
+}
+
+.timelineStep.active .stepIcon {
+  background-color: #ff6f00;
+  border-color: #ff6f00;
+  color: white;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 111, 0, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(255, 111, 0, 0);
+  }
+}
+
+.timelineStep p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.timelineStep.completed p {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.stepLine {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  right: -50%;
+  height: 2px;
+  background-color: var(--border-color);
+  z-index: 1;
+}
+
+.timelineStep.completed .stepLine {
+  background-color: #4caf50;
+}
+
+.estimatedDelivery {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
-  overflow: hidden;
-  background: #f3f4f6;
+  font-size: 13px;
+  color: var(--text-primary);
 }
 
-.itemImage img {
-  width: 100%;
-  height: 100%;
+/* ========================================
+   INFO SECTION
+======================================== */
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoRow span {
+  color: var(--text-secondary);
+}
+
+.infoRow strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.orderIdCopy {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.orderIdCopy button {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #ff6f00;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.orderIdCopy button:hover {
+  background-color: var(--bg-secondary);
+}
+
+.copiedText {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  background-color: var(--text-primary);
+  color: var(--bg-primary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ========================================
+   ADDRESS SECTION
+======================================== */
+.addressSection p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* ========================================
+   ITEMS SECTION
+======================================== */
+.orderItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.orderItem:last-child {
+  border-bottom: none;
+}
+
+.orderItem img {
+  width: 80px;
+  height: 80px;
   object-fit: cover;
+  border-radius: 8px;
 }
 
-.itemDetails {
+.itemInfo {
   flex: 1;
 }
 
-.itemDetails h4 {
-  font-size: 14px;
-  font-weight: 600;
+.itemInfo h4 {
   margin: 0 0 4px 0;
-}
-
-.variant {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin: 0 0 8px 0;
-}
-
-.itemMeta {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.qty {
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-
-.price {
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
-.itemTotal {
-  font-weight: 700;
-  align-self: flex-start;
+.itemInfo p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
+.itemQuantity {
+  margin-top: 4px !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+.itemPrice {
+  text-align: right;
+}
+
+.price {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.subtotal {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ========================================
+   SUMMARY SECTION
+======================================== */
 .summaryRow {
   display: flex;
   justify-content: space-between;
   padding: 8px 0;
   font-size: 14px;
+  color: var(--text-primary);
+}
+
+.summaryRow span {
   color: var(--text-secondary);
 }
 
 .discount {
-  color: #ef4444;
+  color: #4caf50;
+  font-weight: 600;
 }
 
-.totalRow {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-color);
-  font-weight: 700;
-  font-size: 16px;
+.summaryDivider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin: 12px 0;
+}
+
+.total {
+  padding: 12px 0 0 0;
+  font-size: 18px;
+}
+
+.total strong {
   color: var(--text-primary);
 }
 
-.cancelBtn {
+/* ========================================
+   ACTIONS SECTION
+======================================== */
+.actionsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.primaryButton {
   width: 100%;
-  padding: 16px;
-  background: #fff;
-  color: #ef4444;
-  border: 1px solid #ef4444;
-  border-radius: 8px;
+  padding: 14px;
+  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  border: none;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 111, 0, 0.3);
+}
+
+.secondaryButton {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 24px;
+  font-size: 16px;
   font-weight: 600;
-  margin-top: 16px;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background-color: var(--bg-secondary);
+}
+
+.dangerButton {
+  width: 100%;
+  padding: 14px;
+  background-color: #ffebee;
+  border: 2px solid #f44336;
+  border-radius: 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #f44336;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dangerButton:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+[data-theme="dark"] .dangerButton,
+.dark .dangerButton {
+  background-color: #4a1818;
+  border-color: #f44336;
+}
+
+/* ========================================
+   LOADING & ERROR
+======================================== */
+.loading,
+.error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-color);
+  border-top-color: #ff6f00;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading p,
+.error p {
+  margin: 16px 0 0 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.error button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  border: none;
+  border-radius: 24px;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
   cursor: pointer;
 }
 
-.cancelBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* ========================================
+   RESPONSIVE
+======================================== */
+@media (max-width: 768px) {
+  .timeline {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .timelineStep {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .stepIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .timelineStep p {
+    flex: 1;
+    text-align: left;
+  }
+
+  .stepLine {
+    display: none;
+  }
+
+  .orderItem {
+    flex-direction: column;
+  }
+
+  .orderItem img {
+    width: 100%;
+    height: auto;
+  }
+
+  .itemPrice {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+/* ========================================
+   DARK MODE
+======================================== */
+[data-theme="dark"] .container,
+.dark .container {
+  background-color: var(--bg-secondary);
+}
+
+[data-theme="dark"] .statusSection,
+.dark .statusSection,
+[data-theme="dark"] .infoSection,
+.dark .infoSection,
+[data-theme="dark"] .addressSection,
+.dark .addressSection,
+[data-theme="dark"] .itemsSection,
+.dark .itemsSection,
+[data-theme="dark"] .summarySection,
+.dark .summarySection,
+[data-theme="dark"] .actionsSection,
+.dark .actionsSection {
+  background-color: var(--bg-primary);
 }

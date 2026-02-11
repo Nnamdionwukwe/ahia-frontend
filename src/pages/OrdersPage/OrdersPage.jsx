@@ -1,40 +1,57 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Package, ChevronRight, Filter } from "lucide-react";
-import useAuthStore from "../../store/authStore";
+import {
+  Search,
+  ChevronRight,
+  Star,
+  MoreHorizontal,
+  AlertCircle,
+  Clock,
+  Package,
+  Truck,
+  CheckCircle,
+  XCircle,
+} from "lucide-react";
 import styles from "./OrdersPage.module.css";
+import useAuthStore from "../../store/authStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const OrdersPage = () => {
   const navigate = useNavigate();
-  const { accessToken } = useAuthStore();
+  const { user, accessToken } = useAuthStore();
+
+  const [activeTab, setActiveTab] = useState("all");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState("all");
-  const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showMenu, setShowMenu] = useState(null);
+
+  const tabs = [
+    { id: "all", label: "All orders", icon: Package },
+    { id: "processing", label: "Processing", icon: Clock },
+    { id: "shipped", label: "Shipped", icon: Truck },
+    { id: "delivered", label: "Delivered", icon: CheckCircle },
+    { id: "returns", label: "Returns", icon: XCircle },
+  ];
 
   useEffect(() => {
     fetchOrders();
-  }, [activeFilter, page]);
+  }, [activeTab]);
 
   const fetchOrders = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const params = {
-        page: page,
-        limit: 10,
-      };
-
-      // Add status filter if not "all"
-      if (activeFilter !== "all") {
-        params.status = activeFilter;
-      }
-
       const response = await axios.get(`${API_URL}/api/orders`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-        params,
+        params: {
+          status: activeTab === "all" ? undefined : activeTab,
+          page: 1,
+          limit: 50,
+        },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       setOrders(response.data.orders || []);
@@ -45,101 +62,333 @@ const OrdersPage = () => {
     }
   };
 
-  // Helper to get status badge styles
-  const getStatusStyle = (status) => {
-    switch (status) {
-      case "pending":
-        return styles.statusPending;
-      case "processing":
-        return styles.statusProcessing;
-      case "completed":
-        return styles.statusCompleted;
-      case "cancelled":
-        return styles.statusCancelled;
-      case "pending_review":
-        return styles.statusReview;
-      default:
-        return styles.statusDefault;
+  const getOrderStatus = (order) => {
+    if (order.payment_status === "refunded") return "refunded";
+    if (order.payment_status === "pending") return "payment_processing";
+    if (order.status === "cancelled") return "cancelled";
+    if (order.status === "delivered") return "delivered";
+    if (order.status === "shipped") return "shipped";
+    if (order.status === "processing") return "processing";
+    return "pending";
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const formatCurrency = (amount) => {
+    return `₦${Number(amount).toLocaleString()}`;
+  };
+
+  const OrderCard = ({ order }) => {
+    const status = getOrderStatus(order);
+    const isPaymentProcessing = status === "payment_processing";
+    const isRefunded = status === "refunded";
+
+    return (
+      <div className={styles.orderCard}>
+        {/* Order Header */}
+        <div className={styles.orderHeader}>
+          {status === "delivered" && (
+            <p className={styles.deliveryDate}>
+              Delivered on {formatDate(order.delivered_at || order.updated_at)}
+            </p>
+          )}
+          {isPaymentProcessing && (
+            <div className={styles.statusBadge}>
+              <Clock size={16} />
+              <span>Payment processing</span>
+            </div>
+          )}
+          {isRefunded && <p className={styles.refundedText}>Refunded</p>}
+        </div>
+
+        {/* Order Items Preview */}
+        <div
+          className={styles.orderItems}
+          onClick={() => navigate(`/orders/${order.id}`)}
+        >
+          <div className={styles.itemsPreview}>
+            {order.items?.slice(0, 6).map((item, index) => (
+              <div key={index} className={styles.itemImage}>
+                <img
+                  src={item.images?.[0] || "/placeholder.png"}
+                  alt={item.name}
+                />
+                {item.quantity > 1 && (
+                  <span className={styles.quantityBadge}>x{item.quantity}</span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className={styles.orderSummary}>
+            <p className={styles.orderTotal}>
+              {formatCurrency(order.total_amount)}
+            </p>
+            <p className={styles.itemCount}>
+              {order.item_count || order.items?.length || 0} items
+            </p>
+          </div>
+          <ChevronRight size={20} className={styles.chevron} />
+        </div>
+
+        {/* Refund Information */}
+        {isRefunded && (
+          <div className={styles.refundInfo}>
+            <div className={styles.refundHeader}>
+              <AlertCircle size={18} />
+              <p>
+                Refund issued by Temu for the cancelled items. It needs to be
+                processed by your financial institution
+              </p>
+            </div>
+            <p className={styles.refundDescription}>
+              We've issued your refund for the entire order of{" "}
+              {order.item_count} items that you have requested to cancel.
+            </p>
+
+            <div className={styles.refundDetails}>
+              <div className={styles.refundRow}>
+                <span>Total refund amount:</span>
+                <strong>{formatCurrency(order.total_amount)}</strong>
+              </div>
+
+              <div className={styles.paymentMethod}>
+                <img
+                  src="/opay-logo.svg"
+                  alt="OPay"
+                  className={styles.paymentLogo}
+                />
+                <span>Opay</span>
+                <span>{formatCurrency(order.total_amount)}</span>
+              </div>
+
+              <button className={styles.proofLink}>
+                View proof of refund sent by Temu →
+              </button>
+
+              <div className={styles.refundDate}>
+                <p>The date refund will be issued by financial institution:</p>
+                <p className={styles.dateHighlight}>
+                  {formatDate(order.refund_date || order.updated_at)}
+                </p>
+              </div>
+
+              <button className={styles.trackButton}>Track</button>
+            </div>
+
+            <p className={styles.requestedDate}>
+              Requested on {formatDate(order.created_at)}
+            </p>
+          </div>
+        )}
+
+        {/* Payment Processing Info */}
+        {isPaymentProcessing && (
+          <div className={styles.paymentProcessing}>
+            <Clock size={18} className={styles.processingIcon} />
+            <div className={styles.processingText}>
+              <p>
+                We've reserved your order.{" "}
+                <span className={styles.highlight}>If you haven't paid</span>{" "}
+                with {order.payment_method}, you can change your payment method
+                to <span className={styles.paymentIcons}>💳 💰 🍎</span> or
+                another payment method to{" "}
+                <span className={styles.highlight}>
+                  receive your items faster.
+                </span>
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className={styles.actionButtons}>
+          <button
+            className={styles.moreButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowMenu(showMenu === order.id ? null : order.id);
+            }}
+          >
+            <MoreHorizontal size={20} />
+          </button>
+
+          {showMenu === order.id && (
+            <div className={styles.menuDropdown}>
+              <button onClick={() => navigate(`/orders/${order.id}`)}>
+                View details
+              </button>
+              <button onClick={() => handleContactSupport(order.id)}>
+                Contact support
+              </button>
+              {status === "pending" && (
+                <button onClick={() => handleCancelOrder(order.id)}>
+                  Cancel order
+                </button>
+              )}
+            </div>
+          )}
+
+          {status === "delivered" && (
+            <>
+              <button className={styles.secondaryButton}>Return/Refund</button>
+              <button className={styles.secondaryButton}>Buy this again</button>
+              <button className={styles.primaryButton}>Leave a review</button>
+            </>
+          )}
+
+          {status === "refunded" && (
+            <>
+              <button className={styles.secondaryButton}>Refund details</button>
+              <button className={styles.secondaryButton}>Buy this again</button>
+            </>
+          )}
+
+          {isPaymentProcessing && (
+            <>
+              <button
+                className={styles.secondaryButton}
+                onClick={() => handleCancelOrder(order.id)}
+              >
+                Cancel order
+              </button>
+              <button
+                className={styles.primaryButton}
+                onClick={() =>
+                  navigate(`/checkout/payment?order_id=${order.id}`)
+                }
+              >
+                Change payment method
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const ItemsReadyForReview = () => {
+    const deliveredOrders = orders.filter((o) => o.status === "delivered");
+    if (deliveredOrders.length === 0) return null;
+
+    return (
+      <div className={styles.reviewSection}>
+        <div className={styles.reviewHeader}>
+          <h3>Items ready for review ({deliveredOrders.length})</h3>
+          <button onClick={() => setActiveTab("delivered")}>See all →</button>
+        </div>
+        <div className={styles.reviewItems}>
+          {deliveredOrders.slice(0, 3).map((order) =>
+            order.items?.slice(0, 1).map((item, idx) => (
+              <div key={idx} className={styles.reviewItem}>
+                <img
+                  src={item.images?.[0] || "/placeholder.png"}
+                  alt={item.name}
+                />
+                <p>{item.name}</p>
+                <div className={styles.stars}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star key={star} size={20} />
+                  ))}
+                </div>
+              </div>
+            )),
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to cancel this order?")) return;
+
+    try {
+      await axios.put(
+        `${API_URL}/api/orders/${orderId}/cancel`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      fetchOrders();
+      alert("Order cancelled successfully");
+    } catch (error) {
+      console.error("Failed to cancel order:", error);
+      alert("Failed to cancel order. Please try again.");
     }
   };
+
+  const handleContactSupport = (orderId) => {
+    navigate(`/support?order_id=${orderId}`);
+  };
+
+  if (!accessToken) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.emptyState}>
+          <p>Please login to view your orders</p>
+          <button onClick={() => navigate("/auth")}>Login</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.header}>
-        <h1>My Orders</h1>
+      <header className={styles.header}>
+        <button className={styles.backButton} onClick={() => navigate(-1)}>
+          ←
+        </button>
+        <h1>Your orders</h1>
+        <button className={styles.searchButton} onClick={() => {}}>
+          <Search size={24} />
+        </button>
+      </header>
+
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`${styles.tab} ${activeTab === tab.id ? styles.activeTab : ""}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
-      {/* Filter Tabs */}
-      <div className={styles.filters}>
-        {["all", "pending", "processing", "completed", "cancelled"].map(
-          (filter) => (
-            <button
-              key={filter}
-              className={`${styles.filterBtn} ${
-                activeFilter === filter ? styles.active : ""
-              }`}
-              onClick={() => {
-                setPage(1);
-                setActiveFilter(filter);
-              }}
-            >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
-            </button>
-          ),
+      {/* Content */}
+      <div className={styles.content}>
+        {loading ? (
+          <div className={styles.loading}>
+            <div className={styles.spinner} />
+            <p>Loading orders...</p>
+          </div>
+        ) : orders.length === 0 ? (
+          <div className={styles.emptyState}>
+            <Package size={64} className={styles.emptyIcon} />
+            <p>No orders found</p>
+            <button onClick={() => navigate("/")}>Start shopping</button>
+          </div>
+        ) : (
+          <>
+            {activeTab === "all" && <ItemsReadyForReview />}
+            {orders.map((order) => (
+              <OrderCard key={order.id} order={order} />
+            ))}
+          </>
         )}
       </div>
-
-      {/* Orders List */}
-      {loading ? (
-        <div className={styles.loading}>Loading orders...</div>
-      ) : orders.length === 0 ? (
-        <div className={styles.emptyState}>
-          <Package size={48} className={styles.emptyIcon} />
-          <p>No orders found.</p>
-        </div>
-      ) : (
-        <div className={styles.orderList}>
-          {orders.map((order) => (
-            <div
-              key={order.id}
-              className={styles.orderCard}
-              onClick={() => navigate(`/orders/${order.id}`)}
-            >
-              {/* Left: Image & Date */}
-              <div className={styles.orderInfo}>
-                <div className={styles.imagePlaceholder}>
-                  {/* Assuming items array isn't fully populated in list, using generic icon or fetching first item image if available */}
-                  <Package size={32} color="#ccc" />
-                </div>
-                <div>
-                  <p className={styles.orderId}>Order #{order.id.slice(-6)}</p>
-                  <p className={styles.orderDate}>
-                    {new Date(order.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-
-              {/* Middle: Status */}
-              <div className={styles.orderStatusContainer}>
-                <span
-                  className={`${styles.statusBadge} ${getStatusStyle(order.status)}`}
-                >
-                  {order.status.replace("_", " ").toUpperCase()}
-                </span>
-              </div>
-
-              {/* Right: Amount & Arrow */}
-              <div className={styles.orderMeta}>
-                <p className={styles.orderAmount}>
-                  ₦{parseFloat(order.total_amount).toLocaleString()}
-                </p>
-                <ChevronRight size={20} className={styles.arrow} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 };
