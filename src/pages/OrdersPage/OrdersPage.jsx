@@ -33,6 +33,7 @@ const OrdersPage = () => {
   // Modal states
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [showPlaceOrderModal, setShowPlaceOrderModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [countdown, setCountdown] = useState("");
 
@@ -121,6 +122,18 @@ const OrdersPage = () => {
     setSelectedOrder(order);
     setShowCancelModal(true);
     setShowMenu(null);
+  };
+
+  const handleBuyAgainClick = (order) => {
+    setSelectedOrder(order);
+    setShowPlaceOrderModal(true);
+    setShowMenu(null);
+  };
+
+  const handleConfirmBuyAgain = () => {
+    setShowPlaceOrderModal(false);
+    // Add items to cart and navigate to checkout
+    navigate("/checkout");
   };
 
   const handleConfirmCancel = async () => {
@@ -212,14 +225,20 @@ const OrdersPage = () => {
             {order.items?.slice(0, 6).map((item, index) => (
               <div key={index} className={styles.itemImage}>
                 <img
-                  src={item.images?.[0] || "/placeholder.png"}
-                  alt={item.name}
+                  src={item.images?.[0] || item.image || "/placeholder.png"}
+                  alt={item.name || "Product"}
+                  onError={(e) => {
+                    e.target.src = "/placeholder.png";
+                  }}
                 />
                 {item.quantity > 1 && (
                   <span className={styles.quantityBadge}>x{item.quantity}</span>
                 )}
               </div>
             ))}
+            {order.items && order.items.length > 6 && (
+              <div className={styles.moreItems}>+{order.items.length - 6}</div>
+            )}
           </div>
           <div className={styles.orderSummary}>
             <p className={styles.orderTotal}>
@@ -312,23 +331,43 @@ const OrdersPage = () => {
 
           {showMenu === order.id && (
             <div className={styles.menuDropdown}>
-              <button onClick={() => navigate(`/orders/${order.id}`)}>
-                View details
-              </button>
-              <button onClick={() => navigate(`/support?order_id=${order.id}`)}>
-                Contact support
-              </button>
               {status === "payment_processing" && (
                 <>
-                  <button onClick={() => handleChangePaymentClick(order)}>
+                  <button
+                    onClick={() => {
+                      setShowMenu(null);
+                      navigate(`/orders/${order.id}/edit-address`);
+                    }}
+                  >
                     Change address
                   </button>
-                  <button onClick={() => navigate(`/orders/${order.id}`)}>
+                  <button onClick={() => handleBuyAgainClick(order)}>
                     Buy this again
                   </button>
                 </>
               )}
-              {status === "pending" && (
+              {(status === "delivered" || status === "refunded") && (
+                <button onClick={() => handleBuyAgainClick(order)}>
+                  Buy this again
+                </button>
+              )}
+              <button
+                onClick={() => {
+                  setShowMenu(null);
+                  navigate(`/orders/${order.id}`);
+                }}
+              >
+                View details
+              </button>
+              <button
+                onClick={() => {
+                  setShowMenu(null);
+                  navigate(`/support?order_id=${order.id}`);
+                }}
+              >
+                Contact support
+              </button>
+              {(status === "pending" || status === "payment_processing") && (
                 <button onClick={() => handleCancelOrderClick(order)}>
                   Cancel order
                 </button>
@@ -558,6 +597,54 @@ const OrdersPage = () => {
               onClick={handleAlreadyPaid}
             >
               Already paid with Bank transfer, update
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Place Order Again Modal */}
+      {showPlaceOrderModal && selectedOrder && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowPlaceOrderModal(false)}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowPlaceOrderModal(false)}
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className={styles.modalTitle}>
+              Are you sure you want to place another order?
+            </h2>
+
+            <p className={styles.modalDescription}>
+              The payment is pending for the original order you placed.{" "}
+              <span className={styles.modalHighlight}>
+                If you would like to place this order again, the original order
+                will be canceled.
+              </span>
+            </p>
+
+            <p className={styles.modalDescription}>
+              If the payment has already been completed, please wait for the
+              status to be updated.
+            </p>
+
+            <button
+              className={styles.modalPrimaryButton}
+              onClick={handleConfirmBuyAgain}
+            >
+              Cancel the original order and buy this again
+            </button>
+
+            <button
+              className={styles.modalSecondaryButton}
+              onClick={() => setShowPlaceOrderModal(false)}
+            >
+              Wait for the payment status to update
             </button>
           </div>
         </div>
