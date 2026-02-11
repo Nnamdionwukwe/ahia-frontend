@@ -140,7 +140,7 @@ const Profile = () => {
 
       {/* Menu Items */}
       <div className={styles.menuSection}>
-        <Link to="/order-details" className={styles.menuItemLink}>
+        <Link to="/orders" className={styles.menuItemLink}>
           <MenuItem icon={ShoppingBag} label="Your orders" count={null} />
         </Link>
         <MenuItem

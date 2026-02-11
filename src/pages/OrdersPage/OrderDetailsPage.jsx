@@ -26,32 +26,47 @@ const OrderDetailsPage = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    // CRITICAL: Validate orderId before fetching
+    if (!orderId || orderId === "undefined") {
+      console.error("Invalid orderId:", orderId);
+      setError("Invalid order ID");
+      setLoading(false);
+      return;
+    }
+
     fetchOrderDetails();
   }, [orderId]);
 
   const fetchOrderDetails = async () => {
     setLoading(true);
+    setError(null);
+
     try {
+      console.log("Fetching order details for:", orderId);
+
       const response = await axios.get(`${API_URL}/api/orders/${orderId}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
 
+      console.log("Order details received:", response.data);
+
       setOrder(response.data.order);
       setItems(response.data.items || []);
     } catch (error) {
       console.error("Failed to fetch order details:", error);
-      alert("Failed to load order details");
-      navigate("/orders");
+      setError(error.response?.data?.error || "Failed to load order details");
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
       month: "short",
@@ -63,13 +78,15 @@ const OrderDetailsPage = () => {
   };
 
   const formatCurrency = (amount) => {
-    return `₦${Number(amount).toLocaleString()}`;
+    return `₦${Number(amount || 0).toLocaleString()}`;
   };
 
   const copyOrderId = () => {
-    navigator.clipboard.writeText(order.id);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (order?.id) {
+      navigator.clipboard.writeText(order.id);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   const getStatusColor = (status) => {
@@ -111,11 +128,22 @@ const OrderDetailsPage = () => {
     );
   }
 
-  if (!order) {
+  if (error || !order) {
     return (
       <div className={styles.container}>
+        <header className={styles.header}>
+          <button
+            className={styles.backButton}
+            onClick={() => navigate("/orders")}
+          >
+            <ChevronLeft size={24} />
+          </button>
+          <h1>Order Details</h1>
+          <div className={styles.iconButton} />
+        </header>
         <div className={styles.error}>
-          <p>Order not found</p>
+          <Package size={64} className={styles.errorIcon} />
+          <p>{error || "Order not found"}</p>
           <button onClick={() => navigate("/orders")}>Back to Orders</button>
         </div>
       </div>
@@ -148,7 +176,7 @@ const OrderDetailsPage = () => {
             className={styles.statusBadge}
             style={{ backgroundColor: getStatusColor(order.status) }}
           >
-            {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+            {order.status?.charAt(0).toUpperCase() + order.status?.slice(1)}
           </span>
         </div>
 
@@ -189,7 +217,7 @@ const OrderDetailsPage = () => {
         <div className={styles.infoRow}>
           <span>Order ID</span>
           <div className={styles.orderIdCopy}>
-            <span>{order.id.substring(0, 8)}...</span>
+            <span>{order.id?.substring(0, 8)}...</span>
             <button onClick={copyOrderId}>
               <Copy size={16} />
               {copied && <span className={styles.copiedText}>Copied!</span>}
@@ -202,7 +230,7 @@ const OrderDetailsPage = () => {
         </div>
         <div className={styles.infoRow}>
           <span>Payment Method</span>
-          <strong>{order.payment_method}</strong>
+          <strong>{order.payment_method || "N/A"}</strong>
         </div>
         <div className={styles.infoRow}>
           <span>Payment Status</span>
@@ -211,7 +239,7 @@ const OrderDetailsPage = () => {
               color: order.payment_status === "paid" ? "#4caf50" : "#ff6f00",
             }}
           >
-            {order.payment_status}
+            {order.payment_status || "pending"}
           </strong>
         </div>
       </section>
@@ -222,31 +250,43 @@ const OrderDetailsPage = () => {
           <MapPin size={20} />
           Delivery Address
         </h3>
-        <p>{order.delivery_address}</p>
+        <p>{order.delivery_address || "No address provided"}</p>
       </section>
 
       {/* Order Items */}
       <section className={styles.itemsSection}>
         <h3>Order Items ({items.length})</h3>
-        {items.map((item, index) => (
-          <div key={index} className={styles.orderItem}>
-            <img src={item.images?.[0] || "/placeholder.png"} alt={item.name} />
-            <div className={styles.itemInfo}>
-              <h4>{item.name}</h4>
-              <p>
-                {item.color && `Color: ${item.color}`}
-                {item.size && ` • Size: ${item.size}`}
-              </p>
-              <p className={styles.itemQuantity}>Qty: {item.quantity}</p>
+        {items.length === 0 ? (
+          <p className={styles.noItems}>No items found</p>
+        ) : (
+          items.map((item, index) => (
+            <div key={index} className={styles.orderItem}>
+              <img
+                src={item.images?.[0] || "/placeholder.png"}
+                alt={item.name || "Product"}
+                onError={(e) => {
+                  e.target.src = "/placeholder.png";
+                }}
+              />
+              <div className={styles.itemInfo}>
+                <h4>{item.name || "Product"}</h4>
+                <p>
+                  {item.color && `Color: ${item.color}`}
+                  {item.size && ` • Size: ${item.size}`}
+                </p>
+                <p className={styles.itemQuantity}>Qty: {item.quantity || 1}</p>
+              </div>
+              <div className={styles.itemPrice}>
+                <p className={styles.price}>
+                  {formatCurrency(item.unit_price)}
+                </p>
+                <p className={styles.subtotal}>
+                  Subtotal: {formatCurrency(item.subtotal)}
+                </p>
+              </div>
             </div>
-            <div className={styles.itemPrice}>
-              <p className={styles.price}>{formatCurrency(item.unit_price)}</p>
-              <p className={styles.subtotal}>
-                Subtotal: {formatCurrency(item.subtotal)}
-              </p>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </section>
 
       {/* Order Summary */}
@@ -255,7 +295,9 @@ const OrderDetailsPage = () => {
         <div className={styles.summaryRow}>
           <span>Subtotal</span>
           <span>
-            {formatCurrency(order.total_amount + order.discount_amount)}
+            {formatCurrency(
+              (order.total_amount || 0) + (order.discount_amount || 0),
+            )}
           </span>
         </div>
         {order.discount_amount > 0 && (
@@ -296,18 +338,38 @@ const OrderDetailsPage = () => {
         {order.status === "pending" && (
           <button
             className={styles.dangerButton}
-            onClick={() => {
+            onClick={async () => {
               if (
                 window.confirm("Are you sure you want to cancel this order?")
               ) {
-                // Handle cancel
+                try {
+                  await axios.put(
+                    `${API_URL}/api/orders/${order.id}/cancel`,
+                    {},
+                    {
+                      headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                      },
+                    },
+                  );
+                  alert("Order cancelled successfully");
+                  navigate("/orders");
+                } catch (error) {
+                  console.error("Failed to cancel order:", error);
+                  alert("Failed to cancel order");
+                }
               }
             }}
           >
             Cancel Order
           </button>
         )}
-        <button className={styles.secondaryButton}>Contact Support</button>
+        <button
+          className={styles.secondaryButton}
+          onClick={() => navigate(`/support?order_id=${order.id}`)}
+        >
+          Contact Support
+        </button>
       </section>
     </div>
   );

@@ -29,7 +29,6 @@ import Profile from "./pages/Accountprofile/Profile";
 import ProfileCard from "./pages/Accountprofile/ProfileCard";
 import CheckoutPage from "./components/CheckoutPage/CheckoutPage";
 import OrderSuccessPage from "./pages/OrderSuccessPage/OrderSuccessPage";
-import OrderSuccess from "./pages/OrderSuccessPage/OrderSuccess";
 import OrderDetailsPage from "./pages/OrdersPage/OrderDetailsPage";
 import OrdersPage from "./pages/OrdersPage/OrdersPage";
 import BankTransferPayment from "./pages/Banktransferpayment/Banktransferpayment";
@@ -67,11 +66,10 @@ const App = () => {
                 isAuthenticated ? <CheckoutPage /> : <Navigate to="/auth" />
               }
             />
-            <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/bank-transfer" element={<BankTransferPayment />} />
             <Route path="/orders/:id" element={<OrderDetailsPage />} />
 
-            <Route path="/order-details" element={<OrdersPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
             <Route path="/order-success-page" element={<OrderSuccessPage />} />
             <Route path="/flash-sales" element={<FlashSalesList />} />
 
