@@ -12,6 +12,8 @@ import {
   Truck,
   CheckCircle,
   XCircle,
+  X,
+  Building2,
 } from "lucide-react";
 import styles from "./OrdersPage.module.css";
 import useAuthStore from "../../store/authStore";
@@ -28,6 +30,12 @@ const OrdersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showMenu, setShowMenu] = useState(null);
 
+  // Modal states
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [countdown, setCountdown] = useState("");
+
   const tabs = [
     { id: "all", label: "All orders", icon: Package },
     { id: "processing", label: "Processing", icon: Clock },
@@ -39,6 +47,30 @@ const OrdersPage = () => {
   useEffect(() => {
     fetchOrders();
   }, [activeTab]);
+
+  // Countdown timer for payment processing orders
+  useEffect(() => {
+    if (!selectedOrder || !selectedOrder.payment_expires_at) return;
+
+    const updateCountdown = () => {
+      const expiresAt = new Date(selectedOrder.payment_expires_at);
+      const now = new Date();
+      const diff = Math.max(0, expiresAt - now);
+
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      setCountdown(
+        `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
+      );
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(timer);
+  }, [selectedOrder]);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -83,6 +115,69 @@ const OrdersPage = () => {
 
   const formatCurrency = (amount) => {
     return `₦${Number(amount).toLocaleString()}`;
+  };
+
+  const handleCancelOrderClick = (order) => {
+    setSelectedOrder(order);
+    setShowCancelModal(true);
+    setShowMenu(null);
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      await axios.put(
+        `${API_URL}/api/orders/${selectedOrder.id}/cancel`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setShowCancelModal(false);
+      setSelectedOrder(null);
+      fetchOrders();
+      alert("Order cancelled successfully");
+    } catch (error) {
+      console.error("Failed to cancel order:", error);
+      alert("Failed to cancel order. Please try again.");
+    }
+  };
+
+  const handleChangePaymentClick = (order) => {
+    setSelectedOrder(order);
+    setShowPaymentModal(true);
+    setShowMenu(null);
+  };
+
+  const handleContinueToPay = () => {
+    setShowPaymentModal(false);
+    navigate(`/checkout?order_id=${selectedOrder.id}`);
+  };
+
+  const handleAlreadyPaid = async () => {
+    try {
+      // Call API to mark as paid/confirm payment
+      await axios.post(
+        `${API_URL}/api/payments/bank-transfer/confirm`,
+        {
+          reference: selectedOrder.payment_reference,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+      setShowPaymentModal(false);
+      alert(
+        "Payment confirmation received! We'll verify your transfer shortly.",
+      );
+      fetchOrders();
+    } catch (error) {
+      console.error("Failed to confirm payment:", error);
+      alert("Failed to confirm payment. Please try again.");
+    }
   };
 
   const OrderCard = ({ order }) => {
@@ -159,11 +254,7 @@ const OrdersPage = () => {
               </div>
 
               <div className={styles.paymentMethod}>
-                <img
-                  src="/opay-logo.svg"
-                  alt="OPay"
-                  className={styles.paymentLogo}
-                />
+                <Building2 size={24} className={styles.paymentLogo} />
                 <span>Opay</span>
                 <span>{formatCurrency(order.total_amount)}</span>
               </div>
@@ -224,11 +315,21 @@ const OrdersPage = () => {
               <button onClick={() => navigate(`/orders/${order.id}`)}>
                 View details
               </button>
-              <button onClick={() => handleContactSupport(order.id)}>
+              <button onClick={() => navigate(`/support?order_id=${order.id}`)}>
                 Contact support
               </button>
+              {status === "payment_processing" && (
+                <>
+                  <button onClick={() => handleChangePaymentClick(order)}>
+                    Change address
+                  </button>
+                  <button onClick={() => navigate(`/orders/${order.id}`)}>
+                    Buy this again
+                  </button>
+                </>
+              )}
               {status === "pending" && (
-                <button onClick={() => handleCancelOrder(order.id)}>
+                <button onClick={() => handleCancelOrderClick(order)}>
                   Cancel order
                 </button>
               )}
@@ -254,15 +355,13 @@ const OrdersPage = () => {
             <>
               <button
                 className={styles.secondaryButton}
-                onClick={() => handleCancelOrder(order.id)}
+                onClick={() => handleCancelOrderClick(order)}
               >
                 Cancel order
               </button>
               <button
                 className={styles.primaryButton}
-                onClick={() =>
-                  navigate(`/checkout/payment?order_id=${order.id}`)
-                }
+                onClick={() => handleChangePaymentClick(order)}
               >
                 Change payment method
               </button>
@@ -303,31 +402,6 @@ const OrdersPage = () => {
         </div>
       </div>
     );
-  };
-
-  const handleCancelOrder = async (orderId) => {
-    if (!window.confirm("Are you sure you want to cancel this order?")) return;
-
-    try {
-      await axios.put(
-        `${API_URL}/api/orders/${orderId}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      fetchOrders();
-      alert("Order cancelled successfully");
-    } catch (error) {
-      console.error("Failed to cancel order:", error);
-      alert("Failed to cancel order. Please try again.");
-    }
-  };
-
-  const handleContactSupport = (orderId) => {
-    navigate(`/support?order_id=${orderId}`);
   };
 
   if (!accessToken) {
@@ -389,6 +463,105 @@ const OrdersPage = () => {
           </>
         )}
       </div>
+
+      {/* Cancel Order Modal */}
+      {showCancelModal && selectedOrder && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowCancelModal(false)}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowCancelModal(false)}
+            >
+              <X size={24} />
+            </button>
+
+            <div className={styles.modalIcon}>
+              <CheckCircle size={48} />
+            </div>
+
+            <h2 className={styles.modalTitle}>
+              Your order will be processed{" "}
+              <span className={styles.modalHighlight}>within 5 min.</span> Are
+              you sure you want to cancel this order?
+            </h2>
+
+            <ul className={styles.modalList}>
+              <li>We will keep your payment safe.</li>
+              <li>Once the payment is completed, you will receive an email.</li>
+              <li>If canceled, item(s) will be returned to your cart.</li>
+            </ul>
+
+            <button
+              className={styles.modalPrimaryButton}
+              onClick={() => setShowCancelModal(false)}
+            >
+              Keep this order
+            </button>
+
+            <button
+              className={styles.modalSecondaryButton}
+              onClick={handleConfirmCancel}
+            >
+              Cancel this order
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Confirmation Modal */}
+      {showPaymentModal && selectedOrder && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setShowPaymentModal(false)}
+        >
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowPaymentModal(false)}
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className={styles.modalTitle}>
+              Have you already paid for this order?
+            </h2>
+
+            <p className={styles.modalDescription}>
+              <span className={styles.modalHighlight}>
+                If you have already paid with
+              </span>{" "}
+              <Building2 size={20} className={styles.inlineIcon} /> Bank
+              transfer, please wait for your order status to be updated.
+            </p>
+
+            <p className={styles.modalDescription}>
+              If you haven't paid yet, you can change the payment method to
+              complete the payment{" "}
+              <span className={styles.modalHighlight}>
+                within {countdown || "14:47:50"}
+              </span>
+              .
+            </p>
+
+            <button
+              className={styles.modalPrimaryButton}
+              onClick={handleContinueToPay}
+            >
+              Continue to pay
+            </button>
+
+            <button
+              className={styles.modalSecondaryButton}
+              onClick={handleAlreadyPaid}
+            >
+              Already paid with Bank transfer, update
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
