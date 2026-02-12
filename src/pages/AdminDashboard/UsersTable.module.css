@@ -1,13 +1,31 @@
 .tableCard {
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  /* UPDATED: Enables horizontal scroll on small screens */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border: 2px solid #f1f5f9;
+}
+
+/* Custom Scrollbar Styling */
+.tableCard::-webkit-scrollbar {
+  height: 8px;
+}
+.tableCard::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-bottom-right-radius: 12px;
+}
+.tableCard::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 4px;
+  border: 3px solid #f1f5f9;
 }
 
 .usersTable {
   width: 100%;
   border-collapse: collapse;
+  /* UPDATED: Ensures table maintains width to trigger scroll */
+  min-width: 800px;
 }
 
 .usersTable thead {
@@ -22,6 +40,10 @@
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  /* UPDATED: Sticks header to top while scrolling */
+  position: sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .usersTable tbody tr {
