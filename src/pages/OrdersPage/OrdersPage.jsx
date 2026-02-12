@@ -219,7 +219,15 @@ const OrdersPage = () => {
         {/* Order Items Preview */}
         <div
           className={styles.orderItems}
-          onClick={() => navigate(`/orders/${order.id}`)}
+          onClick={() => {
+            const id = order._id || order._id || order.id;
+            if (id) {
+              navigate(`/orders/${id}`);
+            } else {
+              console.error("Order ID is missing:", order);
+              alert("Unable to view order details");
+            }
+          }}
         >
           <div className={styles.itemsPreview}>
             {order.items?.slice(0, 6).map((item, index) => (
@@ -323,57 +331,64 @@ const OrdersPage = () => {
             className={styles.moreButton}
             onClick={(e) => {
               e.stopPropagation();
-              setShowMenu(showMenu === order.id ? null : order.id);
+              setShowMenu(
+                showMenu === order._id || order.id
+                  ? null
+                  : order._id || order.id,
+              );
             }}
           >
             <MoreHorizontal size={20} />
           </button>
 
-          {showMenu === order.id && (
-            <div className={styles.menuDropdown}>
-              {status === "payment_processing" && (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowMenu(null);
-                      navigate(`/orders/${order.id}/edit-address`);
-                    }}
-                  >
-                    Change address
-                  </button>
+          {showMenu === order._id ||
+            (order.id && (
+              <div className={styles.menuDropdown}>
+                {status === "payment_processing" && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setShowMenu(null);
+                        navigate(
+                          `/orders/${order._id || order.id}/edit-address`,
+                        );
+                      }}
+                    >
+                      Change address
+                    </button>
+                    <button onClick={() => handleBuyAgainClick(order)}>
+                      Buy this again
+                    </button>
+                  </>
+                )}
+                {(status === "delivered" || status === "refunded") && (
                   <button onClick={() => handleBuyAgainClick(order)}>
                     Buy this again
                   </button>
-                </>
-              )}
-              {(status === "delivered" || status === "refunded") && (
-                <button onClick={() => handleBuyAgainClick(order)}>
-                  Buy this again
+                )}
+                <button
+                  onClick={() => {
+                    setShowMenu(null);
+                    navigate(`/orders/${order._id || order.id}`);
+                  }}
+                >
+                  View details
                 </button>
-              )}
-              <button
-                onClick={() => {
-                  setShowMenu(null);
-                  navigate(`/orders/${order.id}`);
-                }}
-              >
-                View details
-              </button>
-              <button
-                onClick={() => {
-                  setShowMenu(null);
-                  navigate(`/support?order_id=${order.id}`);
-                }}
-              >
-                Contact support
-              </button>
-              {(status === "pending" || status === "payment_processing") && (
-                <button onClick={() => handleCancelOrderClick(order)}>
-                  Cancel order
+                <button
+                  onClick={() => {
+                    setShowMenu(null);
+                    navigate(`/support?order_id=${order._id || order.id}`);
+                  }}
+                >
+                  Contact support
                 </button>
-              )}
-            </div>
-          )}
+                {(status === "pending" || status === "payment_processing") && (
+                  <button onClick={() => handleCancelOrderClick(order)}>
+                    Cancel order
+                  </button>
+                )}
+              </div>
+            ))}
 
           {status === "delivered" && (
             <>
@@ -497,7 +512,7 @@ const OrdersPage = () => {
           <>
             {activeTab === "all" && <ItemsReadyForReview />}
             {orders.map((order) => (
-              <OrderCard key={order.id} order={order} />
+              <OrderCard key={order._id || order.id} order={order} />
             ))}
           </>
         )}

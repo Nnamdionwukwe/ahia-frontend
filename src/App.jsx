@@ -67,7 +67,7 @@ const App = () => {
               }
             />
             <Route path="/bank-transfer" element={<BankTransferPayment />} />
-            <Route path="/orders/:id" element={<OrderDetailsPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
 
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/order-success-page" element={<OrderSuccessPage />} />
