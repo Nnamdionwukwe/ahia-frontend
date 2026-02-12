@@ -32,6 +32,7 @@ import OrderSuccessPage from "./pages/OrderSuccessPage/OrderSuccessPage";
 import OrderDetailsPage from "./pages/OrdersPage/OrderDetailsPage";
 import OrdersPage from "./pages/OrdersPage/OrdersPage";
 import BankTransferPayment from "./pages/Banktransferpayment/Banktransferpayment";
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -95,6 +96,13 @@ const App = () => {
               path="/account-profile"
               element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />}
             />
+            <Route
+              path="/admin-dashboard"
+              element={
+                isAuthenticated ? <AdminDashboard /> : <Navigate to="/auth" />
+              }
+            />
+            {/* <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
 
             <Route
               path="/profile-card"
