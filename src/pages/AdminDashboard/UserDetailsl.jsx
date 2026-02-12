@@ -1,18 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import {
-  X,
-  Edit2,
-  Trash2,
-  Save,
-  XCircle,
-  Activity,
-  ShoppingBag,
-  MapPin,
-  TrendingUp,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { X, Edit2, Trash2, Save, XCircle } from "lucide-react";
 import styles from "./UserDetailsModal.module.css";
 import useAuthStore from "../../store/authStore";
 
@@ -27,13 +15,6 @@ const UserDetailsModal = ({
   const { accessToken } = useAuthStore();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showActivity, setShowActivity] = useState(false);
-  const [activityLoading, setActivityLoading] = useState(false);
-  const [userActivity, setUserActivity] = useState({
-    orders: [],
-    addresses: [],
-    stats: null,
-  });
   const [formData, setFormData] = useState({
     full_name: selectedUser?.full_name || "",
     email: selectedUser?.email || "",
@@ -48,60 +29,6 @@ const UserDetailsModal = ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
-  };
-
-  const fetchUserActivity = async () => {
-    if (showActivity) {
-      setShowActivity(false);
-      return;
-    }
-
-    setActivityLoading(true);
-    setShowActivity(true);
-
-    try {
-      // Create a temporary token for the selected user (admin accessing user data)
-      const headers = {
-        Authorization: `Bearer ${accessToken}`,
-        "X-Admin-User-Id": selectedUser.id, // Custom header for admin access
-      };
-
-      // Fetch orders
-      const ordersResponse = await axios.get(
-        `${API_URL}/api/admin/users/${selectedUser.id}/orders`,
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
-
-      // Fetch addresses
-      const addressesResponse = await axios.get(
-        `${API_URL}/api/admin/users/${selectedUser.id}/addresses`,
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
-
-      // Fetch stats
-      const statsResponse = await axios.get(
-        `${API_URL}/api/admin/users/${selectedUser.id}/stats`,
-        { headers: { Authorization: `Bearer ${accessToken}` } },
-      );
-
-      setUserActivity({
-        orders: ordersResponse.data.orders || [],
-        addresses: addressesResponse.data.addresses || [],
-        stats: statsResponse.data.stats || null,
-      });
-    } catch (error) {
-      console.error("Failed to fetch user activity:", error);
-      alert("Failed to load user activity. Some data may be unavailable.");
-
-      // Set empty data on error
-      setUserActivity({
-        orders: [],
-        addresses: [],
-        stats: null,
-      });
-    } finally {
-      setActivityLoading(false);
-    }
   };
 
   const handleSaveEdit = async () => {
@@ -120,7 +47,11 @@ const UserDetailsModal = ({
       if (response.data.success) {
         alert("User updated successfully!");
         setIsEditing(false);
+
+        // Update selected user with new data
         setSelectedUser(response.data.user);
+
+        // Notify parent component to refresh user list
         if (onUserUpdated) {
           onUserUpdated(response.data.user);
         }
@@ -143,6 +74,7 @@ const UserDetailsModal = ({
 
     if (!confirmDelete) return;
 
+    // Double confirmation for admin users
     if (selectedUser.role === "admin") {
       const doubleConfirm = window.confirm(
         "⚠️ WARNING: You are about to delete an ADMIN user. Are you absolutely sure?",
@@ -163,9 +95,13 @@ const UserDetailsModal = ({
 
       if (response.data.success) {
         alert("User deleted successfully!");
+
+        // Notify parent component to remove user from list
         if (onUserDeleted) {
           onUserDeleted(selectedUser.id);
         }
+
+        // Close modal
         setSelectedUser(null);
       }
     } catch (error) {
@@ -180,6 +116,7 @@ const UserDetailsModal = ({
   };
 
   const handleCancelEdit = () => {
+    // Reset form to original values
     setFormData({
       full_name: selectedUser.full_name || "",
       email: selectedUser.email || "",
@@ -188,10 +125,6 @@ const UserDetailsModal = ({
       is_verified: selectedUser.is_verified || false,
     });
     setIsEditing(false);
-  };
-
-  const formatCurrency = (amount) => {
-    return `₦${Number(amount || 0).toLocaleString()}`;
   };
 
   return (
@@ -329,127 +262,6 @@ const UserDetailsModal = ({
                     {new Date(selectedUser.created_at).toLocaleString()}
                   </strong>
                 </div>
-
-                {/* User Activity Section */}
-                {showActivity && (
-                  <div className={styles.activitySection}>
-                    {activityLoading ? (
-                      <div className={styles.activityLoading}>
-                        <div className={styles.spinner} />
-                        <p>Loading user activity...</p>
-                      </div>
-                    ) : (
-                      <>
-                        {/* User Stats */}
-                        {userActivity.stats && (
-                          <div className={styles.statsGrid}>
-                            <div className={styles.statCard}>
-                              <ShoppingBag
-                                size={20}
-                                className={styles.statIcon}
-                              />
-                              <div>
-                                <p className={styles.statLabel}>Total Orders</p>
-                                <h4 className={styles.statValue}>
-                                  {userActivity.stats.orders?.total_orders || 0}
-                                </h4>
-                              </div>
-                            </div>
-                            <div className={styles.statCard}>
-                              <TrendingUp
-                                size={20}
-                                className={styles.statIcon}
-                              />
-                              <div>
-                                <p className={styles.statLabel}>Total Spent</p>
-                                <h4 className={styles.statValue}>
-                                  {formatCurrency(
-                                    userActivity.stats.orders?.total_spent,
-                                  )}
-                                </h4>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Recent Orders */}
-                        <div className={styles.activityGroup}>
-                          <h4 className={styles.activityTitle}>
-                            <ShoppingBag size={18} />
-                            Recent Orders ({userActivity.orders.length})
-                          </h4>
-                          {userActivity.orders.length > 0 ? (
-                            <div className={styles.ordersList}>
-                              {userActivity.orders.slice(0, 5).map((order) => (
-                                <div
-                                  key={order.id}
-                                  className={styles.orderItem}
-                                >
-                                  <div>
-                                    <p className={styles.orderId}>
-                                      Order #{order.id.slice(0, 8)}...
-                                    </p>
-                                    <p className={styles.orderDate}>
-                                      {new Date(
-                                        order.created_at,
-                                      ).toLocaleDateString()}
-                                    </p>
-                                  </div>
-                                  <div className={styles.orderRight}>
-                                    <p className={styles.orderAmount}>
-                                      {formatCurrency(order.total_amount)}
-                                    </p>
-                                    <span className={styles.orderStatus}>
-                                      {order.status}
-                                    </span>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className={styles.emptyMessage}>No orders yet</p>
-                          )}
-                        </div>
-
-                        {/* Addresses */}
-                        <div className={styles.activityGroup}>
-                          <h4 className={styles.activityTitle}>
-                            <MapPin size={18} />
-                            Saved Addresses ({userActivity.addresses.length})
-                          </h4>
-                          {userActivity.addresses.length > 0 ? (
-                            <div className={styles.addressesList}>
-                              {userActivity.addresses.map((address) => (
-                                <div
-                                  key={address.id}
-                                  className={styles.addressItem}
-                                >
-                                  <p className={styles.addressText}>
-                                    {address.address_line1}
-                                    {address.address_line2 &&
-                                      `, ${address.address_line2}`}
-                                  </p>
-                                  <p className={styles.addressCity}>
-                                    {address.city}, {address.state}
-                                  </p>
-                                  {address.is_default && (
-                                    <span className={styles.defaultBadge}>
-                                      Default
-                                    </span>
-                                  )}
-                                </div>
-                              ))}
-                            </div>
-                          ) : (
-                            <p className={styles.emptyMessage}>
-                              No saved addresses
-                            </p>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
               </>
             )}
           </div>
@@ -495,25 +307,6 @@ const UserDetailsModal = ({
               </>
             )}
           </div>
-
-          {/* Activity Toggle Button */}
-          {!isEditing && (
-            <div className={styles.activityToggle}>
-              <button
-                className={styles.activityButton}
-                onClick={fetchUserActivity}
-                disabled={activityLoading}
-              >
-                <Activity size={18} />
-                {showActivity ? "Hide" : "View"} User Activity
-                {showActivity ? (
-                  <ChevronUp size={18} />
-                ) : (
-                  <ChevronDown size={18} />
-                )}
-              </button>
-            </div>
-          )}
         </div>
       </div>
     )
