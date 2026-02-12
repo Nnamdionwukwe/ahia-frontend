@@ -15,6 +15,7 @@ import {
   FileText,
   Share2,
   LogOut,
+  Eclipse,
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
@@ -222,7 +223,7 @@ const Settings = () => {
         {/* Theme Toggle (Optional - for demonstration) */}
         <section className={styles.section}>
           <button className={styles.menuItem} onClick={toggleTheme}>
-            <Bell size={20} className={styles.menuIcon} />
+            <Eclipse size={20} className={styles.menuIcon} />
             <span className={styles.menuTitle}>
               {isDark ? "Light Mode" : "Dark Mode"}
             </span>
