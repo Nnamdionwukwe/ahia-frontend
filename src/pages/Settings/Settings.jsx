@@ -126,9 +126,9 @@ const Settings = () => {
         // Share functionality
         if (navigator.share) {
           navigator.share({
-            title: "Temu",
-            text: "Download the Temu app and get amazing deals!",
-            url: "https://temu.app",
+            title: "Ahia",
+            text: "Download the Ahia app and get amazing deals!",
+            url: "https://ahia.com",
           });
         }
         break;
