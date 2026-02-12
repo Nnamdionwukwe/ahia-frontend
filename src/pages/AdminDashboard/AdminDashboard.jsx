@@ -27,6 +27,10 @@ import PopularProducts from "./PopularProducts";
 import UserStats from "./UserStats";
 import UserSearchBar from "./UserSearchBar";
 import UsersTable from "./UsersTable";
+import AdminHeader from "./AdminHeader";
+import NavigationTabs from "./NavigationTabs";
+import TabContent from "./TabContent";
+import UserDetailsModal from "./UserDetailsModal";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -199,143 +203,37 @@ const AdminDashboard = () => {
   return (
     <div className={styles.dashboard}>
       {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerLeft}>
-          <h1>Admin Dashboard</h1>
-          <p>Welcome back, {user?.full_name || "Admin"}</p>
-        </div>
-        <div className={styles.headerRight}>
-          <select
-            className={styles.periodSelector}
-            value={period}
-            onChange={(e) => setPeriod(e.target.value)}
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-          </select>
-          <button className={styles.downloadButton}>
-            <Download size={18} />
-            Export
-          </button>
-        </div>
-      </header>
+      <AdminHeader user={user} period={period} setPeriod={setPeriod} />
 
       {/* Navigation Tabs */}
-      <nav className={styles.tabs}>
-        <button
-          className={`${styles.tab} ${activeTab === "overview" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("overview")}
-        >
-          <BarChart3 size={20} />
-          Overview
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === "users" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("users")}
-        >
-          <Users size={20} />
-          Users
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === "products" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("products")}
-        >
-          <Package size={20} />
-          Products
-        </button>
-        <button
-          className={`${styles.tab} ${activeTab === "orders" ? styles.activeTab : ""}`}
-          onClick={() => setActiveTab("orders")}
-        >
-          <ShoppingBag size={20} />
-          Orders
-        </button>
-      </nav>
+      <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
       {/* Content */}
-      <div className={styles.content}>
-        {loading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner} />
-            <p>Loading data...</p>
+      <TabContent loading={loading} activeTab={activeTab}>
+        {activeTab === "overview" && <OverviewTab />}
+        {activeTab === "users" && <UsersTab />}
+        {activeTab === "products" && (
+          <div className={styles.comingSoon}>
+            <Package size={64} />
+            <h3>Products Management</h3>
+            <p>Coming soon...</p>
           </div>
-        ) : (
-          <>
-            {activeTab === "overview" && <OverviewTab />}
-            {activeTab === "users" && <UsersTab />}
-            {activeTab === "products" && (
-              <div className={styles.comingSoon}>
-                <Package size={64} />
-                <h3>Products Management</h3>
-                <p>Coming soon...</p>
-              </div>
-            )}
-            {activeTab === "orders" && (
-              <div className={styles.comingSoon}>
-                <ShoppingBag size={64} />
-                <h3>Orders Management</h3>
-                <p>Coming soon...</p>
-              </div>
-            )}
-          </>
         )}
-      </div>
+        {activeTab === "orders" && (
+          <div className={styles.comingSoon}>
+            <ShoppingBag size={64} />
+            <h3>Orders Management</h3>
+            <p>Coming soon...</p>
+          </div>
+        )}
+      </TabContent>
 
       {/* User Detail Modal */}
       {selectedUser && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setSelectedUser(null)}
-        >
-          <div
-            className={styles.userModal}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className={styles.modalHeader}>
-              <h2>User Details</h2>
-              <button onClick={() => setSelectedUser(null)}>×</button>
-            </div>
-            <div className={styles.modalBody}>
-              <div className={styles.userDetailRow}>
-                <span>Full Name:</span>
-                <strong>{selectedUser.full_name || "N/A"}</strong>
-              </div>
-              <div className={styles.userDetailRow}>
-                <span>Email:</span>
-                <strong>{selectedUser.email || "N/A"}</strong>
-              </div>
-              <div className={styles.userDetailRow}>
-                <span>Phone:</span>
-                <strong>{selectedUser.phone_number || "N/A"}</strong>
-              </div>
-              <div className={styles.userDetailRow}>
-                <span>Role:</span>
-                <strong>{selectedUser.role || "customer"}</strong>
-              </div>
-              <div className={styles.userDetailRow}>
-                <span>Status:</span>
-                <strong>
-                  {selectedUser.is_verified ? "Verified" : "Unverified"}
-                </strong>
-              </div>
-              <div className={styles.userDetailRow}>
-                <span>Signup Method:</span>
-                <strong>{selectedUser.signup_method || "phone"}</strong>
-              </div>
-              <div className={styles.userDetailRow}>
-                <span>Joined:</span>
-                <strong>
-                  {new Date(selectedUser.created_at).toLocaleString()}
-                </strong>
-              </div>
-            </div>
-            <div className={styles.modalActions}>
-              <button className={styles.editButton}>Edit User</button>
-              <button className={styles.deleteButton}>Delete User</button>
-            </div>
-          </div>
-        </div>
+        <UserDetailsModal
+          selectedUser={selectedUser}
+          setSelectedUser={setSelectedUser}
+        />
       )}
     </div>
   );
