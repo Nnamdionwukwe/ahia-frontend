@@ -25,6 +25,8 @@ import useAuthStore from "../../store/authStore";
 import ChartsRow from "./ChartsRow";
 import PopularProducts from "./PopularProducts";
 import UserStats from "./UserStats";
+import UserSearchBar from "./UserSearchBar";
+import UsersTable from "./UsersTable";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -181,18 +183,13 @@ const AdminDashboard = () => {
         <UserStats users={users} />
 
         {/* Search and Filters */}
-        <div className={styles.searchBar}>
-          <Search size={20} />
-          <input
-            type="text"
-            placeholder="Search users by name, email, or phone..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
+        <UserSearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
 
         {/* Users Table */}
-        <div className={styles.tableCard}>
+        {/* <div className={styles.tableCard}>
           <table className={styles.usersTable}>
             <thead>
               <tr>
@@ -259,7 +256,12 @@ const AdminDashboard = () => {
               ))}
             </tbody>
           </table>
-        </div>
+        </div> */}
+
+        <UsersTable
+          filteredUsers={filteredUsers}
+          setSelectedUser={setSelectedUser}
+        />
       </div>
     );
   };
