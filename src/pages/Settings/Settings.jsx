@@ -16,6 +16,7 @@ import {
   Share2,
   LogOut,
   SunMoon,
+  BarChart3,
 } from "lucide-react";
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
@@ -228,6 +229,16 @@ const Settings = () => {
               {isDark ? "Light Mode" : "Dark Mode"}
             </span>
             <span className={styles.menuValue}>{isDark ? "🌙" : "☀️"}</span>
+          </button>
+        </section>
+
+        <section className={styles.section}>
+          <button
+            className={styles.menuItem}
+            onClick={() => navigate("/admin-dashboard")}
+          >
+            <BarChart3 size={20} className={styles.menuIcon} />
+            <span className={styles.menuTitle}>Admin Dashboard</span>
           </button>
         </section>
       </div>

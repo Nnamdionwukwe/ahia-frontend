@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import styles from "./AdminDashboard.module.css";
 import useAuthStore from "../../store/authStore";
+import ChartsRow from "./ChartsRow";
+import PopularProducts from "./PopularProducts";
+import UserStats from "./UserStats";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -153,85 +156,14 @@ const AdminDashboard = () => {
       </div>
 
       {/* Charts Row */}
-      <div className={styles.chartsRow}>
-        {/* Daily Active Users Chart */}
-        <div className={styles.chartCard}>
-          <div className={styles.chartHeader}>
-            <h3>Daily Active Users</h3>
-            <BarChart3 size={20} />
-          </div>
-          <div className={styles.chartBody}>
-            <div className={styles.barChart}>
-              {dauData.slice(0, 14).map((day, index) => {
-                const maxUsers = Math.max(
-                  ...dauData.map((d) => d.active_users),
-                );
-                const height = (day.active_users / maxUsers) * 100;
-                return (
-                  <div key={index} className={styles.barWrapper}>
-                    <div
-                      className={styles.bar}
-                      style={{ height: `${height}%` }}
-                      title={`${day.active_users} users`}
-                    />
-                    <span className={styles.barLabel}>
-                      {new Date(day.date).getDate()}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Popular Searches */}
-        <div className={styles.chartCard}>
-          <div className={styles.chartHeader}>
-            <h3>Popular Searches</h3>
-            <Search size={20} />
-          </div>
-          <div className={styles.listBody}>
-            {popularSearches.slice(0, 10).map((search, index) => (
-              <div key={index} className={styles.listItem}>
-                <div className={styles.listRank}>#{index + 1}</div>
-                <div className={styles.listContent}>
-                  <p>{search.query}</p>
-                  <span>{search.search_count} searches</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <ChartsRow dauData={dauData} popularSearches={popularSearches} />
 
       {/* Popular Products */}
-      <div className={styles.fullWidthCard}>
-        <div className={styles.cardHeader}>
-          <h3>🔥 Trending Products</h3>
-          <button className={styles.viewAllButton}>View All →</button>
-        </div>
-        <div className={styles.productsGrid}>
-          {popularProducts.slice(0, 8).map((product, index) => (
-            <div key={index} className={styles.productCard}>
-              <div className={styles.productRank}>#{index + 1}</div>
-              <img
-                src={product.images?.[0] || "/placeholder.png"}
-                alt={product.name}
-                className={styles.productImage}
-              />
-              <div className={styles.productInfo}>
-                <h4>{product.name}</h4>
-                <p className={styles.productViews}>
-                  <Eye size={14} /> {formatNumber(product.view_count)} views
-                </p>
-                <p className={styles.productPrice}>
-                  {formatCurrency(product.price)}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <PopularProducts
+        popularProducts={popularProducts}
+        formatNumber={formatNumber}
+        formatCurrency={formatCurrency}
+      />
     </div>
   );
 
@@ -246,36 +178,7 @@ const AdminDashboard = () => {
     return (
       <div className={styles.usersContainer}>
         {/* User Stats */}
-        <div className={styles.userStatsGrid}>
-          <div className={styles.userStatCard}>
-            <Users size={24} className={styles.userStatIcon} />
-            <div>
-              <p>Total Users</p>
-              <h3>{users.length}</h3>
-            </div>
-          </div>
-          <div className={styles.userStatCard}>
-            <UserCheck size={24} className={styles.userStatIcon} />
-            <div>
-              <p>Verified Users</p>
-              <h3>{users.filter((u) => u.is_verified).length}</h3>
-            </div>
-          </div>
-          <div className={styles.userStatCard}>
-            <Crown size={24} className={styles.userStatIcon} />
-            <div>
-              <p>Admin Users</p>
-              <h3>{users.filter((u) => u.role === "admin").length}</h3>
-            </div>
-          </div>
-          <div className={styles.userStatCard}>
-            <UserX size={24} className={styles.userStatIcon} />
-            <div>
-              <p>Inactive Users</p>
-              <h3>{users.filter((u) => !u.is_verified).length}</h3>
-            </div>
-          </div>
-        </div>
+        <UserStats users={users} />
 
         {/* Search and Filters */}
         <div className={styles.searchBar}>

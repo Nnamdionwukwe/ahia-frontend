@@ -1,0 +1,40 @@
+.userStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.userStatCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #f1f5f9;
+  transition: all 0.3s ease;
+}
+
+.userStatCard:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+}
+
+.userStatIcon {
+  color: #667eea;
+}
+
+.userStatCard p {
+  margin: 0 0 4px 0;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.userStatCard h3 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #1e293b;
+}
