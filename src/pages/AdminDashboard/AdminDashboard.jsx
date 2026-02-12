@@ -1,25 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import {
-  Users,
-  ShoppingBag,
-  TrendingUp,
-  DollarSign,
-  Package,
-  Search,
-  Eye,
-  Activity,
-  BarChart3,
-  PieChart,
-  Calendar,
-  Download,
-  Filter,
-  ChevronDown,
-  UserCheck,
-  UserX,
-  Crown,
-  AlertCircle,
-} from "lucide-react";
+import { Users, Activity, Package, ShoppingBag } from "lucide-react";
 import styles from "./AdminDashboard.module.css";
 import useAuthStore from "../../store/authStore";
 import ChartsRow from "./ChartsRow";
@@ -67,7 +48,6 @@ const AdminDashboard = () => {
         params: { period },
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-
       setPlatformMetrics(response.data.metrics);
       setPopularProducts(response.data.popularProducts || []);
       setPopularSearches(response.data.popularSearches || []);
@@ -82,12 +62,10 @@ const AdminDashboard = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      // Note: You'll need to create this endpoint in your backend
       const response = await axios.get(`${API_URL}/api/admin/users`, {
         params: { page: 1, limit: 100, search: searchQuery },
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-
       setUsers(response.data.users || []);
       setUserStats(response.data.stats || null);
     } catch (error) {
@@ -95,6 +73,26 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle user updated callback
+  const handleUserUpdated = (updatedUser) => {
+    console.log("User updated:", updatedUser);
+    // Update the user in the users array
+    setUsers((prevUsers) =>
+      prevUsers.map((user) =>
+        user.id === updatedUser.id ? updatedUser : user,
+      ),
+    );
+  };
+
+  // Handle user deleted callback
+  const handleUserDeleted = (deletedUserId) => {
+    console.log("User deleted:", deletedUserId);
+    // Remove user from the users array
+    setUsers((prevUsers) =>
+      prevUsers.filter((user) => user.id !== deletedUserId),
+    );
   };
 
   const formatNumber = (num) => {
@@ -228,11 +226,13 @@ const AdminDashboard = () => {
         )}
       </TabContent>
 
-      {/* User Detail Modal */}
+      {/* User Detail Modal - UPDATED WITH CALLBACKS */}
       {selectedUser && (
         <UserDetailsModal
           selectedUser={selectedUser}
           setSelectedUser={setSelectedUser}
+          onUserUpdated={handleUserUpdated}
+          onUserDeleted={handleUserDeleted}
         />
       )}
     </div>
