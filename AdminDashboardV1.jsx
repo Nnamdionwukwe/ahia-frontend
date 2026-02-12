@@ -12,8 +12,6 @@ import AdminHeader from "./AdminHeader";
 import NavigationTabs from "./NavigationTabs";
 import TabContent from "./TabContent";
 import UserDetailsModal from "./UserDetailsModal";
-import ProductsManagement from "./ProductsManagement"; // NEW
-import OrdersManagement from "./OrdersManagement"; // NEW
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -77,7 +75,10 @@ const AdminDashboard = () => {
     }
   };
 
+  // Handle user updated callback
   const handleUserUpdated = (updatedUser) => {
+    console.log("User updated:", updatedUser);
+    // Update the user in the users array
     setUsers((prevUsers) =>
       prevUsers.map((user) =>
         user.id === updatedUser.id ? updatedUser : user,
@@ -85,7 +86,10 @@ const AdminDashboard = () => {
     );
   };
 
+  // Handle user deleted callback
   const handleUserDeleted = (deletedUserId) => {
+    console.log("User deleted:", deletedUserId);
+    // Remove user from the users array
     setUsers((prevUsers) =>
       prevUsers.filter((user) => user.id !== deletedUserId),
     );
@@ -123,6 +127,7 @@ const AdminDashboard = () => {
 
   const OverviewTab = () => (
     <div className={styles.overviewContainer}>
+      {/* Stats Grid */}
       <div className={styles.statsGrid}>
         <StatCard
           icon={Users}
@@ -153,7 +158,11 @@ const AdminDashboard = () => {
           color="#10b981"
         />
       </div>
+
+      {/* Charts Row */}
       <ChartsRow dauData={dauData} popularSearches={popularSearches} />
+
+      {/* Popular Products */}
       <PopularProducts
         popularProducts={popularProducts}
         formatNumber={formatNumber}
@@ -172,11 +181,15 @@ const AdminDashboard = () => {
 
     return (
       <div className={styles.usersContainer}>
+        {/* User Stats */}
         <UserStats users={users} />
+
+        {/* Search and Filters */}
         <UserSearchBar
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
+
         <UsersTable
           filteredUsers={filteredUsers}
           setSelectedUser={setSelectedUser}
@@ -187,17 +200,33 @@ const AdminDashboard = () => {
 
   return (
     <div className={styles.dashboard}>
+      {/* Header */}
       <AdminHeader user={user} period={period} setPeriod={setPeriod} />
+
+      {/* Navigation Tabs */}
       <NavigationTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
+      {/* Content */}
       <TabContent loading={loading} activeTab={activeTab}>
         {activeTab === "overview" && <OverviewTab />}
         {activeTab === "users" && <UsersTab />}
-        {/* ✅ NEW: Products and Orders tabs */}
-        {activeTab === "products" && <ProductsManagement />}
-        {activeTab === "orders" && <OrdersManagement />}
+        {activeTab === "products" && (
+          <div className={styles.comingSoon}>
+            <Package size={64} />
+            <h3>Products Management</h3>
+            <p>Coming soon...</p>
+          </div>
+        )}
+        {activeTab === "orders" && (
+          <div className={styles.comingSoon}>
+            <ShoppingBag size={64} />
+            <h3>Orders Management</h3>
+            <p>Coming soon...</p>
+          </div>
+        )}
       </TabContent>
 
+      {/* User Detail Modal - UPDATED WITH CALLBACKS */}
       {selectedUser && (
         <UserDetailsModal
           selectedUser={selectedUser}
