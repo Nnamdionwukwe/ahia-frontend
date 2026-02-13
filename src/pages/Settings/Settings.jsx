@@ -21,6 +21,7 @@ import {
 import useAuthStore from "../../store/authStore";
 import useThemeStore from "../../store/themeStore";
 import styles from "./Settings.module.css";
+import NotificationBadge from "../../components/Notifications/NotificationBadge";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -116,7 +117,7 @@ const Settings = () => {
         navigate("/settings/payment-methods");
         break;
       case "notifications":
-        navigate("/settings/notifications");
+        navigate("/notifications");
         break;
       case "about this app":
         navigate("/settings/about");
@@ -231,6 +232,8 @@ const Settings = () => {
             <span className={styles.menuValue}>{isDark ? "🌙" : "☀️"}</span>
           </button>
         </section>
+
+        <NotificationBadge />
 
         <section className={styles.section}>
           <button
