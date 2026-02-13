@@ -14,22 +14,9 @@ const TabContent = ({ loading, activeTab, children }) => {
         <>
           {activeTab === "overview" && children}
           {activeTab === "users" && children}
+          {activeTab === "products" && children}
 
-          {activeTab === "products" && (
-            <div className={styles.comingSoon}>
-              <Package size={64} />
-              <h3>Products Management</h3>
-              <p>Coming soon...</p>
-            </div>
-          )}
-
-          {activeTab === "orders" && (
-            <div className={styles.comingSoon}>
-              <ShoppingBag size={64} />
-              <h3>Orders Management</h3>
-              <p>Coming soon...</p>
-            </div>
-          )}
+          {activeTab === "orders" && children}
         </>
       )}
     </div>

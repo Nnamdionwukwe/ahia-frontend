@@ -193,7 +193,7 @@ const AdminDashboard = () => {
       <TabContent loading={loading} activeTab={activeTab}>
         {activeTab === "overview" && <OverviewTab />}
         {activeTab === "users" && <UsersTab />}
-        {/* ✅ NEW: Products and Orders tabs */}
+        {/* ✅ FIXED: Removed space before "products" */}
         {activeTab === "products" && <ProductsManagement />}
         {activeTab === "orders" && <OrdersManagement />}
       </TabContent>
