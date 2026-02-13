@@ -18,6 +18,7 @@ const TabContent = ({ loading, activeTab, children }) => {
           {activeTab === "orders" && children}
           {activeTab === "flash-sales" && children}
           {activeTab === "seasonal-sales" && children}
+          {activeTab === "notifications" && children}
         </>
       )}
     </div>

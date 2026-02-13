@@ -6,6 +6,7 @@ import {
   ShoppingBag,
   BadgePercent,
   SunMedium,
+  Bell,
 } from "lucide-react";
 import styles from "./NavigationTabs.module.css";
 
@@ -53,6 +54,20 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
       >
         <SunMedium size={20} />
         Seasonal Sales
+      </button>
+      <button
+        className={`${styles.tab} ${activeTab === "seasonal-sales" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("seasonal-sales")}
+      >
+        <SunMedium size={20} />
+        Seasonal Sales
+      </button>
+      <button
+        className={`${styles.tab} ${activeTab === "notifications" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("notifications")}
+      >
+        <Bell size={20} />
+        Notifications
       </button>
     </nav>
   );
