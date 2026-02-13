@@ -1,5 +1,12 @@
 import React from "react";
-import { BarChart3, Users, Package, ShoppingBag } from "lucide-react";
+import {
+  BarChart3,
+  Users,
+  Package,
+  ShoppingBag,
+  BadgePercent,
+  SunMedium,
+} from "lucide-react";
 import styles from "./NavigationTabs.module.css";
 
 const NavigationTabs = ({ activeTab, setActiveTab }) => {
@@ -32,6 +39,20 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
       >
         <ShoppingBag size={20} />
         Orders
+      </button>
+      <button
+        className={`${styles.tab} ${activeTab === "flash-sales" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("flash-sales")}
+      >
+        <BadgePercent size={20} />
+        Flash Sales
+      </button>
+      <button
+        className={`${styles.tab} ${activeTab === "seasonal-sales" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("seasonal-sales")}
+      >
+        <SunMedium size={20} />
+        Seasonal Sales
       </button>
     </nav>
   );

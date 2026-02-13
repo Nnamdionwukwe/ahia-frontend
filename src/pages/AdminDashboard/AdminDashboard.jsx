@@ -14,6 +14,8 @@ import TabContent from "./TabContent";
 import UserDetailsModal from "./UserDetailsModal";
 import ProductsManagement from "./ProductsManagement"; // NEW
 import OrdersManagement from "./OrdersManagement"; // NEW
+import FlashSalesManagement from "./FlashSalesManagement";
+import SeasonalSalesManagement from "./SeasonalSalesManagement";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -193,9 +195,10 @@ const AdminDashboard = () => {
       <TabContent loading={loading} activeTab={activeTab}>
         {activeTab === "overview" && <OverviewTab />}
         {activeTab === "users" && <UsersTab />}
-        {/* ✅ FIXED: Removed space before "products" */}
         {activeTab === "products" && <ProductsManagement />}
         {activeTab === "orders" && <OrdersManagement />}
+        {activeTab === "flash-sales" && <FlashSalesManagement />}
+        {activeTab === "seasonal-sales" && <SeasonalSalesManagement />}
       </TabContent>
 
       {selectedUser && (
