@@ -16,6 +16,7 @@ import {
   Gift,
   MessageSquare,
   ChevronDown,
+  WifiOff,
 } from "lucide-react";
 import styles from "./Notifications.module.css";
 import useAuthStore from "../../store/authStore";
@@ -48,54 +49,132 @@ const Notifications = () => {
   const [filter, setFilter] = useState("all"); // all, unread
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState("disconnected"); // connected, disconnected, error
   const eventSourceRef = useRef(null);
+  const reconnectTimeoutRef = useRef(null);
+  const reconnectAttempts = useRef(0);
 
   useEffect(() => {
     fetchNotifications();
     fetchUnreadCount();
     fetchPreferences();
-    setupRealTimeNotifications();
 
     return () => {
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
       }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
     };
   }, [filter, page]);
 
-  const setupRealTimeNotifications = () => {
-    if (!accessToken) return;
+  useEffect(() => {
+    if (accessToken) {
+      setupRealTimeNotifications();
+    }
 
-    // Note: EventSource doesn't support custom headers well
-    // For production, use WebSocket or pass token in URL
+    return () => {
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+    };
+  }, [accessToken]);
+
+  const setupRealTimeNotifications = () => {
+    if (!accessToken) {
+      console.log("No access token, skipping SSE setup");
+      return;
+    }
+
+    // Close existing connection
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+    }
+
     try {
+      console.log("Setting up SSE connection...");
       const eventSource = new EventSource(
         `${API_URL}/api/notifications/stream?token=${accessToken}`,
       );
 
+      eventSource.onopen = () => {
+        console.log("✅ SSE connection opened");
+        setConnectionStatus("connected");
+        reconnectAttempts.current = 0;
+      };
+
       eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.type === "unread_count") {
-          setUnreadCount(data.count);
-        } else {
-          // New notification received
-          setNotifications((prev) => [data, ...prev]);
-          setUnreadCount((prev) => prev + 1);
-
-          // Show browser notification if permission granted
-          if (Notification.permission === "granted") {
-            new Notification(data.title, {
-              body: data.message,
-              icon: "/logo.png",
-            });
+        try {
+          // Skip empty messages or heartbeats
+          if (!event.data || event.data.trim() === "") {
+            return;
           }
+
+          const data = JSON.parse(event.data);
+
+          if (data.type === "unread_count") {
+            setUnreadCount(data.count);
+          } else {
+            // New notification received
+            setNotifications((prev) => [data, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+
+            // Show browser notification if permission granted
+            if (Notification.permission === "granted") {
+              new Notification(data.title, {
+                body: data.message,
+                icon: "/logo.png",
+              });
+            }
+          }
+        } catch (error) {
+          // Ignore JSON parse errors from heartbeat messages
+          if (event.data && !event.data.startsWith(":")) {
+            console.error(
+              "Failed to parse SSE message:",
+              error,
+              "Data:",
+              event.data,
+            );
+          }
+        }
+      };
+
+      eventSource.onerror = (error) => {
+        console.error("❌ SSE connection error:", error);
+        setConnectionStatus("error");
+
+        // Close the connection
+        eventSource.close();
+
+        // Attempt to reconnect with exponential backoff
+        const maxAttempts = 5;
+        const backoffDelay = Math.min(
+          1000 * Math.pow(2, reconnectAttempts.current),
+          30000,
+        );
+
+        if (reconnectAttempts.current < maxAttempts) {
+          reconnectAttempts.current++;
+          console.log(
+            `Reconnecting in ${backoffDelay}ms (attempt ${reconnectAttempts.current}/${maxAttempts})...`,
+          );
+
+          reconnectTimeoutRef.current = setTimeout(() => {
+            setupRealTimeNotifications();
+          }, backoffDelay);
+        } else {
+          console.log("Max reconnection attempts reached. Giving up.");
+          setConnectionStatus("disconnected");
         }
       };
 
       eventSourceRef.current = eventSource;
     } catch (error) {
       console.error("Failed to setup real-time notifications:", error);
+      setConnectionStatus("error");
     }
   };
 
@@ -153,6 +232,16 @@ const Notifications = () => {
       setPreferences(response.data);
     } catch (error) {
       console.error("Failed to fetch preferences:", error);
+      // Set default preferences if fetch fails
+      setPreferences({
+        order_updates: true,
+        price_drops: true,
+        flash_sales: true,
+        restock_alerts: true,
+        promotions: true,
+        push_enabled: true,
+        email_enabled: false,
+      });
     }
   };
 
@@ -333,7 +422,7 @@ const Notifications = () => {
                 <label className={styles.switch}>
                   <input
                     type="checkbox"
-                    checked={preferences[pref.key]}
+                    checked={preferences[pref.key] || false}
                     onChange={(e) =>
                       setPreferences({
                         ...preferences,
@@ -361,7 +450,7 @@ const Notifications = () => {
               <label className={styles.switch}>
                 <input
                   type="checkbox"
-                  checked={preferences.push_enabled}
+                  checked={preferences.push_enabled || false}
                   onChange={(e) =>
                     setPreferences({
                       ...preferences,
@@ -384,7 +473,7 @@ const Notifications = () => {
               <label className={styles.switch}>
                 <input
                   type="checkbox"
-                  checked={preferences.email_enabled}
+                  checked={preferences.email_enabled || false}
                   onChange={(e) =>
                     setPreferences({
                       ...preferences,
@@ -426,6 +515,12 @@ const Notifications = () => {
           <h2>Notifications</h2>
           {unreadCount > 0 && (
             <span className={styles.unreadBadge}>{unreadCount}</span>
+          )}
+          {/* Connection status indicator */}
+          {connectionStatus === "error" && (
+            <span className={styles.statusIndicator} title="Connection error">
+              <WifiOff size={16} />
+            </span>
           )}
         </div>
         <button
