@@ -11,7 +11,7 @@ import {
   Zap,
   TrendingDown,
 } from "lucide-react";
-import styles from "./FlashSaleViewModal.module.css";
+import styles from "./Flashsaleviewmodal.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
