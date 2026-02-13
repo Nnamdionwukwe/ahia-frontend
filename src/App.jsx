@@ -34,6 +34,7 @@ import OrdersPage from "./pages/OrdersPage/OrdersPage";
 import BankTransferPayment from "./pages/Banktransferpayment/Banktransferpayment";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import Notifications from "./components/Notifications/Notifications";
+import LoyaltyRewards from "./components/LoyaltyRewards/LoyaltyRewards";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -115,6 +116,13 @@ const App = () => {
               path="/notifications"
               element={
                 isAuthenticated ? <Notifications /> : <Navigate to="/auth" />
+              }
+            />
+
+            <Route
+              path="/loyalty-rewards"
+              element={
+                isAuthenticated ? <LoyaltyRewards /> : <Navigate to="/auth" />
               }
             />
 

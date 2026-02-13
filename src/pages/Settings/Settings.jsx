@@ -222,6 +222,16 @@ const Settings = () => {
           </button>
         </section>
 
+        <section className={styles.section}>
+          <button
+            className={styles.signOutButton}
+            onClick={() => navigate("/loyalty-rewards")}
+          >
+            <LogOut size={20} className={styles.signOutIcon} />
+            <span>Loyalty Reward</span>
+          </button>
+        </section>
+
         {/* Theme Toggle (Optional - for demonstration) */}
         <section className={styles.section}>
           <button className={styles.menuItem} onClick={toggleTheme}>
