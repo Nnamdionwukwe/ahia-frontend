@@ -279,6 +279,18 @@
   transition: background-color 0.3s ease;
 }
 
+@media (min-width: 550px) {
+  .cartSection {
+    min-width: 0; /* let flex: 1 take over fully — no scroll */
+  }
+}
+
+@media (max-width: 549px) {
+  .cartSection {
+    min-width: calc(80vw - 32px); /* wide enough to trigger scroll */
+  }
+}
+
 .sectionHeader {
   display: flex;
   align-items: center;
