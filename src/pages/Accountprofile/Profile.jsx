@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Bell,
   Eye,
@@ -16,15 +17,38 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./Profile.module.css";
 import useCartStore from "../../store/cartStore";
 import Header from "../../components/Header/Header";
+import ProductCard from "../../components/ProductCard/ProductCard";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const Profile = () => {
   const navigate = useNavigate();
   const [showNotification, setShowNotification] = useState(true);
   const { items: cartItems, fetchCart } = useCartStore();
 
+  const [products, setProducts] = useState([]);
+
   useEffect(() => {
     fetchCart();
   }, [fetchCart]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/products`, {
+          params: { limit: 20, sort: "shuffle" },
+        });
+        const data =
+          res.data?.products ||
+          res.data?.data ||
+          (Array.isArray(res.data) ? res.data : []);
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err.message);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const profile = {
     name: "Nnamdi Onwukwe",
@@ -223,6 +247,15 @@ const Profile = () => {
             ),
         )}
       </div>
+
+      {/* Product Feed */}
+      {products.length > 0 && (
+        <div className={styles.productGrid}>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
