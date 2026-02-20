@@ -263,17 +263,16 @@
   flex-direction: row;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: none; /* hide scrollbar Firefox */
+  scrollbar-width: none;
 }
 
 .cartSections::-webkit-scrollbar {
-  display: none; /* hide scrollbar Chrome/Safari */
+  display: none;
 }
 
 .cartSection {
-  min-width: min(240px, 70vw);
-  max-width: min(240px, 70vw);
-  flex-shrink: 0;
+  flex: 1 0 0; /* grow to fill space equally on large screens */
+  min-width: clamp(160px, 42vw, 280px); /* scroll threshold on small screens */
   background-color: var(--bg-primary);
   border-radius: 12px;
   padding: 12px;
