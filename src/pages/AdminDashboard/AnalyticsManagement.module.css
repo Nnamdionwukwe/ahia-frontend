@@ -1,0 +1,507 @@
+/* AnalyticsManagement.module.css */
+.root {
+  padding: 24px;
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.headerIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+.headerTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
+}
+.headerSub {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.periodTabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  padding: 4px;
+}
+.periodTab {
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.periodTab:hover {
+  color: var(--text-primary);
+}
+.periodActive {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  font-weight: 700;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.refreshBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+.refreshBtn:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0;
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: none;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+}
+.tab:hover {
+  color: var(--text-primary);
+}
+.tabActive {
+  color: #6366f1;
+  border-bottom-color: #6366f1;
+  font-weight: 700;
+}
+
+/* Error / Loading */
+.errorBanner {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+:global([data-theme="dark"]) .errorBanner {
+  background: #450a0a;
+  border-color: #dc2626;
+  color: #fca5a5;
+}
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 80px 0;
+  color: var(--text-secondary);
+}
+.spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid var(--border-color);
+  border-top-color: #6366f1;
+  animation: spin 0.8s linear infinite;
+}
+
+/* KPI Row */
+.overviewGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.kpiRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.statCard {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.3s;
+}
+.statCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+.statTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.statIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.trendUp {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #10b981;
+}
+.trendDown {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ef4444;
+}
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 0 0 4px;
+}
+.statValue {
+  font-size: 1.9rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  line-height: 1;
+}
+.statSub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Sparkline */
+.sparkline {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 32px;
+  margin-top: 12px;
+}
+.sparkBar {
+  flex: 1;
+  border-radius: 2px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  min-height: 2px;
+}
+.sparkBar:hover {
+  opacity: 1;
+}
+.sparkEmpty {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 12px;
+}
+
+/* DAU Bar chart */
+.chartCard,
+.conversionCard,
+.listCard {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 24px;
+}
+.chartTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 20px;
+}
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 140px;
+  position: relative;
+}
+.barWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+}
+.barFill {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #6366f1, #8b5cf6);
+  transition: height 0.3s ease;
+  min-height: 2px;
+}
+.barLabel {
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap;
+}
+.noData {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-align: center;
+  padding: 32px 0;
+}
+
+/* Funnel */
+.funnelRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px 0;
+}
+.funnelStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+}
+.funnelStep p {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+.funnelStep span {
+  font-size: 0.8rem;
+}
+.funnelArrow {
+  font-size: 1.5rem;
+  color: var(--border-color);
+}
+
+/* Bar list */
+.barList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.barListRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 10px;
+  transition: background 0.15s;
+}
+.barListRow:hover {
+  background: var(--bg-secondary);
+}
+.rankNum {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  width: 28px;
+  flex-shrink: 0;
+}
+.productThumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.barListInfo {
+  flex: 1;
+}
+.barListName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+.barListCount {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Hbar */
+.hbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hbarLabel {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  width: 0;
+}
+.hbarTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-secondary);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.hbarFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.hbarVal {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  width: 60px;
+  text-align: right;
+}
+
+/* Trending grid */
+.trendingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.trendCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 14px;
+  position: relative;
+  transition: all 0.2s;
+}
+.trendCard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px var(--shadow);
+  border-color: #6366f1;
+}
+.trendRank {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trendThumb {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+.trendInfo {
+}
+.trendName {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+.trendStore {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 0 0 6px;
+}
+.trendPrice {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 0;
+  color: #6366f1;
+}
+.trendDiscount {
+  color: #10b981;
+  font-size: 0.78rem;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .kpiRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .root {
+    padding: 16px;
+  }
+  .kpiRow {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .funnelRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .funnelArrow {
+    transform: rotate(90deg);
+  }
+}

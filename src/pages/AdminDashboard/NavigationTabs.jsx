@@ -87,6 +87,13 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
         <Shield size={20} />
         Fraud
       </button>
+      <button
+        className={`${styles.tab} ${activeTab === "fraanalyticsud" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("analytics")}
+      >
+        <Shield size={20} />
+        Analytics
+      </button>
     </nav>
   );
 };
