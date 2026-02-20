@@ -9,6 +9,7 @@ import {
   Bell,
   Award,
   ShoppingCart,
+  Shield,
 } from "lucide-react";
 import styles from "./NavigationTabs.module.css";
 
@@ -78,6 +79,13 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
       >
         <ShoppingCart size={20} />
         Carts
+      </button>
+      <button
+        className={`${styles.tab} ${activeTab === "fraud" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("fraud")}
+      >
+        <Shield size={20} />
+        Fraud
       </button>
     </nav>
   );

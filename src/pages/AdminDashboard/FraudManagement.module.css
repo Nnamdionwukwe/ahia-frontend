@@ -1,0 +1,888 @@
+/* FraudManagement.module.css */
+/* Uses CSS variables from globals.css — supports light & dark mode */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Page Header ── */
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.pageHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.pageIcon {
+  color: #ef4444;
+}
+.pageTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.pageSubtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 2px solid var(--border-color);
+}
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+.tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border-radius: 6px 6px 0 0;
+}
+.tabActive {
+  color: #ef4444 !important;
+  border-bottom-color: #ef4444 !important;
+}
+
+/* ── Tab content ── */
+.tabContent {
+  min-height: 300px;
+}
+.tabPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+.searchInput {
+  width: 100%;
+  padding: 9px 12px 9px 32px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.searchInput:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+.searchInput::placeholder {
+  color: var(--text-secondary);
+}
+
+.filterSelect {
+  padding: 9px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+}
+.filterSelect:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+
+.btnRefresh {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 10px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btnRefresh:hover {
+  color: var(--text-primary);
+}
+
+/* ── Table ── */
+.tableWrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  background: var(--bg-primary);
+}
+.table th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+.table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.table tr:last-child td {
+  border-bottom: none;
+}
+.table tbody tr:hover td {
+  background: var(--bg-secondary);
+}
+.emptyRow {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 50px !important;
+  font-size: 0.9rem;
+}
+
+/* User cell */
+.userName {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 0.875rem;
+}
+.userPhone {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* Order */
+.orderNum {
+  font-weight: 700;
+  color: var(--primary-color);
+  font-size: 0.85rem;
+}
+.orderAmt {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.noOrder {
+  color: var(--text-secondary);
+}
+
+/* Score bar (table) */
+.scoreWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.scoreNum {
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 28px;
+}
+.scoreBar {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+  min-width: 60px;
+}
+.scoreBarFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+/* Risk badge */
+.riskBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 0.73rem;
+  font-weight: 700;
+}
+
+/* Action pill */
+.actionPill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 0.73rem;
+  font-weight: 600;
+}
+
+/* Decision pills */
+.decisionPill,
+.approved,
+.declined,
+.pendingPill {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 0.73rem;
+  font-weight: 600;
+}
+.approved {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+.declined {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+.pendingPill {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.dateCell {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* Row button */
+.btnView {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btnView:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* ── Modal ── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+  color: var(--primary-color);
+}
+.modalHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ef4444;
+}
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.modalSub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+.modalClose {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s;
+}
+.modalClose:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+.modalBody {
+  padding: 20px 24px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Risk summary grid */
+.riskSummary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+}
+.riskSummaryItem {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.riskSummaryLabel {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0 0 6px;
+}
+.riskSummaryValue {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Large score bar */
+.scoreBarLarge {
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+/* Factors */
+.factorsSection {
+}
+.factorsTitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+}
+.factorsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.factorItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+.factorIcon {
+  color: #f59e0b;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.noFactors {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Details grid */
+.detailsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.detailItem {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.detailLabel {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin: 0 0 3px;
+}
+.detailValue {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  word-break: break-all;
+}
+
+/* Previous decision */
+.prevDecision {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+.prevApproved {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #10b981;
+}
+.prevDeclined {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+}
+.prevNotes {
+  margin: 6px 0 0;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+/* Decision form */
+.decisionForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.decisionButtons {
+  display: flex;
+  gap: 10px;
+}
+.decisionBtn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.decisionBtn:hover {
+  border-color: var(--d-color, #ef4444);
+  color: var(--d-color, #ef4444);
+}
+.decisionBtnActive {
+  border-color: var(--d-color, #ef4444) !important;
+  background: color-mix(
+    in srgb,
+    var(--d-color, #ef4444) 10%,
+    transparent
+  ) !important;
+  color: var(--d-color, #ef4444) !important;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.textarea {
+  padding: 9px 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+.textarea:focus {
+  outline: none;
+  border-color: #ef4444;
+}
+
+.modalActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* ── Analytics ── */
+.analyticsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.analyticsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 2px 6px var(--shadow);
+}
+.statIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.statLabel {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin: 0 0 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.statValue {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+.statSub {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  margin: 2px 0 0;
+}
+
+/* Distribution */
+.distributionCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.distRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.distLabel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  min-width: 60px;
+}
+.distBar {
+  flex: 1;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.distFill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+.distCount {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  min-width: 80px;
+  text-align: right;
+}
+.avgScore {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 4px 0 0;
+}
+
+/* Factors card */
+.factorsCard {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+}
+.factorsTable {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.factorRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.factorRank {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.factorInfo {
+  flex: 1;
+}
+.factorName {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.factorBar {
+  height: 5px;
+  background: var(--border-color);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.factorBarFill {
+  height: 100%;
+  background: #ef4444;
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+.factorCount {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  min-width: 30px;
+  text-align: right;
+}
+
+/* ── Buttons ── */
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btnPrimary:hover:not(:disabled) {
+  background: #dc2626;
+}
+.btnPrimary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btnGhost:hover {
+  background: var(--bg-secondary);
+}
+
+/* ── Flash ── */
+.flashSuccess {
+  padding: 10px 16px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--success-color);
+}
+.flashError {
+  padding: 10px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  color: var(--danger-color);
+}
+
+/* ── Pagination ── */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 8px;
+}
+.pageBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.pageBtn:hover:not(:disabled) {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+.pageBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.pageInfo {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* ── Spinner ── */
+.spinnerWrap {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+.spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid var(--border-color);
+  border-top-color: #ef4444;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .statsRow {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .table th:nth-child(7),
+  .table td:nth-child(7) {
+    display: none;
+  }
+  .decisionButtons {
+    flex-direction: column;
+  }
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 480px) {
+  .statsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .table th:nth-child(5),
+  .table td:nth-child(5),
+  .table th:nth-child(6),
+  .table td:nth-child(6) {
+    display: none;
+  }
+}
