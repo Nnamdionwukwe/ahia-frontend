@@ -24,7 +24,7 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
-import styles from "./LoyaltyManagement.module.css";
+import styles from "./Loyaltymanagement.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
