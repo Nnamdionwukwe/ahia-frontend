@@ -7,39 +7,30 @@ import styles from "./SeasonalSaleSection.module.css";
 const SeasonalSaleSection = ({ activeSeasonalSales, seasonalSaleProducts }) => {
   const navigate = useNavigate();
 
-  const handleViewAll = (saleId) => {
-    navigate(`/seasonal-sales/${saleId}`);
-  };
+  if (!activeSeasonalSales || activeSeasonalSales.length === 0) return null;
 
-  // Handle null or undefined cases
-  if (!activeSeasonalSales || activeSeasonalSales.length === 0) {
-    return null; // Don't show anything if no seasonal sales
-  }
-
-  // Filter out sales with no products
   const salesWithProducts = activeSeasonalSales.filter((sale) => {
     const products = seasonalSaleProducts?.[sale.id] || [];
     return products.length > 0;
   });
 
-  if (salesWithProducts.length === 0) {
-    return null;
-  }
+  if (salesWithProducts.length === 0) return null;
+
+  // Dynamic grid class based on number of sales
+  const gridClass =
+    salesWithProducts.length === 1
+      ? styles.featuredGridSingle
+      : salesWithProducts.length === 2
+        ? styles.featuredGridDouble
+        : styles.featuredGridMulti;
 
   return (
     <div className={styles.seasonalSaleContainer}>
-      {/* Featured Grid - Shows one product per seasonal sale */}
-      <div className={styles.featuredGrid}>
+      <div className={gridClass}>
         {salesWithProducts.map((sale) => {
           const saleProducts = seasonalSaleProducts[sale.id] || [];
-
-          // Get only the featured (first) product
           const featuredProduct = saleProducts[0];
-
-          if (!featuredProduct) {
-            console.warn(`No featured product for seasonal sale ${sale.id}`);
-            return null;
-          }
+          if (!featuredProduct) return null;
 
           return (
             <SeasonalSaleFeaturedCard
@@ -51,7 +42,6 @@ const SeasonalSaleSection = ({ activeSeasonalSales, seasonalSaleProducts }) => {
         })}
       </div>
 
-      {/* Footer CTA - View all seasonal sales if multiple */}
       {salesWithProducts.length > 1 && (
         <div className={styles.viewAllContainer}>
           <button
