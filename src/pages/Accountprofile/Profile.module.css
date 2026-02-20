@@ -285,7 +285,7 @@
   }
 }
 
-@media (max-width: 349px) {
+@media (max-width: 449px) {
   .cartSection {
     min-width: calc(80vw - 32px); /* wide enough to trigger scroll */
   }
