@@ -17,6 +17,7 @@ import OrdersManagement from "./OrdersManagement"; // NEW
 import FlashSalesManagement from "./FlashSalesManagement";
 import SeasonalSalesManagement from "./SeasonalSalesManagement";
 import NotificationsManagement from "./NotificationsManagement";
+import LoyaltyManagement from "./LoyaltyManagement";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -201,6 +202,7 @@ const AdminDashboard = () => {
         {activeTab === "flash-sales" && <FlashSalesManagement />}
         {activeTab === "seasonal-sales" && <SeasonalSalesManagement />}
         {activeTab === "notifications" && <NotificationsManagement />}
+        {activeTab === "loyalty" && <LoyaltyManagement />}
       </TabContent>
 
       {selectedUser && (

@@ -15,6 +15,7 @@ import {
   Sparkles,
   ChevronRight,
   Clock,
+  Package,
   Tag,
 } from "lucide-react";
 import styles from "./LoyaltyRewards.module.css";
