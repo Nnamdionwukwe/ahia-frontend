@@ -91,7 +91,7 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
         className={`${styles.tab} ${activeTab === "fraanalyticsud" ? styles.activeTab : ""}`}
         onClick={() => setActiveTab("analytics")}
       >
-        <Shield size={20} />
+        <BarChart3 size={20} />
         Analytics
       </button>
     </nav>
