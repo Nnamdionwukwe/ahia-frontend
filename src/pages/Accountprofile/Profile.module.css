@@ -260,7 +260,7 @@
   padding: 0 16px;
   gap: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: rwo;
 }
 
 .cartSection {
