@@ -261,6 +261,7 @@
   gap: 12px;
   display: flex;
   flex-direction: rwo;
+  overflow: scroll;
 }
 
 .cartSection {
