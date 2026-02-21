@@ -1,13 +1,11 @@
 /* Reviews.module.css */
-
 .container {
   min-height: 100vh;
   background-color: var(--bg-secondary);
-  transition: background-color 0.3s ease;
   padding-bottom: 100px;
+  transition: background-color 0.3s ease;
 }
 
-/* ── Header ─────────────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
@@ -34,7 +32,6 @@
   border-radius: 8px;
   transition: background 0.2s;
 }
-
 .backBtn:hover {
   background: var(--bg-secondary);
 }
@@ -46,7 +43,6 @@
   color: var(--text-primary);
 }
 
-/* ── Profile ─────────────────────────────────────────────── */
 .profile {
   display: flex;
   align-items: center;
@@ -80,7 +76,6 @@
   color: var(--text-secondary);
 }
 
-/* ── Tabs ────────────────────────────────────────────────── */
 .tabs {
   display: flex;
   background-color: var(--bg-primary);
@@ -101,17 +96,14 @@
   transition: all 0.2s ease;
   margin-bottom: -1px;
 }
-
 .tab:hover {
   color: var(--text-primary);
 }
-
 .tabActive {
   color: var(--text-primary);
   border-bottom-color: #ff6f00;
 }
 
-/* ── Review All Bar ──────────────────────────────────────── */
 .reviewAllBar {
   display: flex;
   align-items: center;
@@ -123,13 +115,11 @@
   border-radius: 10px;
   transition: background-color 0.3s ease;
 }
-
 .reviewAllText {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
 }
-
 .chooseBtn {
   display: flex;
   align-items: center;
@@ -140,10 +130,8 @@
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
-  white-space: nowrap;
 }
 
-/* ── List ────────────────────────────────────────────────── */
 .list {
   display: flex;
   flex-direction: column;
@@ -155,7 +143,6 @@
   transition: background-color 0.3s ease;
 }
 
-/* ── Product Row ─────────────────────────────────────────── */
 .productRow {
   display: flex;
   align-items: center;
@@ -186,7 +173,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .productVariant {
   font-size: 13px;
   color: var(--text-secondary);
@@ -208,7 +194,6 @@
     background-color 0.2s ease,
     transform 0.2s ease;
 }
-
 .leaveBtn:hover {
   background-color: #e65100;
   transform: translateY(-1px);
@@ -222,7 +207,6 @@
   flex-shrink: 0;
 }
 
-/* ── Waiting Row ─────────────────────────────────────────── */
 .waitingRow {
   display: flex;
   align-items: center;
@@ -231,48 +215,43 @@
   background-color: var(--bg-secondary);
   font-size: 13px;
 }
-
 .flameIcon {
   color: #ff6f00;
   flex-shrink: 0;
 }
-
 .waitingCount {
   color: #ff6f00;
   font-weight: 700;
 }
-
 .waitingText {
   color: var(--text-secondary);
   flex: 1;
 }
 
-/* ── Stars ───────────────────────────────────────────────── */
-.stars {
+.starRow {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .star {
-  color: var(--border-color);
   cursor: pointer;
+  fill: transparent;
+  stroke: var(--border-color);
+  stroke-width: 1.5;
   transition:
-    color 0.15s ease,
-    transform 0.15s ease;
-  flex-shrink: 0;
+    fill 0.15s,
+    stroke 0.15s,
+    transform 0.15s;
 }
-
 .star:hover {
   transform: scale(1.2);
 }
-
 .starFilled {
-  color: #ff6f00;
   fill: #ff6f00;
+  stroke: #ff6f00;
 }
 
-/* ── Reviewed Text ───────────────────────────────────────── */
 .reviewedText {
   font-size: 13px;
   color: var(--text-secondary);
@@ -282,141 +261,6 @@
   line-height: 1.5;
 }
 
-/* ── Modal ───────────────────────────────────────────────── */
-.modalOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  z-index: 200;
-  animation: fadeIn 0.2s ease;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.modal {
-  background: var(--bg-primary);
-  width: 100%;
-  max-width: 600px;
-  border-radius: 20px 20px 0 0;
-  padding: 24px;
-  animation: slideUp 0.3s ease;
-  transition: background-color 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-  }
-  to {
-    transform: translateY(0);
-  }
-}
-
-.modalTitle {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 8px;
-}
-
-.modalProduct {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 2px;
-}
-
-.modalVariant {
-  font-size: 13px;
-  color: var(--text-secondary);
-  margin: 0 0 16px;
-}
-
-.modalStars {
-  margin-bottom: 16px;
-}
-
-.modalStars .stars {
-  gap: 6px;
-}
-.modalStars .star {
-  width: 32px;
-  height: 32px;
-}
-
-.textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 14px;
-  resize: none;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color 0.2s ease;
-  font-family: inherit;
-}
-
-.textarea:focus {
-  border-color: #ff6f00;
-}
-
-.modalActions {
-  display: flex;
-  gap: 12px;
-  margin-top: 16px;
-}
-
-.cancelBtn {
-  flex: 1;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border-color);
-  background: none;
-  color: var(--text-primary);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.cancelBtn:hover {
-  background: var(--bg-secondary);
-}
-
-.submitBtn {
-  flex: 2;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  background: #ff6f00;
-  color: white;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.submitBtn:hover {
-  background-color: #e65100;
-  transform: translateY(-1px);
-}
-
-/* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 480px) {
   .headerTitle {
     font-size: 16px;
@@ -437,24 +281,5 @@
   }
   .waitingText {
     width: 100%;
-  }
-}
-
-.productGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
-  padding: 8px 16px;
-}
-
-@media (min-width: 550px) {
-  .productGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (min-width: 900px) {
-  .productGrid {
-    grid-template-columns: repeat(4, 1fr);
   }
 }

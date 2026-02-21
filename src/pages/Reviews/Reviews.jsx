@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, ThumbsUp, Flame, Star } from "lucide-react";
+import React, { useState } from "react";
+import { ChevronLeft, ChevronRight, ThumbsUp, Flame } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
-import ProductCard from "../../components/ProductCard/ProductCard";
-import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 
 const PENDING_REVIEWS = [
   {
@@ -72,19 +70,24 @@ const REVIEWED = [
   },
 ];
 
-function StarRating({ rating = 0, onChange }) {
+function StarRow({ rating, onChange, size = 20 }) {
   const [hovered, setHovered] = useState(0);
+  const active = hovered || rating;
   return (
-    <div className={styles.stars}>
+    <div className={styles.starRow}>
       {[1, 2, 3, 4, 5].map((s) => (
-        <Star
+        <svg
           key={s}
-          size={18}
-          className={`${styles.star} ${(hovered || rating) >= s ? styles.starFilled : ""}`}
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          className={`${styles.star} ${active >= s ? styles.starFilled : ""}`}
           onMouseEnter={() => onChange && setHovered(s)}
           onMouseLeave={() => onChange && setHovered(0)}
           onClick={() => onChange && onChange(s)}
-        />
+        >
+          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+        </svg>
       ))}
     </div>
   );
@@ -95,40 +98,11 @@ export default function Reviews() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState("pending");
   const [ratings, setRatings] = useState({});
-  const [reviewModal, setReviewModal] = useState(null);
-  const [reviewText, setReviewText] = useState("");
   const [submitted, setSubmitted] = useState({});
-
-  const [products, setProducts] = useState([]);
-
-  const handleSubmit = () => {
-    if (!reviewModal) return;
-    setSubmitted((s) => ({ ...s, [reviewModal.id]: true }));
-    setReviewModal(null);
-    setReviewText("");
-  };
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/products`, {
-          params: { limit: 20, sort: "shuffle" },
-        });
-        const data =
-          res.data?.products ||
-          res.data?.data ||
-          (Array.isArray(res.data) ? res.data : []);
-        setProducts(data);
-      } catch (err) {
-        console.error("Failed to fetch products:", err.message);
-      }
-    };
-    fetchProducts();
-  }, []);
 
   return (
     <div className={styles.container}>
-      {/* ── Header ── */}
+      {/* Header */}
       <div className={styles.header}>
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
@@ -137,12 +111,12 @@ export default function Reviews() {
         <div style={{ width: 32 }} />
       </div>
 
-      {/* ── Profile ── */}
+      {/* Profile */}
       <div className={styles.profile}>
         <img
           src={
             user?.avatar ||
-            `https://via.placeholder.com/80/d4a574/ffffff?text=${(user?.full_name || "U")[0]}`
+            `https://via.placeholder.com/80/d4a574/fff?text=${(user?.full_name || "U")[0]}`
           }
           alt={user?.full_name || "User"}
           className={styles.avatar}
@@ -159,7 +133,7 @@ export default function Reviews() {
         </div>
       </div>
 
-      {/* ── Tabs ── */}
+      {/* Tabs */}
       <div className={styles.tabs}>
         <button
           className={`${styles.tab} ${activeTab === "pending" ? styles.tabActive : ""}`}
@@ -175,7 +149,7 @@ export default function Reviews() {
         </button>
       </div>
 
-      {/* ── Review all bar ── */}
+      {/* Review all bar */}
       {activeTab === "pending" && (
         <div className={styles.reviewAllBar}>
           <span className={styles.reviewAllText}>
@@ -187,17 +161,12 @@ export default function Reviews() {
         </div>
       )}
 
-      {/* ── Pending list ── */}
+      {/* Pending list */}
       {activeTab === "pending" && (
         <div className={styles.list}>
           {PENDING_REVIEWS.map((item) => (
             <div key={item.id} className={styles.reviewBlock}>
-              <div
-                onClick={() =>
-                  navigate("/leave-review", { state: { product: item } })
-                }
-                className={styles.productRow}
-              >
+              <div className={styles.productRow}>
                 <img
                   src={item.image}
                   alt={item.name}
@@ -230,9 +199,14 @@ export default function Reviews() {
                   {" "}
                   people are waiting for your review.
                 </span>
-                <StarRating
+                <StarRow
                   rating={ratings[item.id] || 0}
-                  onChange={(v) => setRatings((r) => ({ ...r, [item.id]: v }))}
+                  onChange={(v) => {
+                    setRatings((r) => ({ ...r, [item.id]: v }));
+                    navigate("/leave-review", {
+                      state: { product: item, initialRating: v },
+                    });
+                  }}
                 />
               </div>
             </div>
@@ -240,7 +214,7 @@ export default function Reviews() {
         </div>
       )}
 
-      {/* ── Reviewed list ── */}
+      {/* Reviewed list */}
       {activeTab === "reviewed" && (
         <div className={styles.list}>
           {REVIEWED.map((item) => (
@@ -257,61 +231,11 @@ export default function Reviews() {
                 <div className={styles.productInfo}>
                   <p className={styles.productName}>{item.name}</p>
                   <p className={styles.productVariant}>{item.variant}</p>
-                  <StarRating rating={item.rating} />
+                  <StarRow rating={item.rating} size={16} />
                 </div>
               </div>
               <p className={styles.reviewedText}>"{item.reviewText}"</p>
             </div>
-          ))}
-        </div>
-      )}
-
-      {/* ── Review Modal ── */}
-      {reviewModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setReviewModal(null)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitle}>Leave a Review</h3>
-
-            <p className={styles.modalProduct}>{reviewModal.name}</p>
-            <p className={styles.modalVariant}>{reviewModal.variant}</p>
-            <div className={styles.modalStars}>
-              <StarRating
-                rating={ratings[reviewModal.id] || 0}
-                onChange={(v) =>
-                  setRatings((r) => ({ ...r, [reviewModal.id]: v }))
-                }
-              />
-            </div>
-            <textarea
-              className={styles.textarea}
-              placeholder="Share your experience with this product..."
-              value={reviewText}
-              onChange={(e) => setReviewText(e.target.value)}
-              rows={4}
-            />
-            <div className={styles.modalActions}>
-              <button
-                className={styles.cancelBtn}
-                onClick={() => setReviewModal(null)}
-              >
-                Cancel
-              </button>
-              <button className={styles.submitBtn} onClick={handleSubmit}>
-                Submit Review
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Product Feed */}
-      {products.length > 0 && (
-        <div className={styles.productGrid}>
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
           ))}
         </div>
       )}
