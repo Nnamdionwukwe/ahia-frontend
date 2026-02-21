@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import CategorySidebar from "./CategorySidebar";
-import ProductCard from "../ProductCard/ProductCard";
 import styles from "./CategoryPage.module.css";
 import CategoryHeader from "../CategoryHeader/CategoryHeader";
 import CategoryProductCard from "./CategoryProductCard";

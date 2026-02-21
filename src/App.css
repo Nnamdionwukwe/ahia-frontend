@@ -57,7 +57,9 @@
 
 /* Smooth transition between themes */
 * {
-  transition: background-color 0.3s ease, color 0.3s ease,
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease,
     border-color 0.3s ease;
 }
 
@@ -67,7 +69,7 @@ nav[class*="bottomNav"] {
   bottom: 0 !important;
   left: 0 !important;
   right: 0 !important;
-  background: red !important;
+  /* background: red !important; */
   z-index: 9999 !important;
   height: 70px !important;
 }
