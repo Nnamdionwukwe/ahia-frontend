@@ -180,7 +180,7 @@
 /* Promo tag sits to the right of the icon inline */
 .promoTag {
   position: absolute;
-  left: 32px;
+  left: 52px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
