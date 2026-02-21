@@ -65,7 +65,7 @@ const BottomNav = () => {
             aria-label={item.label}
           >
             <div className={styles.iconWrapper}>
-              <Icon className={styles.icon} size={20} />
+              <Icon className={styles.icon} size={21} />
 
               {/* Count badge */}
               {item.badge > 0 && (
