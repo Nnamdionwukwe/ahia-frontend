@@ -255,17 +255,21 @@
   }
 }
 
-@media (max-width: 650px) {
+@media (min-width: 550px) {
   .cartItem {
-    flex: 2.5;
-    padding-left: 20px;
+    flex: 1;
+    align-items: center;
+    padding-left: 0;
   }
 
   .promoTag {
-    left: 46px;
+    left: 38px;
+  }
+
+  .navItem {
+    flex: 1;
   }
 }
-
 /* ── Body padding ───────────────────────────────────────── */
 @media (max-width: 767px) {
   body {
