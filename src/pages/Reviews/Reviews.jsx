@@ -14,7 +14,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 import axios from "axios";
@@ -152,6 +152,7 @@ function StarRow({ rating, onChange, size = 20 }) {
 function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [helpful, setHelpful] = useState(false);
+  const navigate = useNavigate();
 
   const handleHelpful = () => {
     setHelpful((h) => !h);
@@ -249,7 +250,10 @@ function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
       </div>
 
       {/* Product strip */}
-      <div className={styles.productStrip}>
+      <div
+        onClick={() => navigate("/review-details")}
+        className={styles.productStrip}
+      >
         <img
           src={item.image}
           alt={item.name}
