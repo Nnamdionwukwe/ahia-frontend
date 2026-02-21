@@ -126,7 +126,7 @@
 }
 
 /* ── Categories ─────────────────────────────────────────── */
-.categoriesItem .icon {
+/* .categoriesItem .icon {
   color: #e74c3c;
 }
 .categoriesItem .label {
@@ -141,7 +141,7 @@
 }
 .categoriesItem.active::before {
   background: #e74c3c;
-}
+} */
 
 /* ── Cart count badge ───────────────────────────────────── */
 .badge {
