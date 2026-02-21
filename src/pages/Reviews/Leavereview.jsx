@@ -67,7 +67,7 @@ export default function LeaveReview() {
 
   const handleRatingChange = (val) => {
     setRating(val);
-    setShowSheet(true);
+    // setShowSheet(true);
   };
 
   const handlePhotoChange = (e) => {
