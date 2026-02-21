@@ -37,6 +37,7 @@ import Notifications from "./components/Notifications/Notifications";
 import LoyaltyRewards from "./components/LoyaltyRewards/LoyaltyRewards";
 import Messages from "./pages/Messages/Messages";
 import Reviews from "./pages/Reviews/Reviews";
+import LeaveReview from "./pages/Reviews/Leavereview";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -102,6 +103,7 @@ const App = () => {
             />
             <Route path="/account-profile/messages" element={<Messages />} />
             <Route path="/account-profile/reviews" element={<Reviews />} />
+            <Route path="/leave-review" element={<LeaveReview />} />
 
             <Route
               path="/admin-dashboard"

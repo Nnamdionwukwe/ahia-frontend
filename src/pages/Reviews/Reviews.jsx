@@ -192,7 +192,12 @@ export default function Reviews() {
         <div className={styles.list}>
           {PENDING_REVIEWS.map((item) => (
             <div key={item.id} className={styles.reviewBlock}>
-              <div className={styles.productRow}>
+              <div
+                onClick={() =>
+                  navigate("/leave-review", { state: { product: item } })
+                }
+                className={styles.productRow}
+              >
                 <img
                   src={item.image}
                   alt={item.name}
@@ -210,7 +215,9 @@ export default function Reviews() {
                 ) : (
                   <button
                     className={styles.leaveBtn}
-                    onClick={() => setReviewModal(item)}
+                    onClick={() =>
+                      navigate("/leave-review", { state: { product: item } })
+                    }
                   >
                     Leave a review
                   </button>
@@ -267,6 +274,7 @@ export default function Reviews() {
         >
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitle}>Leave a Review</h3>
+
             <p className={styles.modalProduct}>{reviewModal.name}</p>
             <p className={styles.modalVariant}>{reviewModal.variant}</p>
             <div className={styles.modalStars}>
