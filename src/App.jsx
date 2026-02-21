@@ -36,6 +36,7 @@ import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import Notifications from "./components/Notifications/Notifications";
 import LoyaltyRewards from "./components/LoyaltyRewards/LoyaltyRewards";
 import Messages from "./pages/Messages/Messages";
+import Reviews from "./pages/Reviews/Reviews";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -100,6 +101,8 @@ const App = () => {
               element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />}
             />
             <Route path="/account-profile/messages" element={<Messages />} />
+            <Route path="/account-profile/reviews" element={<Reviews />} />
+
             <Route
               path="/admin-dashboard"
               element={

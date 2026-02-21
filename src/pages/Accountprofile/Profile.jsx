@@ -216,7 +216,6 @@ const Profile = () => {
         <Link to="/orders" className={styles.menuItemLink}>
           <MenuItem icon={ShoppingBag} label="Your orders" count={null} />
         </Link>
-
         <Link to="/account-profile/messages">
           <MenuItem
             icon={MessageCircle}
@@ -225,12 +224,14 @@ const Profile = () => {
           />
         </Link>
 
-        <MenuItem
-          icon={Star}
-          label="Reviews"
-          count="19 awaiting review"
-          subtext
-        />
+        <Link to="/account-profile/reviews">
+          <MenuItem
+            icon={Star}
+            label="Reviews"
+            count="19 awaiting review"
+            subtext
+          />
+        </Link>
       </div>
 
       {/* Bottom Navigation Tabs */}
