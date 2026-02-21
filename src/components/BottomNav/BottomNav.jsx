@@ -8,7 +8,7 @@ import styles from "./BottomNav.module.css";
 const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const cartItemsCount = useCartStore((state) => state.itemCount || 0);
+  const totalCount = useCartStore((state) => state.totalCount || 0);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated());
 
   const navItems = [
@@ -32,7 +32,7 @@ const BottomNav = () => {
       label: "Cart",
       icon: FiShoppingCart,
       path: "/cart",
-      badge: cartItemsCount,
+      badge: totalCount,
     },
   ];
 
@@ -61,13 +61,13 @@ const BottomNav = () => {
             onClick={() => handleNavClick(item)}
             className={`${styles.navItem} ${active ? styles.active : ""} ${
               item.id === "categories" ? styles.categoriesItem : ""
-            }`}
+            } ${item.id === "cart" ? styles.cartItem : ""}`}
             aria-label={item.label}
           >
             <div className={styles.iconWrapper}>
               <Icon className={styles.icon} size={24} />
 
-              {/* Cart count badge */}
+              {/* Count badge */}
               {item.badge > 0 && (
                 <span className={styles.badge}>
                   {item.badge > 99 ? "99+" : item.badge}
