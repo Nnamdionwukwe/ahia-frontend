@@ -116,7 +116,7 @@
 
 /* ── Label ──────────────────────────────────────────────── */
 .label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
   font-weight: 500;
   transition: all 0.3s ease;
