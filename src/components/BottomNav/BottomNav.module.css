@@ -174,7 +174,7 @@
 .navItem:last-child {
   flex: 2;
   align-items: flex-start;
-  padding-left: 58px; /* increase this to shift both right */
+  padding-left: 48px; /* increase this to shift both right */
 }
 
 /* Promo tag sits to the right of the icon inline */
