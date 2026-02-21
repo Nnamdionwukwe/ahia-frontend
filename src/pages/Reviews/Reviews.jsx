@@ -1,10 +1,21 @@
-import React, { useState } from "react";
-import { ChevronLeft, ChevronRight, ThumbsUp, Flame } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useRef } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ThumbsUp,
+  Flame,
+  Camera,
+  Video,
+  X,
+  MessageCircle,
+  User,
+} from "lucide-react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
+const MAX_CHARS = 3000;
 
 const PENDING_REVIEWS = [
   {
@@ -70,6 +81,15 @@ const REVIEWED = [
   },
 ];
 
+const maskName = (name = "") => {
+  if (!name) return "User";
+  return name
+    .trim()
+    .split(" ")
+    .map((s) => (s.length <= 2 ? s : s[0] + "***" + s[s.length - 1]))
+    .join(" ");
+};
+
 function StarRow({ rating, onChange, size = 20 }) {
   const [hovered, setHovered] = useState(0);
   const active = hovered || rating;
@@ -85,6 +105,7 @@ function StarRow({ rating, onChange, size = 20 }) {
           onMouseEnter={() => onChange && setHovered(s)}
           onMouseLeave={() => onChange && setHovered(0)}
           onClick={() => onChange && onChange(s)}
+          style={{ cursor: onChange ? "pointer" : "default" }}
         >
           <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
         </svg>
@@ -93,12 +114,158 @@ function StarRow({ rating, onChange, size = 20 }) {
   );
 }
 
+function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
+  const { user } = useAuthStore();
+  const photoRef = useRef();
+  const [rating, setRating] = useState(initialRating || 0);
+  const [reviewText, setReviewText] = useState("");
+  const [hideProfile, setHideProfile] = useState(false);
+  const [photos, setPhotos] = useState([]);
+
+  const handlePhotoChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setPhotos((p) => [...p, ...urls].slice(0, 9));
+  };
+
+  const handleSubmit = () => {
+    onSubmitted(product.id);
+    onClose();
+  };
+
+  return (
+    <div className={styles.sheetOverlay} onClick={onClose}>
+      <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
+        {/* Sheet header — rating + close */}
+        <div className={styles.sheetHeader}>
+          <div className={styles.sheetRatingRow}>
+            <span className={styles.asterisk}>*</span>
+            <span className={styles.ratingLabel}>Rating</span>
+            <StarRow rating={rating} onChange={setRating} size={28} />
+            {rating > 0 && (
+              <span className={styles.ratingWord}>{RATING_LABELS[rating]}</span>
+            )}
+          </div>
+          <button className={styles.closeBtn} onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Get help — only 1 or 2 stars */}
+        {rating > 0 && rating <= 2 && (
+          <div className={styles.getHelpBox}>
+            <p className={styles.getHelpText}>
+              If you had any problems with shipping or the item, contact us!
+            </p>
+            <button className={styles.getHelpBtn}>
+              <MessageCircle size={14} /> Get help <ChevronRight size={13} />
+            </button>
+          </div>
+        )}
+
+        {/* Media */}
+        <div className={styles.mediaRow}>
+          <button
+            className={styles.mediaBtn}
+            onClick={() => photoRef.current?.click()}
+          >
+            <Camera size={24} />
+            <span>Photo</span>
+          </button>
+          <button className={styles.mediaBtn}>
+            <Video size={24} />
+            <span>Video</span>
+          </button>
+          {photos.map((p, i) => (
+            <div key={i} className={styles.photoThumb}>
+              <img src={p} alt="" />
+              <button
+                className={styles.removePhoto}
+                onClick={() => setPhotos(photos.filter((_, j) => j !== i))}
+              >
+                <X size={11} />
+              </button>
+            </div>
+          ))}
+          <input
+            ref={photoRef}
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={handlePhotoChange}
+          />
+        </div>
+
+        {/* Textarea */}
+        <div className={styles.textareaWrap}>
+          <textarea
+            className={styles.textarea}
+            placeholder="Sharing your thought and experience about this item."
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value.slice(0, MAX_CHARS))}
+            rows={5}
+          />
+          <span className={styles.charCount}>
+            {reviewText.length}/{MAX_CHARS}
+          </span>
+        </div>
+
+        {/* Guidelines + Submit */}
+        <div className={styles.sheetBottom}>
+          <p className={styles.guidelines}>
+            Please follow the{" "}
+            <span className={styles.guidelinesLink}>review guidelines</span>{" "}
+            when writing reviews.
+          </p>
+          <button
+            className={styles.submitBtn}
+            onClick={handleSubmit}
+            disabled={!rating}
+          >
+            Submit
+          </button>
+          <div className={styles.hideRow}>
+            <button
+              className={`${styles.hideCheck} ${hideProfile ? styles.hideChecked : ""}`}
+              onClick={() => setHideProfile((h) => !h)}
+            >
+              {hideProfile && <span className={styles.checkMark}>✓</span>}
+            </button>
+            <span className={styles.hideText}>
+              Hide your profile photo and name as
+            </span>
+            <User size={15} className={styles.hideIcon} />
+            <span className={styles.hideName}>{maskName(user?.full_name)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Reviews() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState("pending");
+  const [sheetProduct, setSheetProduct] = useState(null);
+  const [sheetInitialRating, setSheetInitialRating] = useState(0);
   const [ratings, setRatings] = useState({});
   const [submitted, setSubmitted] = useState({});
+
+  const openSheet = (product, initialRating = 0) => {
+    setSheetProduct(product);
+    setSheetInitialRating(initialRating);
+  };
+
+  const closeSheet = () => {
+    setSheetProduct(null);
+    setSheetInitialRating(0);
+  };
+
+  const handleSubmitted = (productId) => {
+    setSubmitted((s) => ({ ...s, [productId]: true }));
+  };
 
   return (
     <div className={styles.container}>
@@ -182,14 +349,9 @@ export default function Reviews() {
                 {submitted[item.id] ? (
                   <span className={styles.submittedTag}>Submitted ✓</span>
                 ) : (
-                  <button
-                    className={styles.leaveBtn}
-                    onClick={() =>
-                      navigate("/leave-review", { state: { product: item } })
-                    }
-                  >
-                    Leave a review
-                  </button>
+                  <Link to="/leave-review">
+                    <button className={styles.leaveBtn}>Leave a review</button>
+                  </Link>
                 )}
               </div>
               <div className={styles.waitingRow}>
@@ -199,15 +361,16 @@ export default function Reviews() {
                   {" "}
                   people are waiting for your review.
                 </span>
-                <StarRow
-                  rating={ratings[item.id] || 0}
-                  onChange={(v) => {
-                    setRatings((r) => ({ ...r, [item.id]: v }));
-                    navigate("/leave-review", {
-                      state: { product: item, initialRating: v },
-                    });
-                  }}
-                />
+                {!submitted[item.id] && (
+                  <StarRow
+                    rating={ratings[item.id] || 0}
+                    size={18}
+                    onChange={(v) => {
+                      setRatings((r) => ({ ...r, [item.id]: v }));
+                      openSheet(item, v);
+                    }}
+                  />
+                )}
               </div>
             </div>
           ))}
@@ -238,6 +401,16 @@ export default function Reviews() {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Leave Review Sheet */}
+      {sheetProduct && (
+        <LeaveReviewSheet
+          product={sheetProduct}
+          initialRating={sheetInitialRating}
+          onClose={closeSheet}
+          onSubmitted={handleSubmitted}
+        />
       )}
     </div>
   );

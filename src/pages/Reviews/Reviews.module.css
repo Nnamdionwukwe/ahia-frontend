@@ -1,4 +1,5 @@
 /* Reviews.module.css */
+
 .container {
   min-height: 100vh;
   background-color: var(--bg-secondary);
@@ -6,6 +7,7 @@
   transition: background-color 0.3s ease;
 }
 
+/* ── Header ─────────────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
@@ -43,6 +45,7 @@
   color: var(--text-primary);
 }
 
+/* ── Profile ─────────────────────────────────────────────── */
 .profile {
   display: flex;
   align-items: center;
@@ -76,6 +79,7 @@
   color: var(--text-secondary);
 }
 
+/* ── Tabs ────────────────────────────────────────────────── */
 .tabs {
   display: flex;
   background-color: var(--bg-primary);
@@ -93,7 +97,7 @@
   font-weight: 600;
   color: var(--text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
   margin-bottom: -1px;
 }
 .tab:hover {
@@ -104,6 +108,7 @@
   border-bottom-color: #ff6f00;
 }
 
+/* ── Review All Bar ──────────────────────────────────────── */
 .reviewAllBar {
   display: flex;
   align-items: center;
@@ -132,6 +137,7 @@
   cursor: pointer;
 }
 
+/* ── List ────────────────────────────────────────────────── */
 .list {
   display: flex;
   flex-direction: column;
@@ -143,6 +149,7 @@
   transition: background-color 0.3s ease;
 }
 
+/* ── Product Row ─────────────────────────────────────────── */
 .productRow {
   display: flex;
   align-items: center;
@@ -191,8 +198,8 @@
   white-space: nowrap;
   flex-shrink: 0;
   transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+    background-color 0.2s,
+    transform 0.2s;
 }
 .leaveBtn:hover {
   background-color: #e65100;
@@ -207,6 +214,7 @@
   flex-shrink: 0;
 }
 
+/* ── Waiting Row ─────────────────────────────────────────── */
 .waitingRow {
   display: flex;
   align-items: center;
@@ -228,6 +236,7 @@
   flex: 1;
 }
 
+/* ── Stars ───────────────────────────────────────────────── */
 .starRow {
   display: flex;
   align-items: center;
@@ -235,7 +244,6 @@
 }
 
 .star {
-  cursor: pointer;
   fill: transparent;
   stroke: var(--border-color);
   stroke-width: 1.5;
@@ -252,6 +260,7 @@
   stroke: #ff6f00;
 }
 
+/* ── Reviewed ────────────────────────────────────────────── */
 .reviewedText {
   font-size: 13px;
   color: var(--text-secondary);
@@ -261,6 +270,302 @@
   line-height: 1.5;
 }
 
+/* ── Sheet Overlay ───────────────────────────────────────── */
+.sheetOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sheet {
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 0 40px;
+  animation: slideUp 0.3s ease;
+  transition: background-color 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ── Sheet Header ────────────────────────────────────────── */
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.sheetRatingRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.asterisk {
+  color: #ff6f00;
+  font-weight: 700;
+  font-size: 16px;
+}
+.ratingLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.ratingWord {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.closeBtn:hover {
+  background: var(--bg-secondary);
+}
+
+/* ── Get Help ────────────────────────────────────────────── */
+.getHelpBox {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 0 16px 16px;
+}
+.getHelpText {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.getHelpBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ── Media ───────────────────────────────────────────────── */
+.mediaRow {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 16px;
+  flex-wrap: wrap;
+}
+
+.mediaBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 110px;
+  height: 110px;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.mediaBtn:hover {
+  border-color: #ff6f00;
+  background: rgba(255, 111, 0, 0.04);
+}
+
+.photoThumb {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.photoThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removePhoto {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Textarea ────────────────────────────────────────────── */
+.textareaWrap {
+  position: relative;
+  margin: 0 16px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.textareaWrap:focus-within {
+  border-color: #4a90d9;
+}
+
+.textarea {
+  width: 100%;
+  padding: 14px;
+  padding-bottom: 30px;
+  border: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: background-color 0.3s ease;
+}
+
+.charCount {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── Sheet Bottom ────────────────────────────────────────── */
+.sheetBottom {
+  padding: 0 16px;
+}
+
+.guidelines {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 12px;
+}
+.guidelinesLink {
+  color: #4a90d9;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  background: #ff6f00;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.submitBtn:hover:not(:disabled) {
+  background: #e65100;
+  transform: translateY(-1px);
+}
+.submitBtn:disabled {
+  background: #ffb380;
+  cursor: not-allowed;
+}
+
+/* ── Hide Row ────────────────────────────────────────────── */
+.hideRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.hideCheck {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.hideChecked {
+  border-color: #ff6f00;
+  background: #ff6f00;
+}
+.checkMark {
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+.hideText {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.hideIcon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.hideName {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 480px) {
   .headerTitle {
     font-size: 16px;
@@ -281,5 +586,13 @@
   }
   .waitingText {
     width: 100%;
+  }
+  .mediaBtn {
+    width: 90px;
+    height: 90px;
+  }
+  .photoThumb {
+    width: 90px;
+    height: 90px;
   }
 }
