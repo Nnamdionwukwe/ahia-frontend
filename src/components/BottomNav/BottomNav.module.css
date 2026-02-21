@@ -255,7 +255,7 @@
   }
 }
 
-@media (min-width: 550px) {
+@media (max-width: 650px) {
   .cartItem {
     flex: 2.5;
     padding-left: 20px;
