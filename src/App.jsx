@@ -35,6 +35,7 @@ import BankTransferPayment from "./pages/Banktransferpayment/Banktransferpayment
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import Notifications from "./components/Notifications/Notifications";
 import LoyaltyRewards from "./components/LoyaltyRewards/LoyaltyRewards";
+import Messages from "./pages/Messages/Messages";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -98,6 +99,7 @@ const App = () => {
               path="/account-profile"
               element={isAuthenticated ? <Profile /> : <Navigate to="/auth" />}
             />
+            <Route path="/account-profile/messages" element={<Messages />} />
             <Route
               path="/admin-dashboard"
               element={

@@ -216,11 +216,15 @@ const Profile = () => {
         <Link to="/orders" className={styles.menuItemLink}>
           <MenuItem icon={ShoppingBag} label="Your orders" count={null} />
         </Link>
-        <MenuItem
-          icon={MessageCircle}
-          label="Messages"
-          count={profile.messagesCount}
-        />
+
+        <Link to="/account-profile/messages">
+          <MenuItem
+            icon={MessageCircle}
+            label="Messages"
+            count={profile.messagesCount}
+          />
+        </Link>
+
         <MenuItem
           icon={Star}
           label="Reviews"
