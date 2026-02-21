@@ -226,9 +226,6 @@ export default function LeaveReview() {
           onClick={() => setShowSheet(false)}
         >
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-            {/* Sheet rating header with close */}
-            {/* <RatingHeader onClose={() => setShowSheet(false)} /> */}
-
             {/* Get help — only for 1 or 2 stars */}
             {rating <= 2 && rating > 0 && (
               <div className={styles.getHelpBox}>
@@ -241,10 +238,6 @@ export default function LeaveReview() {
                 </button>
               </div>
             )}
-
-            {/* <MediaSection />
-            <TextSection />
-            <BottomSection /> */}
           </div>
         </div>
       )}
