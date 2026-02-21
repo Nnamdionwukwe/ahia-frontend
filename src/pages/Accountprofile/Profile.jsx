@@ -19,6 +19,7 @@ import useCartStore from "../../store/cartStore";
 import Header from "../../components/Header/Header";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import { useRef } from "react";
+import BottomNav from "../../components/BottomNav/BottomNav";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -314,6 +315,9 @@ const Profile = () => {
           ))}
         </div>
       )}
+
+      {/* Bottom Navigation */}
+      <BottomNav />
     </div>
   );
 };

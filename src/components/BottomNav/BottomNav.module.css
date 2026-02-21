@@ -1,49 +1,5 @@
 /* BottomNav.module.css */
 
-/* Promo Banner */
-.promoBanner {
-  position: fixed;
-  bottom: 70px;
-  left: 0;
-  right: 0;
-  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
-  padding: 12px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  z-index: 998;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  animation: slideUp 0.5s ease;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.promoText {
-  color: white;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.promoHighlight {
-  background: white;
-  color: #27ae60;
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-/* Bottom Navigation */
 .bottomNav {
   position: fixed;
   bottom: 0;
@@ -59,6 +15,7 @@
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
+/* Nav Item */
 .navItem {
   flex: 1;
   display: flex;
@@ -77,6 +34,56 @@
   transform: scale(0.95);
 }
 
+/* Active top indicator */
+.navItem.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 0 0 3px 3px;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+    opacity: 0;
+  }
+  to {
+    height: 3px;
+    opacity: 1;
+  }
+}
+
+/* Ripple */
+.navItem::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--primary-color);
+  opacity: 0;
+  transform: translate(-50%, -50%);
+  transition:
+    width 0.6s,
+    height 0.6s,
+    opacity 0.6s;
+}
+
+.navItem:active::after {
+  width: 100px;
+  height: 100px;
+  opacity: 0.1;
+}
+
+/* Icon wrapper */
 .iconWrapper {
   position: relative;
   display: flex;
@@ -98,6 +105,7 @@
   color: var(--text-primary);
 }
 
+/* Label */
 .label {
   font-size: 12px;
   color: var(--text-secondary);
@@ -110,30 +118,25 @@
   font-weight: 600;
 }
 
-/* Special styling for Categories (Search) */
+/* Categories special style */
 .categoriesItem .icon {
   color: #e74c3c;
 }
-
-.categoriesItem.active .icon {
-  color: #c0392b;
-}
-
 .categoriesItem .label {
   color: #e74c3c;
 }
-
+.categoriesItem.active .icon {
+  color: #c0392b;
+}
 .categoriesItem.active .label {
   color: #c0392b;
   font-weight: 600;
 }
-
-/* Special active indicator for Categories */
 .categoriesItem.active::before {
   background: #e74c3c;
 }
 
-/* Badge */
+/* Cart count badge */
 .badge {
   position: absolute;
   top: -8px;
@@ -167,58 +170,39 @@
   }
 }
 
-/* Active indicator line */
-.navItem.active::before {
-  content: "";
+/* ── Promo tag next to cart icon ─────────────────────────── */
+.promoTag {
   position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 40px;
-  height: 3px;
-  background: var(--primary-color);
-  border-radius: 0 0 3px 3px;
-  animation: slideDown 0.3s ease;
+  left: 26px;
+  top: -8px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
 }
 
-/* Special active indicator for Categories */
-.navItem:nth-child(2).active::before {
-  background: #e74c3c;
+.promoTagTop {
+  font-size: 10px;
+  font-weight: 600;
+  color: #27ae60;
+  line-height: 1.3;
+  padding-left: 2px;
 }
 
-@keyframes slideDown {
-  from {
-    height: 0;
-    opacity: 0;
-  }
-  to {
-    height: 3px;
-    opacity: 1;
-  }
+.promoTagBottom {
+  background: linear-gradient(135deg, #2ecc71, #27ae60);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  line-height: 1.4;
+  box-shadow: 0 2px 6px rgba(39, 174, 96, 0.35);
 }
 
-/* Ripple effect on click */
-.navItem::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: var(--primary-color);
-  opacity: 0;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s, opacity 0.6s;
-}
-
-.navItem:active::after {
-  width: 100px;
-  height: 100px;
-  opacity: 0.1;
-}
-
-/* Dark mode specific adjustments */
+/* Dark mode */
 [data-theme="dark"] .bottomNav,
 .dark .bottomNav {
   background: var(--card-bg);
@@ -231,56 +215,35 @@
   box-shadow: 0 2px 8px rgba(255, 107, 53, 0.6);
 }
 
-/* Responsive adjustments */
+/* Hide on desktop */
 @media (min-width: 768px) {
   .bottomNav {
     display: none;
   }
-
-  .promoBanner {
-    display: none;
-  }
 }
 
+/* Small screens */
 @media (max-width: 480px) {
-  .promoBanner {
-    padding: 10px 16px;
-  }
-
-  .promoText,
-  .promoHighlight {
-    font-size: 12px;
-  }
-
   .label {
     font-size: 11px;
   }
-
-  .icon {
-    font-size: 22px;
-  }
-
   .badge {
     font-size: 10px;
     min-width: 18px;
     height: 18px;
   }
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .content {
-    grid-template-columns: 1fr;
+  .promoTagTop {
+    font-size: 9px;
   }
-
-  .summary {
-    position: static;
+  .promoTagBottom {
+    font-size: 9px;
+    padding: 2px 6px;
   }
 }
 
-/* Add bottom padding to prevent content from being hidden by nav */
+/* Body padding so content isn't hidden behind nav */
 @media (max-width: 767px) {
   body {
-    padding-bottom: 140px !important;
+    padding-bottom: 80px !important;
   }
 }
