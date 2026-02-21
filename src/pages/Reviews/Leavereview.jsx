@@ -67,7 +67,7 @@ export default function LeaveReview() {
 
   const handleRatingChange = (val) => {
     setRating(val);
-    // setShowSheet(true);
+    setShowSheet(true);
   };
 
   const handlePhotoChange = (e) => {
@@ -227,7 +227,7 @@ export default function LeaveReview() {
         >
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
             {/* Sheet rating header with close */}
-            <RatingHeader onClose={() => setShowSheet(false)} />
+            {/* <RatingHeader onClose={() => setShowSheet(false)} /> */}
 
             {/* Get help — only for 1 or 2 stars */}
             {rating <= 2 && rating > 0 && (
@@ -242,9 +242,9 @@ export default function LeaveReview() {
               </div>
             )}
 
-            <MediaSection />
+            {/* <MediaSection />
             <TextSection />
-            <BottomSection />
+            <BottomSection /> */}
           </div>
         </div>
       )}
