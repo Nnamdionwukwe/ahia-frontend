@@ -18,6 +18,7 @@ import styles from "./Profile.module.css";
 import useCartStore from "../../store/cartStore";
 import Header from "../../components/Header/Header";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import { useRef } from "react";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -27,6 +28,25 @@ const Profile = () => {
   const { items: cartItems, fetchCart } = useCartStore();
 
   const [products, setProducts] = useState([]);
+
+  // Add this state and effect inside Profile component
+  const [showStickyBanner, setShowStickyBanner] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY < lastScrollY.current && currentScrollY > 100) {
+        setShowStickyBanner(true); // scrolling UP
+      } else {
+        setShowStickyBanner(false); // scrolling DOWN or at top
+      }
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     fetchCart();
@@ -121,6 +141,18 @@ const Profile = () => {
       {/* Header */}
       <Header />
 
+      {/* Sticky Shipping Banner */}
+      <div
+        className={`${styles.stickyShippingBanner} ${showStickyBanner ? styles.stickyVisible : ""}`}
+      >
+        <span className={styles.shippingItem}>✓ Free shipping</span>
+        <span className={styles.shippingDivider}>|</span>
+        <span className={styles.shippingItem}>
+          ✓ Price adjustment within 30 days
+        </span>
+        <ChevronRight size={18} className={styles.shippingChevron} />
+      </div>
+
       {/* Notification Banner */}
       {showNotification && (
         <div className={styles.notificationBanner}>
@@ -160,6 +192,22 @@ const Profile = () => {
           <span>Coupons & offers ({profile.coupons})</span>
           <ChevronRight size={20} />
         </div>
+      </div>
+
+      {/* Credit Banner */}
+      <div className={styles.creditBanner}>
+        <p className={styles.creditBannerText}>
+          <span className={styles.creditHighlight}>
+            {profile.credit} credit
+          </span>{" "}
+          can be applied to item(s) in your cart.
+        </p>
+        <button
+          className={styles.goToCartBtn}
+          onClick={() => navigate("/cart")}
+        >
+          Go to cart
+        </button>
       </div>
 
       {/* Menu Items */}
@@ -246,6 +294,16 @@ const Profile = () => {
               </div>
             ),
         )}
+      </div>
+
+      {/* Shipping Banner */}
+      <div className={styles.shippingBanner}>
+        <span className={styles.shippingItem}>✓ Free shipping</span>
+        <span className={styles.shippingDivider}>|</span>
+        <span className={styles.shippingItem}>
+          ✓ Price adjustment within 30 days
+        </span>
+        <ChevronRight size={18} className={styles.shippingChevron} />
       </div>
 
       {/* Product Feed */}
