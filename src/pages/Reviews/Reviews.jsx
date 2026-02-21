@@ -9,8 +9,12 @@ import {
   X,
   MessageCircle,
   User,
+  Share2,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
 } from "lucide-react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 
@@ -65,19 +69,45 @@ const PENDING_REVIEWS = [
 const REVIEWED = [
   {
     id: 7,
-    name: "Wireless Earbuds Pro Max",
-    variant: "White",
-    image: "https://via.placeholder.com/80/888/fff?text=EAR",
+    name: "Future oriented integrated glasses with dazzling col...",
+    variant: "C2",
+    image: "https://via.placeholder.com/80/c0c0c0/333?text=Glass",
     rating: 5,
-    reviewText: "Excellent sound quality!",
+    reviewText: "",
+    date: "Dec 6, 2025",
+    helpfulCount: 0,
   },
   {
     id: 8,
-    name: "USB-C Fast Charging Cable",
-    variant: "Black 2m",
-    image: "https://via.placeholder.com/80/999/fff?text=CBL",
-    rating: 4,
-    reviewText: "Good value for money.",
+    name: "AOCHUAN SmartX Pro Combo 1 - Wireless Phone Gi...",
+    variant: "SmartXProCombo1",
+    image: "https://via.placeholder.com/80/1a1a2e/fff?text=Gimbal",
+    rating: 5,
+    reviewText:
+      "This my best purchase in Temu great for its price thank you Team Temu",
+    date: "Dec 6, 2025",
+    helpfulCount: 0,
+  },
+  {
+    id: 9,
+    name: "Fashionable Anti-blue Light Glasses, Trendy Fr...",
+    variant: "White",
+    image: "https://via.placeholder.com/80/e8eaf6/333?text=Frames",
+    rating: 2,
+    reviewText: "Not cool way too small than it was advertised",
+    date: "Nov 14, 2025",
+    helpfulCount: 0,
+  },
+  {
+    id: 10,
+    name: "Women's High Waist Slim Ankle Length Trousers...",
+    variant: "Black",
+    image: "https://via.placeholder.com/80/1c1c1c/fff?text=Pants",
+    rating: 5,
+    reviewText:
+      "I thought it was ankle length guess I didn't look at it properly but it's of nice quality",
+    date: "Nov 14, 2025",
+    helpfulCount: 0,
   },
 ];
 
@@ -114,6 +144,125 @@ function StarRow({ rating, onChange, size = 20 }) {
   );
 }
 
+// ── Reviewed Card (matches the screenshot) ────────────────────────────────────
+function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [helpful, setHelpful] = useState(false);
+
+  const handleHelpful = () => {
+    setHelpful((h) => !h);
+    onHelpful?.(item.id);
+  };
+
+  return (
+    <div className={styles.reviewedCard}>
+      {/* Top row: avatar + name + date + menu */}
+      <div className={styles.reviewedHeader}>
+        <img
+          src={
+            user?.avatar ||
+            `https://via.placeholder.com/36/d4a574/fff?text=${(user?.full_name || "U")[0]}`
+          }
+          alt={user?.full_name}
+          className={styles.reviewedAvatar}
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/36/d4a574/fff?text=U";
+          }}
+        />
+        <div className={styles.reviewedMeta}>
+          <span className={styles.reviewedName}>
+            {user?.full_name || "Guest"}
+          </span>
+          <span className={styles.reviewedDate}>on {item.date}</span>
+        </div>
+        <div className={styles.menuWrap}>
+          <button
+            className={styles.menuBtn}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            <MoreHorizontal size={18} />
+          </button>
+          {menuOpen && (
+            <div className={styles.menuDropdown}>
+              <button
+                className={styles.menuItem}
+                onClick={() => {
+                  onEdit?.(item);
+                  setMenuOpen(false);
+                }}
+              >
+                <Pencil size={13} /> Edit
+              </button>
+              <button
+                className={`${styles.menuItem} ${styles.menuItemDanger}`}
+                onClick={() => {
+                  onDelete?.(item.id);
+                  setMenuOpen(false);
+                }}
+              >
+                <Trash2 size={13} /> Delete
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Star rating */}
+      <div className={styles.reviewedStars}>
+        <StarRow rating={item.rating} size={18} />
+      </div>
+
+      {/* Review text */}
+      {item.reviewText ? (
+        <p className={styles.reviewedBody}>{item.reviewText}</p>
+      ) : null}
+
+      {/* Action row: Helpful | Edit | Delete  +  Share */}
+      <div className={styles.reviewedActions}>
+        <div className={styles.reviewedActionsLeft}>
+          <button
+            className={`${styles.actionBtn} ${helpful ? styles.actionBtnActive : ""}`}
+            onClick={handleHelpful}
+          >
+            <ThumbsUp size={14} />
+            Helpful
+          </button>
+          <span className={styles.actionDivider}>|</span>
+          <button className={styles.actionBtn} onClick={() => onEdit?.(item)}>
+            Edit
+          </button>
+          <span className={styles.actionDivider}>|</span>
+          <button
+            className={`${styles.actionBtn} ${styles.actionBtnDelete}`}
+            onClick={() => onDelete?.(item.id)}
+          >
+            Delete
+          </button>
+        </div>
+        <button className={styles.shareBtn} onClick={() => onShare?.(item)}>
+          <Share2 size={14} /> Share
+        </button>
+      </div>
+
+      {/* Product strip */}
+      <div className={styles.productStrip}>
+        <img
+          src={item.image}
+          alt={item.name}
+          className={styles.productStripImg}
+          onError={(e) => {
+            e.target.src = "https://via.placeholder.com/64?text=IMG";
+          }}
+        />
+        <div className={styles.productStripInfo}>
+          <p className={styles.productStripName}>{item.name}</p>
+          <p className={styles.productStripVariant}>{item.variant}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   const { user } = useAuthStore();
   const photoRef = useRef();
@@ -136,7 +285,6 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   return (
     <div className={styles.sheetOverlay} onClick={onClose}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-        {/* Sheet header — rating + close */}
         <div className={styles.sheetHeader}>
           <div className={styles.sheetRatingRow}>
             <span className={styles.asterisk}>*</span>
@@ -151,7 +299,6 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </button>
         </div>
 
-        {/* Get help — only 1 or 2 stars */}
         {rating > 0 && rating <= 2 && (
           <div className={styles.getHelpBox}>
             <p className={styles.getHelpText}>
@@ -163,7 +310,6 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </div>
         )}
 
-        {/* Media */}
         <div className={styles.mediaRow}>
           <button
             className={styles.mediaBtn}
@@ -197,7 +343,6 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           />
         </div>
 
-        {/* Textarea */}
         <div className={styles.textareaWrap}>
           <textarea
             className={styles.textarea}
@@ -211,7 +356,6 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </span>
         </div>
 
-        {/* Guidelines + Submit */}
         <div className={styles.sheetBottom}>
           <p className={styles.guidelines}>
             Please follow the{" "}
@@ -252,6 +396,7 @@ export default function Reviews() {
   const [sheetInitialRating, setSheetInitialRating] = useState(0);
   const [ratings, setRatings] = useState({});
   const [submitted, setSubmitted] = useState({});
+  const [reviewed, setReviewed] = useState(REVIEWED);
 
   const openSheet = (product, initialRating = 0) => {
     setSheetProduct(product);
@@ -265,6 +410,22 @@ export default function Reviews() {
 
   const handleSubmitted = (productId) => {
     setSubmitted((s) => ({ ...s, [productId]: true }));
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Delete this review?")) {
+      setReviewed((r) => r.filter((item) => item.id !== id));
+    }
+  };
+
+  const handleEdit = (item) => {
+    openSheet(item, item.rating);
+  };
+
+  const handleShare = (item) => {
+    if (navigator.share) {
+      navigator.share({ title: item.name, text: item.reviewText });
+    }
   };
 
   return (
@@ -312,7 +473,7 @@ export default function Reviews() {
           className={`${styles.tab} ${activeTab === "reviewed" ? styles.tabActive : ""}`}
           onClick={() => setActiveTab("reviewed")}
         >
-          Reviewed ({REVIEWED.length})
+          Reviewed ({reviewed.length})
         </button>
       </div>
 
@@ -334,8 +495,8 @@ export default function Reviews() {
           {PENDING_REVIEWS.map((item) => (
             <div key={item.id} className={styles.reviewBlock}>
               <div
-                onClick={() => navigate("/leave-review")}
                 className={styles.productRow}
+                onClick={() => navigate("/leave-review")}
               >
                 <img
                   src={item.image}
@@ -386,26 +547,23 @@ export default function Reviews() {
       {/* Reviewed list */}
       {activeTab === "reviewed" && (
         <div className={styles.list}>
-          {REVIEWED.map((item) => (
-            <div key={item.id} className={styles.reviewBlock}>
-              <div className={styles.productRow}>
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className={styles.productImg}
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/80?text=IMG";
-                  }}
-                />
-                <div className={styles.productInfo}>
-                  <p className={styles.productName}>{item.name}</p>
-                  <p className={styles.productVariant}>{item.variant}</p>
-                  <StarRow rating={item.rating} size={16} />
-                </div>
-              </div>
-              <p className={styles.reviewedText}>"{item.reviewText}"</p>
+          {reviewed.length === 0 ? (
+            <div className={styles.emptyReviewed}>
+              <ThumbsUp size={40} opacity={0.2} />
+              <p>No reviews yet</p>
             </div>
-          ))}
+          ) : (
+            reviewed.map((item) => (
+              <ReviewedCard
+                key={item.id}
+                item={item}
+                user={user}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onShare={handleShare}
+              />
+            ))
+          )}
         </div>
       )}
 

@@ -22,7 +22,6 @@
     background-color 0.3s ease,
     border-color 0.3s ease;
 }
-
 .backBtn {
   background: none;
   border: none;
@@ -37,7 +36,6 @@
 .backBtn:hover {
   background: var(--bg-secondary);
 }
-
 .headerTitle {
   font-size: 18px;
   font-weight: 700;
@@ -55,7 +53,6 @@
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.3s ease;
 }
-
 .avatar {
   width: 64px;
   height: 64px;
@@ -63,14 +60,12 @@
   object-fit: cover;
   flex-shrink: 0;
 }
-
 .profileName {
   font-size: 17px;
   font-weight: 700;
   margin: 0 0 6px;
   color: var(--text-primary);
 }
-
 .profileSub {
   display: flex;
   align-items: center;
@@ -86,7 +81,6 @@
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.3s ease;
 }
-
 .tab {
   flex: 1;
   padding: 14px 8px;
@@ -99,6 +93,7 @@
   cursor: pointer;
   transition: all 0.2s;
   margin-bottom: -1px;
+  font-family: inherit;
 }
 .tab:hover {
   color: var(--text-primary);
@@ -135,6 +130,7 @@
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
+  font-family: inherit;
 }
 
 /* ── List ────────────────────────────────────────────────── */
@@ -143,20 +139,19 @@
   flex-direction: column;
 }
 
+/* ── Pending Review Block ────────────────────────────────── */
 .reviewBlock {
   background-color: var(--bg-primary);
   border-bottom: 8px solid var(--bg-secondary);
   transition: background-color 0.3s ease;
 }
-
-/* ── Product Row ─────────────────────────────────────────── */
 .productRow {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 14px 16px;
+  cursor: pointer;
 }
-
 .productImg {
   width: 72px;
   height: 72px;
@@ -165,12 +160,10 @@
   flex-shrink: 0;
   background: var(--bg-secondary);
 }
-
 .productInfo {
   flex: 1;
   min-width: 0;
 }
-
 .productName {
   font-size: 14px;
   font-weight: 600;
@@ -185,7 +178,6 @@
   color: var(--text-secondary);
   margin: 0;
 }
-
 .leaveBtn {
   background-color: #ff6f00;
   color: white;
@@ -197,6 +189,7 @@
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
+  font-family: inherit;
   transition:
     background-color 0.2s,
     transform 0.2s;
@@ -205,7 +198,6 @@
   background-color: #e65100;
   transform: translateY(-1px);
 }
-
 .submittedTag {
   font-size: 13px;
   font-weight: 700;
@@ -242,7 +234,6 @@
   align-items: center;
   gap: 3px;
 }
-
 .star {
   fill: transparent;
   stroke: var(--border-color);
@@ -260,14 +251,236 @@
   stroke: #ff6f00;
 }
 
-/* ── Reviewed ────────────────────────────────────────────── */
-.reviewedText {
+/* ═══════════════════════════════════════════════════════════
+   REVIEWED CARD — matches the screenshot
+═══════════════════════════════════════════════════════════ */
+.reviewedCard {
+  background-color: var(--bg-primary);
+  border-bottom: 8px solid var(--bg-secondary);
+  padding: 16px;
+  transition: background-color 0.3s ease;
+}
+
+/* Header: avatar + name/date + menu */
+.reviewedHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  position: relative;
+}
+.reviewedAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.reviewedMeta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.reviewedName {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.reviewedDate {
   font-size: 13px;
   color: var(--text-secondary);
-  padding: 0 16px 14px;
+}
+
+/* ··· menu */
+.menuWrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.menuBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.menuBtn:hover {
+  background: var(--bg-secondary);
+}
+
+.menuDropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px var(--shadow);
+  min-width: 130px;
+  overflow: hidden;
+  z-index: 50;
+  animation: fadeIn 0.15s ease;
+}
+.menuItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 14px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.menuItem:hover {
+  background: var(--bg-secondary);
+}
+.menuItemDanger {
+  color: #ef4444;
+}
+.menuItemDanger:hover {
+  background: rgba(239, 68, 68, 0.06);
+}
+
+/* Stars */
+.reviewedStars {
+  margin-bottom: 8px;
+}
+
+/* Review body text */
+.reviewedBody {
+  font-size: 14px;
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+
+/* Action row */
+.reviewedActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 8px;
+}
+.reviewedActionsLeft {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-family: inherit;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.actionBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+.actionBtnActive {
+  color: #ff6f00 !important;
+}
+.actionBtnDelete:hover {
+  color: #ef4444 !important;
+}
+
+.actionDivider {
+  color: var(--border-color);
+  font-size: 13px;
+  user-select: none;
+  padding: 0 2px;
+}
+
+.shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  white-space: nowrap;
+}
+.shareBtn:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+
+/* Product strip at bottom of each review */
+.productStrip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 10px;
+  transition: background-color 0.3s ease;
+}
+.productStripImg {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-primary);
+}
+.productStripInfo {
+  flex: 1;
+  min-width: 0;
+}
+.productStripName {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0 0 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.productStripVariant {
+  font-size: 12px;
+  color: var(--text-secondary);
   margin: 0;
-  font-style: italic;
-  line-height: 1.5;
+}
+
+/* Empty state */
+.emptyReviewed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 /* ── Sheet Overlay ───────────────────────────────────────── */
@@ -280,7 +493,6 @@
   align-items: flex-end;
   animation: fadeIn 0.2s ease;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -300,7 +512,6 @@
   animation: slideUp 0.3s ease;
   transition: background-color 0.3s ease;
 }
-
 @keyframes slideUp {
   from {
     transform: translateY(100%);
@@ -319,14 +530,12 @@
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 16px;
 }
-
 .sheetRatingRow {
   display: flex;
   align-items: center;
   gap: 6px;
   flex: 1;
 }
-
 .asterisk {
   color: #ff6f00;
   font-weight: 700;
@@ -341,7 +550,6 @@
   font-size: 14px;
   color: var(--text-secondary);
 }
-
 .closeBtn {
   background: none;
   border: none;
@@ -382,6 +590,7 @@
   color: var(--text-primary);
   cursor: pointer;
   padding: 0;
+  font-family: inherit;
 }
 
 /* ── Media ───────────────────────────────────────────────── */
@@ -391,7 +600,6 @@
   padding: 0 16px 16px;
   flex-wrap: wrap;
 }
-
 .mediaBtn {
   display: flex;
   flex-direction: column;
@@ -406,6 +614,7 @@
   color: var(--text-primary);
   font-size: 13px;
   cursor: pointer;
+  font-family: inherit;
   transition:
     border-color 0.2s,
     background 0.2s;
@@ -414,7 +623,6 @@
   border-color: #ff6f00;
   background: rgba(255, 111, 0, 0.04);
 }
-
 .photoThumb {
   position: relative;
   width: 110px;
@@ -427,7 +635,6 @@
   height: 100%;
   object-fit: cover;
 }
-
 .removePhoto {
   position: absolute;
   top: 4px;
@@ -456,7 +663,6 @@
 .textareaWrap:focus-within {
   border-color: #4a90d9;
 }
-
 .textarea {
   width: 100%;
   padding: 14px;
@@ -472,7 +678,6 @@
   line-height: 1.5;
   transition: background-color 0.3s ease;
 }
-
 .charCount {
   position: absolute;
   bottom: 8px;
@@ -485,7 +690,6 @@
 .sheetBottom {
   padding: 0 16px;
 }
-
 .guidelines {
   font-size: 13px;
   color: var(--text-secondary);
@@ -497,7 +701,6 @@
   text-decoration: underline;
   cursor: pointer;
 }
-
 .submitBtn {
   width: 100%;
   padding: 16px;
@@ -508,6 +711,7 @@
   font-size: 17px;
   font-weight: 700;
   cursor: pointer;
+  font-family: inherit;
   transition:
     background 0.2s,
     transform 0.2s;
@@ -528,7 +732,6 @@
   gap: 6px;
   margin-top: 12px;
 }
-
 .hideCheck {
   width: 20px;
   height: 20px;
@@ -594,5 +797,14 @@
   .photoThumb {
     width: 90px;
     height: 90px;
+  }
+  .reviewedActions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .productStripImg {
+    width: 50px;
+    height: 50px;
   }
 }
