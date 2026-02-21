@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
-import styles from "./LeaveReview.module.css";
+import styles from "./Leavereview.module.css";
 
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 
