@@ -333,7 +333,10 @@ export default function Reviews() {
         <div className={styles.list}>
           {PENDING_REVIEWS.map((item) => (
             <div key={item.id} className={styles.reviewBlock}>
-              <div className={styles.productRow}>
+              <div
+                onClick={() => navigate("/leave-review")}
+                className={styles.productRow}
+              >
                 <img
                   src={item.image}
                   alt={item.name}
@@ -349,9 +352,12 @@ export default function Reviews() {
                 {submitted[item.id] ? (
                   <span className={styles.submittedTag}>Submitted ✓</span>
                 ) : (
-                  <Link to="/leave-review">
-                    <button className={styles.leaveBtn}>Leave a review</button>
-                  </Link>
+                  <button
+                    onClick={() => navigate("/leave-review")}
+                    className={styles.leaveBtn}
+                  >
+                    Leave a review
+                  </button>
                 )}
               </div>
               <div className={styles.waitingRow}>
