@@ -255,6 +255,17 @@
   }
 }
 
+@media (min-width: 550px) {
+  .cartItem {
+    flex: 2.5;
+    padding-left: 20px;
+  }
+
+  .promoTag {
+    left: 46px;
+  }
+}
+
 /* ── Body padding ───────────────────────────────────────── */
 @media (max-width: 767px) {
   body {
