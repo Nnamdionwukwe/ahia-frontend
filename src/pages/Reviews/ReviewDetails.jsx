@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+// src/pages/ReviewDetails/ReviewDetails.jsx
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,17 +10,22 @@ import {
   X,
   MessageCircle,
   User,
+  ThumbsUp,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./ReviewDetails.module.css";
-import axios from "axios";
 import ProductCard from "../../components/ProductCard/ProductCard";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 const MAX_CHARS = 3000;
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+function useAuthHeaders() {
+  const { accessToken } = useAuthStore();
+  return { Authorization: `Bearer ${accessToken}` };
+}
 
 const maskName = (name = "") => {
   if (!name) return "User";
@@ -55,14 +61,25 @@ function StarRow({ rating = 0, onChange, size = 20 }) {
   );
 }
 
-// ── Leave Review Sheet ────────────────────────────────────────────────────────
+// ── Leave / Edit Review Sheet ─────────────────────────────────────────────────
+// Endpoint: POST /api/reviews/:productId/add  (new)
+// Endpoint: PUT  /api/reviews/:reviewId/edit  (edit)
 function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   const { user } = useAuthStore();
+  const headers = useAuthHeaders();
   const photoRef = useRef();
+
   const [rating, setRating] = useState(initialRating || 0);
-  const [reviewText, setReviewText] = useState("");
-  const [hideProfile, setHideProfile] = useState(false);
+  const [reviewText, setReviewText] = useState(product?.reviewText || "");
+  const [hideProfile, setHideProfile] = useState(
+    product?.hide_profile || false,
+  );
   const [photos, setPhotos] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  // If product has a reviewId it means we're editing an existing review
+  const isEdit = !!product?.reviewId;
 
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -70,15 +87,39 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
     setPhotos((p) => [...p, ...urls].slice(0, 9));
   };
 
-  const handleSubmit = () => {
-    onSubmitted?.(product?.id);
-    onClose();
+  const handleSubmit = async () => {
+    if (!rating) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      if (isEdit) {
+        // PUT /api/reviews/:reviewId/edit
+        await axios.put(
+          `${API_URL}/api/reviews/${product.reviewId}/edit`,
+          { rating, comment: reviewText, hide_profile: hideProfile },
+          { headers },
+        );
+      } else {
+        // POST /api/reviews/:productId/add
+        await axios.post(
+          `${API_URL}/api/reviews/${product.id}/add`,
+          { rating, comment: reviewText, hide_profile: hideProfile },
+          { headers },
+        );
+      }
+      onSubmitted?.(product.id);
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className={styles.sheetOverlay} onClick={onClose}>
       <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-        {/* Sheet Header — rating + close */}
+        {/* Header: rating stars + close */}
         <div className={styles.sheetHeader}>
           <div className={styles.sheetRatingRow}>
             <span className={styles.asterisk}>*</span>
@@ -93,7 +134,7 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </button>
         </div>
 
-        {/* Get help — only 1 or 2 stars */}
+        {/* Get help banner — only for 1-2 stars */}
         {rating > 0 && rating <= 2 && (
           <div className={styles.getHelpBox}>
             <p className={styles.getHelpText}>
@@ -105,7 +146,7 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </div>
         )}
 
-        {/* Media */}
+        {/* Media upload */}
         <div className={styles.mediaRow}>
           <button
             className={styles.mediaBtn}
@@ -139,7 +180,7 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           />
         </div>
 
-        {/* Textarea */}
+        {/* Review text */}
         <div className={styles.textareaWrap}>
           <textarea
             className={styles.textarea}
@@ -153,7 +194,9 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </span>
         </div>
 
-        {/* Bottom */}
+        {error && <p className={styles.errorMsg}>{error}</p>}
+
+        {/* Bottom: guidelines + submit + hide profile */}
         <div className={styles.sheetBottom}>
           <p className={styles.guidelines}>
             Please follow the{" "}
@@ -163,9 +206,9 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           <button
             className={styles.submitBtn}
             onClick={handleSubmit}
-            disabled={!rating}
+            disabled={!rating || submitting}
           >
-            Submit
+            {submitting ? "Submitting…" : isEdit ? "Update" : "Submit"}
           </button>
           <div className={styles.hideRow}>
             <button
@@ -186,85 +229,82 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   );
 }
 
-// ── Mock data ─────────────────────────────────────────────────────────────────
-const THIS_REVIEW = {
-  id: 1,
-  name: "Future oriented integrated glasses with dazz...",
-  variant: "C2",
-  image: "https://via.placeholder.com/80/c8c8c8/333?text=👓",
-  rating: 5,
-  date: "Dec 6, 2025",
-};
-
-const ORDER_ITEMS = [
-  {
-    id: 10,
-    image: "https://via.placeholder.com/360/b0b8c1/fff?text=LED+Light",
-  },
-  { id: 11, image: "https://via.placeholder.com/360/1c1c2e/fff?text=Speaker" },
-  { id: 12, image: "https://via.placeholder.com/360/2d4a2d/fff?text=Cap" },
-];
-
-const PENDING = [
-  {
-    id: 1,
-    name: "109.98cm LED Square ...",
-    variant: "10INFD110",
-    image: "https://via.placeholder.com/80/b0b8c1/333?text=LED",
-    waitingCount: "999+",
-  },
-  {
-    id: 2,
-    name: "1pc SoundWave Portab...",
-    variant: "Black",
-    image: "https://via.placeholder.com/80/1c1c2e/fff?text=SPK",
-    waitingCount: "999+",
-  },
-  {
-    id: 3,
-    name: "Unadorned Pure Surface Curved...",
-    variant: "Dark Gray",
-    image: "https://via.placeholder.com/80/444/fff?text=Cap",
-    waitingCount: "512",
-  },
-];
-
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function ReviewDetails() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuthStore();
+  const headers = useAuthHeaders();
 
+  const passedReview = location.state?.review || null;
+
+  const [thisReview, setThisReview] = useState(passedReview);
+  const [orderItems, setOrderItems] = useState([]);
+  const [pending, setPending] = useState([]);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [ratings, setRatings] = useState({});
   const [submitted, setSubmitted] = useState({});
   const [sheetProduct, setSheetProduct] = useState(null);
   const [sheetInitialRating, setSheetInitialRating] = useState(0);
-
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
+  // Helpful state for the THIS review card
+  const [helpfulActive, setHelpfulActive] = useState(false);
+  const [helpfulCount, setHelpfulCount] = useState(
+    passedReview?.helpfulCount || 0,
+  );
+
+  // ── Fetch: reviews/me + orders ───────────────────────────────────────────────
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [reviewsRes, ordersRes] = await Promise.all([
+        axios.get(`${API_URL}/api/reviews/user/me`, { headers }),
+        axios.get(`${API_URL}/api/reviews/user/orders`, { headers }),
+      ]);
+
+      if (reviewsRes.data.success) {
+        setPending(reviewsRes.data.pending || []);
+        if (!passedReview && reviewsRes.data.reviewed?.length > 0) {
+          const first = reviewsRes.data.reviewed[0];
+          setThisReview(first);
+          setHelpfulCount(first.helpfulCount || 0);
+        }
+      }
+
+      if (ordersRes.data.success && ordersRes.data.orders?.length > 0) {
+        setOrderItems(ordersRes.data.orders[0].items || []);
+      }
+    } catch (err) {
+      console.error("ReviewDetails fetch error:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // ── Fetch: product feed ───────────────────────────────────────────────────────
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/products`, {
-          params: { limit: 20, sort: "shuffle" },
-        });
+    fetchData();
+    axios
+      .get(`${API_URL}/api/products`, {
+        params: { limit: 20, sort: "shuffle" },
+      })
+      .then((res) => {
         const data =
           res.data?.products ||
           res.data?.data ||
           (Array.isArray(res.data) ? res.data : []);
         setProducts(data);
-      } catch (err) {
-        console.error("Failed to fetch products:", err.message);
-      }
-    };
-    fetchProducts();
-  }, []);
+      })
+      .catch((err) => console.error("Products fetch error:", err.message));
+  }, [fetchData]);
 
+  // ── Sheet helpers ─────────────────────────────────────────────────────────────
   const openSheet = (product, initialRating = 0) => {
     setSheetProduct(product);
     setSheetInitialRating(initialRating);
   };
-
   const closeSheet = () => {
     setSheetProduct(null);
     setSheetInitialRating(0);
@@ -272,11 +312,43 @@ export default function ReviewDetails() {
 
   const handleSubmitted = (productId) => {
     setSubmitted((s) => ({ ...s, [productId]: true }));
+    fetchData();
   };
 
+  // ── Share ─────────────────────────────────────────────────────────────────────
+  const handleShare = () => {
+    if (!thisReview) return;
+    if (navigator.share) {
+      navigator.share({
+        title: thisReview.name,
+        text: thisReview.reviewText || thisReview.name,
+      });
+    } else {
+      navigator.clipboard?.writeText(window.location.href);
+    }
+  };
+
+  // ── Carousel ──────────────────────────────────────────────────────────────────
   const prevSlide = () => setCarouselIndex((i) => Math.max(0, i - 1));
   const nextSlide = () =>
-    setCarouselIndex((i) => Math.min(ORDER_ITEMS.length - 1, i + 1));
+    setCarouselIndex((i) => Math.min(orderItems.length - 1, i + 1));
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <button className={styles.iconBtn} onClick={() => navigate(-1)}>
+            <ChevronLeft size={24} />
+          </button>
+          <h1 className={styles.headerTitle}>Review details</h1>
+          <div style={{ width: 36 }} />
+        </div>
+        <div className={styles.loadingWrap}>
+          <div className={styles.spinner} />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -286,200 +358,267 @@ export default function ReviewDetails() {
           <ChevronLeft size={24} />
         </button>
         <h1 className={styles.headerTitle}>Review details</h1>
-        <button className={styles.iconBtn}>
+        <button className={styles.iconBtn} onClick={handleShare}>
           <Share2 size={20} />
         </button>
       </div>
 
       {/* ── This Review Card ── */}
-      <div className={styles.reviewCard}>
-        <div className={styles.reviewCardHeader}>
-          <div className={styles.reviewerInfo}>
-            <div className={styles.reviewerAvatar}>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              >
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
-            </div>
-            <span className={styles.reviewerName}>
-              {maskName(user?.full_name || "Nnamdi Onwukwe")}
-            </span>
-          </div>
-          <span className={styles.reviewDate}>{THIS_REVIEW.date}</span>
-        </div>
-
-        <StarRow rating={THIS_REVIEW.rating} size={20} />
-
-        <div className={styles.productStrip}>
-          <img
-            src={THIS_REVIEW.image}
-            alt={THIS_REVIEW.name}
-            className={styles.productStripImg}
-            onError={(e) => {
-              e.target.src = "https://via.placeholder.com/64?text=IMG";
-            }}
-          />
-          <div className={styles.productStripInfo}>
-            <p className={styles.productStripName}>{THIS_REVIEW.name}</p>
-            <p className={styles.productStripVariant}>{THIS_REVIEW.variant}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Quickly review all items ── */}
-      <div className={styles.quickReviewSection}>
-        <h2 className={styles.quickReviewTitle}>
-          Quickly review all items in this order.
-        </h2>
-
-        {/* Carousel */}
-        <div className={styles.carouselWrap}>
-          <div
-            className={styles.carouselTrack}
-            style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
-          >
-            {ORDER_ITEMS.map((item) => (
-              <div key={item.id} className={styles.carouselSlide}>
-                <img
-                  src={item.image}
-                  alt=""
-                  className={styles.carouselImg}
-                  onError={(e) => {
-                    e.target.src =
-                      "https://via.placeholder.com/360/ccc/333?text=IMG";
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {carouselIndex > 0 && (
-            <button
-              className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
-              onClick={prevSlide}
-            >
-              <ChevronLeft size={20} />
-            </button>
-          )}
-          {carouselIndex < ORDER_ITEMS.length - 1 && (
-            <button
-              className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
-              onClick={nextSlide}
-            >
-              <ChevronRight size={20} />
-            </button>
-          )}
-        </div>
-
-        {/* Dots + Leave a review */}
-        <div className={styles.carouselFooter}>
-          <div className={styles.dots}>
-            {ORDER_ITEMS.map((_, i) => (
-              <button
-                key={i}
-                className={`${styles.dot} ${i === carouselIndex ? styles.dotActive : ""}`}
-                onClick={() => setCarouselIndex(i)}
-              />
-            ))}
-          </div>
-          <button
-            className={styles.leaveReviewOutline}
-            onClick={() => navigate("/leave-review")}
-          >
-            Leave a review
-          </button>
-        </div>
-      </div>
-
-      {/* ── Items ready for review ── */}
-      <div className={styles.pendingSection}>
-        <div className={styles.pendingHeader}>
-          <div>
-            <h2 className={styles.pendingTitle}>
-              Items ready for review ({PENDING.length + 16})
-            </h2>
-            <p className={styles.pendingSub}>
-              Show only delivered items below.
-            </p>
-          </div>
-          <button
-            onClick={() => navigate("/account-profile/reviews")}
-            className={styles.seeAllBtn}
-          >
-            See all <ChevronRight size={15} />
-          </button>
-        </div>
-
-        <div className={styles.pendingList}>
-          {PENDING.map((item) => (
-            <div key={item.id} className={styles.pendingItem}>
-              {/* Product row */}
-              <div className={styles.pendingProductRow}>
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className={styles.pendingImg}
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/80?text=IMG";
-                  }}
-                />
-                <div className={styles.pendingInfo}>
-                  <p className={styles.pendingName}>{item.name}</p>
-                  <p className={styles.pendingVariant}>{item.variant}</p>
-                </div>
-                {submitted[item.id] ? (
-                  <span className={styles.submittedTag}>Submitted ✓</span>
-                ) : (
-                  <button
-                    className={styles.leaveReviewOrange}
-                    onClick={() => navigate("/leave-review")}
-                  >
-                    Leave a review
-                  </button>
-                )}
-              </div>
-
-              {/* Waiting row */}
-              <div className={styles.waitingRow}>
-                <Flame size={14} className={styles.flameIcon} />
-                <span className={styles.waitingCount}>{item.waitingCount}</span>
-                <span className={styles.waitingText}>
-                  {" "}
-                  people are waiting for your review.
-                </span>
-                {!submitted[item.id] && (
-                  <StarRow
-                    rating={ratings[item.id] || 0}
-                    size={20}
-                    onChange={(v) => {
-                      setRatings((r) => ({ ...r, [item.id]: v }));
-                      openSheet(item, v);
+      {thisReview && (
+        <div className={styles.reviewCard}>
+          {/* Reviewer row */}
+          <div className={styles.reviewCardHeader}>
+            <div className={styles.reviewerInfo}>
+              <div className={styles.reviewerAvatar}>
+                {user?.avatar ? (
+                  <img
+                    src={user.avatar}
+                    alt={user.full_name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      objectFit: "cover",
                     }}
                   />
+                ) : (
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  >
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                  </svg>
                 )}
               </div>
+              <span className={styles.reviewerName}>
+                {thisReview.hide_profile
+                  ? maskName(user?.full_name)
+                  : user?.full_name || "Guest"}
+              </span>
             </div>
-          ))}
-        </div>
+            <span className={styles.reviewDate}>{thisReview.date}</span>
+          </div>
 
-        {/* Product Feed */}
-        {products.length > 0 && (
-          <div className={styles.productGrid}>
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+          {/* Stars */}
+          <StarRow rating={thisReview.rating} size={20} />
+
+          {/* Review text */}
+          {thisReview.reviewText && (
+            <p className={styles.reviewText}>{thisReview.reviewText}</p>
+          )}
+
+          {/* Review images */}
+          {thisReview.images?.length > 0 && (
+            <div className={styles.reviewImages}>
+              {thisReview.images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt=""
+                  className={styles.reviewImage}
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                  }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Product strip */}
+          <div className={styles.productStrip}>
+            <img
+              src={
+                thisReview.image || "https://via.placeholder.com/64?text=IMG"
+              }
+              alt={thisReview.name}
+              className={styles.productStripImg}
+              onError={(e) => {
+                e.target.src = "https://via.placeholder.com/64?text=IMG";
+              }}
+            />
+            <div className={styles.productStripInfo}>
+              <p className={styles.productStripName}>{thisReview.name}</p>
+              <p className={styles.productStripVariant}>{thisReview.variant}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Quickly review all items in this order ── */}
+      {orderItems.length > 0 && (
+        <div className={styles.quickReviewSection}>
+          <h2 className={styles.quickReviewTitle}>
+            Quickly review all items in this order.
+          </h2>
+
+          <div className={styles.carouselWrap}>
+            <div
+              className={styles.carouselTrack}
+              style={{ transform: `translateX(-${carouselIndex * 100}%)` }}
+            >
+              {orderItems.map((item, i) => (
+                <div key={item.id || i} className={styles.carouselSlide}>
+                  <img
+                    src={
+                      item.image ||
+                      "https://via.placeholder.com/360/ccc/333?text=IMG"
+                    }
+                    alt={item.name || ""}
+                    className={styles.carouselImg}
+                    onError={(e) => {
+                      e.target.src =
+                        "https://via.placeholder.com/360/ccc/333?text=IMG";
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {carouselIndex > 0 && (
+              <button
+                className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
+                onClick={prevSlide}
+              >
+                <ChevronLeft size={20} />
+              </button>
+            )}
+            {carouselIndex < orderItems.length - 1 && (
+              <button
+                className={`${styles.carouselArrow} ${styles.carouselArrowRight}`}
+                onClick={nextSlide}
+              >
+                <ChevronRight size={20} />
+              </button>
+            )}
+          </div>
+
+          {/* Dots + Leave a review — opens sheet for the carousel-indexed pending item */}
+          <div className={styles.carouselFooter}>
+            <div className={styles.dots}>
+              {orderItems.map((_, i) => (
+                <button
+                  key={i}
+                  className={`${styles.dot} ${i === carouselIndex ? styles.dotActive : ""}`}
+                  onClick={() => setCarouselIndex(i)}
+                />
+              ))}
+            </div>
+            <button
+              className={styles.leaveReviewOutline}
+              onClick={() => {
+                // Match carousel item to pending list by name; fallback to carouselIndex
+                const carouselItem = orderItems[carouselIndex];
+                const match =
+                  pending.find((p) => p.name === carouselItem?.name) ||
+                  pending[carouselIndex];
+                if (match) openSheet(match);
+              }}
+            >
+              Leave a review
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Items ready for review ── */}
+      {pending.length > 0 && (
+        <div className={styles.pendingSection}>
+          <div className={styles.pendingHeader}>
+            <div>
+              <h2 className={styles.pendingTitle}>
+                Items ready for review ({pending.length})
+              </h2>
+              <p className={styles.pendingSub}>
+                Show only delivered items below.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate("/account-profile/reviews")}
+              className={styles.seeAllBtn}
+            >
+              See all <ChevronRight size={15} />
+            </button>
+          </div>
+
+          <div className={styles.pendingList}>
+            {pending.map((item) => (
+              <div key={item.id} className={styles.pendingItem}>
+                <div className={styles.pendingProductRow}>
+                  <img
+                    src={
+                      item.image || "https://via.placeholder.com/80?text=IMG"
+                    }
+                    alt={item.name}
+                    className={styles.pendingImg}
+                    onError={(e) => {
+                      e.target.src = "https://via.placeholder.com/80?text=IMG";
+                    }}
+                  />
+                  <div className={styles.pendingInfo}>
+                    <p className={styles.pendingName}>{item.name}</p>
+                    <p className={styles.pendingVariant}>{item.variant}</p>
+                  </div>
+                  {submitted[item.id] ? (
+                    <span className={styles.submittedTag}>Submitted ✓</span>
+                  ) : (
+                    // Opens LeaveReviewSheet → POST /api/reviews/:productId/add
+
+                    <button
+                      className={styles.leaveReviewOrange}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate("/leave-review", {
+                          state: { product: item },
+                        });
+                      }}
+                    >
+                      Leave a review
+                    </button>
+                  )}
+                </div>
+
+                <div className={styles.waitingRow}>
+                  <Flame size={14} className={styles.flameIcon} />
+                  <span className={styles.waitingCount}>
+                    {item.waitingCount}
+                  </span>
+                  <span className={styles.waitingText}>
+                    {" "}
+                    people are waiting for your review.
+                  </span>
+                  {!submitted[item.id] && (
+                    // Tapping a star also opens sheet pre-filled with that rating
+                    <StarRow
+                      rating={ratings[item.id] || 0}
+                      size={20}
+                      onChange={(v) => {
+                        setRatings((r) => ({ ...r, [item.id]: v }));
+                        openSheet(item, v);
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
-      {/* ── Leave Review Sheet ── */}
+      {/* ── Product Feed ── */}
+      {products.length > 0 && (
+        <div className={styles.productGrid}>
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+      )}
+
+      {/* ── Leave / Edit Review Sheet ── */}
       {sheetProduct && (
         <LeaveReviewSheet
           product={sheetProduct}

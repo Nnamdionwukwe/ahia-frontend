@@ -1,59 +1,20 @@
-import React, { useState } from "react";
+// src/components/reviews/ChooseOrderSheet.jsx
+import React, { useState, useEffect } from "react";
 import { X, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import useAuthStore from "../../store/authStore";
 import styles from "./ChooseOrderSheet.module.css";
 
-// Mock orders data — replace with real API
-const MOCK_ORDERS = [
-  {
-    id: "ord_1",
-    deliveredDate: "Dec 5, 2025",
-    items: [
-      { id: 1, image: "https://via.placeholder.com/80/b0b8c1/333?text=LED" },
-    ],
-  },
-  {
-    id: "ord_2",
-    deliveredDate: "Dec 2, 2025",
-    items: [
-      { id: 2, image: "https://via.placeholder.com/80/111/fff?text=KB" },
-      { id: 3, image: "https://via.placeholder.com/80/6c5ce7/fff?text=Stand" },
-      { id: 4, image: "https://via.placeholder.com/80/2d3436/fff?text=Pad" },
-      { id: 5, image: "https://via.placeholder.com/80/4a4a4a/fff?text=Bag" },
-      { id: 6, image: "https://via.placeholder.com/80/333/fff?text=+" },
-      { id: 7, image: "https://via.placeholder.com/80/555/fff?text=+" },
-      { id: 8, image: "https://via.placeholder.com/80/666/fff?text=+" },
-      { id: 9, image: "https://via.placeholder.com/80/777/fff?text=+" },
-      { id: 10, image: "https://via.placeholder.com/80/888/fff?text=+" },
-      { id: 11, image: "https://via.placeholder.com/80/999/fff?text=+" },
-      { id: 12, image: "https://via.placeholder.com/80/aaa/fff?text=+" },
-      { id: 13, image: "https://via.placeholder.com/80/bbb/333?text=+" },
-    ],
-  },
-  {
-    id: "ord_3",
-    deliveredDate: "Nov 27, 2025",
-    items: [
-      { id: 14, image: "https://via.placeholder.com/80/333/fff?text=Lens" },
-      { id: 15, image: "https://via.placeholder.com/80/c8a96e/fff?text=Cloth" },
-      { id: 16, image: "https://via.placeholder.com/80/d0d0d0/333?text=Bulb" },
-      { id: 17, image: "https://via.placeholder.com/80/222/fff?text=Mic" },
-      { id: 18, image: "https://via.placeholder.com/80/444/fff?text=+" },
-      { id: 19, image: "https://via.placeholder.com/80/555/fff?text=+" },
-      { id: 20, image: "https://via.placeholder.com/80/666/fff?text=+" },
-    ],
-  },
-  {
-    id: "ord_4",
-    deliveredDate: "Nov 24, 2025",
-    items: [
-      { id: 21, image: "https://via.placeholder.com/80/ccc/333?text=Hub" },
-    ],
-  },
-];
-
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const MAX_VISIBLE = 4;
 
+function useAuthHeaders() {
+  const { accessToken } = useAuthStore();
+  return { Authorization: `Bearer ${accessToken}` };
+}
+
+// ── Single order row ──────────────────────────────────────────────────────────
 function OrderRow({ order, onSelect }) {
   const visible = order.items.slice(0, MAX_VISIBLE);
   const extra = order.items.length - MAX_VISIBLE;
@@ -66,31 +27,74 @@ function OrderRow({ order, onSelect }) {
         </p>
         <div className={styles.imagesRow}>
           {visible.map((item, i) => (
-            <div key={item.id} className={styles.thumbWrap}>
+            <div key={item.id || i} className={styles.thumbWrap}>
               <img
-                src={item.image}
-                alt=""
+                src={item.image || "https://via.placeholder.com/80?text=IMG"}
+                alt={item.name || ""}
                 className={styles.thumb}
                 onError={(e) => {
                   e.target.src = "https://via.placeholder.com/80?text=IMG";
                 }}
               />
-              {/* Show +N overlay on the last visible if there are extras */}
+              {/* +N overlay on last visible thumb */}
               {i === MAX_VISIBLE - 1 && extra > 0 && (
                 <div className={styles.extraOverlay}>+{extra}</div>
               )}
             </div>
           ))}
         </div>
+        {/* Item names preview — first 2 */}
+        {order.items.length > 0 && (
+          <p className={styles.itemNames}>
+            {order.items
+              .slice(0, 2)
+              .map((it) => it.name)
+              .filter(Boolean)
+              .join(", ")}
+            {order.items.length > 2 && ` +${order.items.length - 2} more`}
+          </p>
+        )}
       </div>
       <ChevronRight size={20} className={styles.chevron} />
     </div>
   );
 }
 
+// ── Main Sheet ────────────────────────────────────────────────────────────────
 export default function ChooseOrderSheet({ onClose }) {
   const navigate = useNavigate();
+  const headers = useAuthHeaders();
 
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch: GET /api/reviews/user/orders
+  // Returns orders that are delivered/completed — exactly the ones that can be reviewed
+  useEffect(() => {
+    const fetchOrders = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await axios.get(`${API_URL}/api/reviews/user/orders`, {
+          headers,
+        });
+        if (res.data.success) {
+          setOrders(res.data.orders || []);
+        } else {
+          setError("Could not load orders.");
+        }
+      } catch (err) {
+        console.error("ChooseOrderSheet fetch error:", err.message);
+        setError(err.response?.data?.error || "Failed to load orders.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  // Pass the full order (id + items with product ids, names, images) to LeaveAllReviews
   const handleSelect = (order) => {
     onClose();
     navigate("/leave-all-reviews", { state: { order } });
@@ -112,15 +116,57 @@ export default function ChooseOrderSheet({ onClose }) {
           </button>
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className={styles.stateWrap}>
+            <div className={styles.spinner} />
+            <p className={styles.stateText}>Loading your orders…</p>
+          </div>
+        )}
+
+        {/* Error */}
+        {!loading && error && (
+          <div className={styles.stateWrap}>
+            <p className={styles.errorText}>{error}</p>
+            <button
+              className={styles.retryBtn}
+              onClick={() => {
+                setError("");
+                setLoading(true);
+                axios
+                  .get(`${API_URL}/api/reviews/user/orders`, { headers })
+                  .then((res) => {
+                    setOrders(res.data.orders || []);
+                  })
+                  .catch(() => setError("Failed to load orders."))
+                  .finally(() => setLoading(false));
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && !error && orders.length === 0 && (
+          <div className={styles.stateWrap}>
+            <p className={styles.stateText}>
+              No delivered orders to review yet.
+            </p>
+          </div>
+        )}
+
         {/* Orders list */}
-        <div className={styles.list}>
-          {MOCK_ORDERS.map((order, i) => (
-            <React.Fragment key={order.id}>
-              <OrderRow order={order} onSelect={handleSelect} />
-              {i < MOCK_ORDERS.length - 1 && <div className={styles.divider} />}
-            </React.Fragment>
-          ))}
-        </div>
+        {!loading && !error && orders.length > 0 && (
+          <div className={styles.list}>
+            {orders.map((order, i) => (
+              <React.Fragment key={order.id}>
+                <OrderRow order={order} onSelect={handleSelect} />
+                {i < orders.length - 1 && <div className={styles.divider} />}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

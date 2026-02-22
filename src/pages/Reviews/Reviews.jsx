@@ -19,6 +19,7 @@ import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 import ChooseOrderSheet from "./ChooseOrderSheet";
+import ProductCard from "../../components/ProductCard/ProductCard";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
@@ -134,9 +135,9 @@ function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
         <StarRow rating={item.rating} size={18} />
       </div>
 
-      {item.reviewText ? (
+      {item.reviewText && (
         <p className={styles.reviewedBody}>{item.reviewText}</p>
-      ) : null}
+      )}
 
       {item.images?.length > 0 && (
         <div className={styles.reviewImages}>
@@ -218,7 +219,7 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // If product has an existing review id AND a productId field it's an edit
+  // product.productId present = editing existing review; otherwise = new
   const isEdit = !!(product?.id && product?.productId);
 
   const handlePhotoChange = (e) => {
@@ -233,21 +234,19 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
     setError("");
     try {
       if (isEdit) {
-        // PUT /api/reviews/:reviewId/edit
         await axios.put(
           `${API_URL}/api/reviews/${product.id}/edit`,
           { rating, comment: reviewText, hide_profile: hideProfile },
           { headers },
         );
       } else {
-        // POST /api/reviews/:productId/add
         await axios.post(
           `${API_URL}/api/reviews/${product.id}/add`,
           { rating, comment: reviewText, hide_profile: hideProfile },
           { headers },
         );
       }
-      onSubmitted(); // re-fetch reviews list
+      onSubmitted();
       onClose();
     } catch (err) {
       setError(err.response?.data?.error || "Failed to submit review");
@@ -379,6 +378,25 @@ export default function Reviews() {
   const [reviewed, setReviewed] = useState([]);
   const [helpfulTotal, setHelpfulTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/products`, {
+          params: { limit: 20, sort: "shuffle" },
+        });
+        const data =
+          res.data?.products ||
+          res.data?.data ||
+          (Array.isArray(res.data) ? res.data : []);
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err.message);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   const fetchReviews = useCallback(async () => {
     setLoading(true);
@@ -522,7 +540,12 @@ export default function Reviews() {
                     <div key={item.id} className={styles.reviewBlock}>
                       <div
                         className={styles.productRow}
-                        onClick={() => openSheet(item)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate("/leave-review", {
+                            state: { product: item },
+                          });
+                        }}
                       >
                         <img
                           src={
@@ -546,7 +569,9 @@ export default function Reviews() {
                           className={styles.leaveBtn}
                           onClick={(e) => {
                             e.stopPropagation();
-                            openSheet(item);
+                            navigate("/leave-review", {
+                              state: { product: item },
+                            });
                           }}
                         >
                           Leave a review
@@ -573,6 +598,15 @@ export default function Reviews() {
                     </div>
                   ))
                 )}
+
+                {/* Product Feed */}
+                {products.length > 0 && (
+                  <div className={styles.productGrid}>
+                    {products.map((product) => (
+                      <ProductCard key={product.id} product={product} />
+                    ))}
+                  </div>
+                )}
               </div>
             </>
           )}
@@ -597,6 +631,15 @@ export default function Reviews() {
                     onShare={handleShare}
                   />
                 ))
+              )}
+
+              {/* Product Feed */}
+              {products.length > 0 && (
+                <div className={styles.productGrid}>
+                  {products.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
               )}
             </div>
           )}

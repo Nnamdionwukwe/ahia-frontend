@@ -1,3 +1,4 @@
+// src/pages/LeaveReview/LeaveReview.jsx
 import React, { useState, useRef } from "react";
 import {
   ChevronLeft,
@@ -9,11 +10,18 @@ import {
   User,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./Leavereview.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 const MAX_CHARS = 3000;
+
+function useAuthHeaders() {
+  const { accessToken } = useAuthStore();
+  return { Authorization: `Bearer ${accessToken}` };
+}
 
 const maskName = (name = "") => {
   if (!name) return "User";
@@ -39,6 +47,7 @@ function StarRating({ rating, onChange, size = 30 }) {
           onMouseEnter={() => onChange && setHovered(s)}
           onMouseLeave={() => onChange && setHovered(0)}
           onClick={() => onChange && onChange(s)}
+          style={{ cursor: onChange ? "pointer" : "default" }}
         >
           <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
         </svg>
@@ -51,23 +60,33 @@ export default function LeaveReview() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuthStore();
+  const headers = useAuthHeaders();
   const photoRef = useRef();
 
-  const product = location.state?.product || {
-    name: "HD Camera for Smartphones, High Quality Mo...",
-    variant: "【Black】 2 in 1 HD mobile phone lens",
-    image: "https://via.placeholder.com/80/333/fff?text=CAM",
-  };
+  // ── Product + edit context from navigation state ──────────────────────────
+  // New review:  navigate("/leave-review", { state: { product: { id, name, variant, image } } })
+  // Edit review: navigate("/leave-review", { state: { product: {...}, review: { id, rating, comment, hide_profile } } })
+  const product = location.state?.product || null;
+  const editReview = location.state?.review || null;
+  const isEdit = !!editReview;
 
-  const [rating, setRating] = useState(location.state?.initialRating || 0);
-  const [showSheet, setShowSheet] = useState(!!location.state?.initialRating);
-  const [reviewText, setReviewText] = useState("");
-  const [hideProfile, setHideProfile] = useState(false);
+  const [rating, setRating] = useState(
+    editReview?.rating || location.state?.initialRating || 0,
+  );
+  const [showSheet, setShowSheet] = useState(
+    !!(editReview?.rating || location.state?.initialRating),
+  );
+  const [reviewText, setReviewText] = useState(editReview?.comment || "");
+  const [hideProfile, setHideProfile] = useState(
+    editReview?.hide_profile || false,
+  );
   const [photos, setPhotos] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const handleRatingChange = (val) => {
     setRating(val);
-    setShowSheet(true);
+    // setShowSheet(true);
   };
 
   const handlePhotoChange = (e) => {
@@ -76,9 +95,71 @@ export default function LeaveReview() {
     setPhotos((p) => [...p, ...urls].slice(0, 9));
   };
 
-  const handleSubmit = () => navigate(-1);
+  // ── Submit: POST /api/reviews/:productId/add  OR  PUT /api/reviews/:reviewId/edit ──
+  const handleSubmit = async () => {
+    if (!rating || !product?.id) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      if (isEdit) {
+        await axios.put(
+          `${API_URL}/api/reviews/${editReview.id}/edit`,
+          { rating, comment: reviewText, hide_profile: hideProfile },
+          { headers },
+        );
+      } else {
+        await axios.post(
+          `${API_URL}/api/reviews/${product.id}/add`,
+          { rating, comment: reviewText, hide_profile: hideProfile },
+          { headers },
+        );
+      }
+      navigate(-1);
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to submit review");
+      setSubmitting(false);
+    }
+  };
 
-  const RatingHeader = ({ onClose }) => (
+  // ── No product guard ───────────────────────────────────────────────────────
+  if (!product) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <ChevronLeft size={24} />
+          </button>
+          <h1 className={styles.headerTitle}>Leave a review</h1>
+          <div style={{ width: 32 }} />
+        </div>
+        <div
+          style={{
+            padding: "40px 24px",
+            textAlign: "center",
+            color: "var(--text-secondary)",
+          }}
+        >
+          <p>No product selected.</p>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              marginTop: 16,
+              color: "#ff6f00",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: 15,
+            }}
+          >
+            Go back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Shared sub-sections ────────────────────────────────────────────────────
+  const RatingHeader = () => (
     <div className={styles.ratingHeader}>
       <div className={styles.ratingHeaderLeft}>
         <span className={styles.asterisk}>*</span>
@@ -88,11 +169,6 @@ export default function LeaveReview() {
           <span className={styles.ratingWord}>{RATING_LABELS[rating]}</span>
         )}
       </div>
-      {onClose && (
-        <button className={styles.closeBtn} onClick={onClose}>
-          <X size={20} />
-        </button>
-      )}
     </div>
   );
 
@@ -148,6 +224,7 @@ export default function LeaveReview() {
 
   const BottomSection = () => (
     <div className={styles.bottomSection}>
+      {error && <p className={styles.errorMsg}>{error}</p>}
       <p className={styles.guidelines}>
         Please follow the{" "}
         <span className={styles.guidelinesLink}>review guidelines</span> when
@@ -156,9 +233,9 @@ export default function LeaveReview() {
       <button
         className={styles.submitBtn}
         onClick={handleSubmit}
-        disabled={!rating}
+        disabled={!rating || submitting}
       >
-        Submit
+        {submitting ? "Submitting…" : isEdit ? "Update Review" : "Submit"}
       </button>
       <div className={styles.hideRow}>
         <button
@@ -183,14 +260,16 @@ export default function LeaveReview() {
         <button className={styles.backBtn} onClick={() => navigate(-1)}>
           <ChevronLeft size={24} />
         </button>
-        <h1 className={styles.headerTitle}>Leave a review</h1>
+        <h1 className={styles.headerTitle}>
+          {isEdit ? "Edit review" : "Leave a review"}
+        </h1>
         <div style={{ width: 32 }} />
       </div>
 
-      {/* Product */}
+      {/* Product row — real product from navigation state */}
       <div className={styles.productRow}>
         <img
-          src={product.image}
+          src={product.image || "https://via.placeholder.com/80?text=IMG"}
           alt={product.name}
           className={styles.productImg}
           onError={(e) => {
@@ -205,12 +284,12 @@ export default function LeaveReview() {
 
       <div className={styles.divider} />
 
-      {/* Inline rating */}
+      {/* Inline rating row */}
       <RatingHeader />
 
       <div className={styles.divider} />
 
-      {/* Media + Textarea shown on page (before sheet opens) */}
+      {/* Before sheet: show full form inline */}
       {!showSheet && (
         <>
           <MediaSection />
@@ -219,25 +298,29 @@ export default function LeaveReview() {
         </>
       )}
 
-      {/* Rating Bottom Sheet */}
+      {/* After rating selected: bottom sheet slides up */}
       {showSheet && (
         <div
           className={styles.sheetOverlay}
           onClick={() => setShowSheet(false)}
         >
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-            {/* Get help — only for 1 or 2 stars */}
-            {rating <= 2 && rating > 0 && (
+            {/* Low-rating help banner */}
+            {rating > 0 && rating <= 2 && (
               <div className={styles.getHelpBox}>
                 <p className={styles.getHelpText}>
                   If you had any problems with shipping or the item, contact us!
                 </p>
                 <button className={styles.getHelpBtn}>
-                  <MessageCircle size={14} />
-                  Get help <ChevronRight size={13} />
+                  <MessageCircle size={14} /> Get help{" "}
+                  <ChevronRight size={13} />
                 </button>
               </div>
             )}
+
+            <MediaSection />
+            <TextSection />
+            <BottomSection />
           </div>
         </div>
       )}

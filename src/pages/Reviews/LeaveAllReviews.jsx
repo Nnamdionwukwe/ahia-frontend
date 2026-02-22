@@ -1,11 +1,19 @@
-import React, { useState, useRef } from "react";
+// src/pages/LeaveAllReviews/LeaveAllReviews.jsx
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ChevronLeft, Camera, Video, X, User } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./LeaveAllReviews.module.css";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 const MAX_CHARS = 3000;
+
+function useAuthHeaders() {
+  const { accessToken } = useAuthStore();
+  return { Authorization: `Bearer ${accessToken}` };
+}
 
 const maskName = (name = "") => {
   if (!name) return "User";
@@ -16,34 +24,7 @@ const maskName = (name = "") => {
     .join(" ");
 };
 
-// Mock fallback order items
-const FALLBACK_ITEMS = [
-  {
-    id: 1,
-    name: "25.4 cm Backlit for iPad Rechargeable Keyboar...",
-    variant: "Black",
-    image: "https://via.placeholder.com/80/111/fff?text=KB",
-  },
-  {
-    id: 2,
-    name: "2 Colors Available, 1pc Rotating Full Metal 360...",
-    variant: "Purple",
-    image: "https://via.placeholder.com/80/6c5ce7/fff?text=Stand",
-  },
-  {
-    id: 3,
-    name: "RGB Gaming Mouse Pad Extra Large...",
-    variant: "Black",
-    image: "https://via.placeholder.com/80/2d3436/fff?text=Pad",
-  },
-  {
-    id: 4,
-    name: "Vintage Leather Crossbody Shoulder Bag...",
-    variant: "Brown",
-    image: "https://via.placeholder.com/80/4a4a4a/fff?text=Bag",
-  },
-];
-
+// ── Star Rating ───────────────────────────────────────────────────────────────
 function StarRating({ rating, onChange, size = 26 }) {
   const [hovered, setHovered] = useState(0);
   const active = hovered || rating;
@@ -68,6 +49,7 @@ function StarRating({ rating, onChange, size = 26 }) {
   );
 }
 
+// ── Single item review block ──────────────────────────────────────────────────
 function ItemReviewBlock({ item, reviewData, onChange }) {
   const photoRef = useRef();
 
@@ -86,7 +68,7 @@ function ItemReviewBlock({ item, reviewData, onChange }) {
       {/* Product header */}
       <div className={styles.productHeader}>
         <img
-          src={item.image}
+          src={item.image || "https://via.placeholder.com/80?text=IMG"}
           alt={item.name}
           className={styles.productImg}
           onError={(e) => {
@@ -100,6 +82,21 @@ function ItemReviewBlock({ item, reviewData, onChange }) {
       </div>
 
       <div className={styles.divider} />
+
+      {/* Rating */}
+      <div className={styles.ratingRow}>
+        <span className={styles.asterisk}>*</span>
+        <span className={styles.ratingLabel}>Rating</span>
+        <StarRating
+          rating={reviewData.rating || 0}
+          onChange={(v) => onChange(item.id, "rating", v)}
+        />
+        {reviewData.rating > 0 && (
+          <span className={styles.ratingWord}>
+            {RATING_LABELS[reviewData.rating]}
+          </span>
+        )}
+      </div>
 
       {/* Media upload */}
       <div className={styles.mediaRow}>
@@ -156,48 +153,48 @@ function ItemReviewBlock({ item, reviewData, onChange }) {
           {(reviewData.text || "").length}/{MAX_CHARS}
         </span>
       </div>
-
-      {/* Rating row */}
-      <div className={styles.ratingRow}>
-        <span className={styles.asterisk}>*</span>
-        <span className={styles.ratingLabel}>Rating</span>
-        <StarRating
-          rating={reviewData.rating || 0}
-          onChange={(v) => onChange(item.id, "rating", v)}
-        />
-        {reviewData.rating > 0 && (
-          <span className={styles.ratingWord}>
-            {RATING_LABELS[reviewData.rating]}
-          </span>
-        )}
-      </div>
     </div>
   );
 }
 
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function LeaveAllReviews() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuthStore();
+  const headers = useAuthHeaders();
 
-  const order = location.state?.order;
-  const items = order?.items?.length
-    ? order.items.map((item, i) => ({
-        ...item,
-        name:
-          item.name ||
-          FALLBACK_ITEMS[i % FALLBACK_ITEMS.length]?.name ||
-          `Item ${i + 1}`,
-        variant:
-          item.variant ||
-          FALLBACK_ITEMS[i % FALLBACK_ITEMS.length]?.variant ||
-          "",
-      }))
-    : FALLBACK_ITEMS;
+  // Order passed from ChooseOrderSheet → { id, deliveredDate, items: [{id, name, variant, image}] }
+  const passedOrder = location.state?.order || null;
 
-  // reviewData keyed by item id
+  const [items, setItems] = useState(passedOrder?.items || []);
   const [reviewData, setReviewData] = useState({});
   const [hideProfile, setHideProfile] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(!passedOrder);
+
+  // If no order was passed, fetch the most recent delivered order
+  const fetchLatestOrder = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/api/reviews/user/orders`, {
+        headers,
+      });
+      if (res.data.success && res.data.orders?.length > 0) {
+        setItems(res.data.orders[0].items || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch orders:", err.message);
+      setError("Could not load order items.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!passedOrder) fetchLatestOrder();
+  }, [passedOrder, fetchLatestOrder]);
 
   const handleChange = (itemId, field, value) => {
     setReviewData((prev) => ({
@@ -206,10 +203,93 @@ export default function LeaveAllReviews() {
     }));
   };
 
-  const handleSubmit = () => {
-    // Submit logic here
-    navigate(-1);
+  const handleSubmit = async () => {
+    // Build reviews array — only items that have a rating
+    const reviews = items
+      .filter((item) => reviewData[item.id]?.rating > 0)
+      .map((item) => ({
+        productId: item.id,
+        rating: reviewData[item.id].rating,
+        comment: reviewData[item.id].text || "",
+        hide_profile: hideProfile,
+        images: [], // photo upload to storage not implemented yet
+      }));
+
+    if (reviews.length === 0) {
+      setError("Please rate at least one item before submitting.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError("");
+
+    try {
+      // POST /api/reviews/bulk
+      const res = await axios.post(
+        `${API_URL}/api/reviews/bulk`,
+        { reviews },
+        { headers },
+      );
+
+      if (res.data.success) {
+        const { submitted, errors } = res.data;
+        if (errors?.length > 0) {
+          // Some failed (e.g. already reviewed) — show partial success
+          const msgs = errors.map((e) => e.error).join(", ");
+          setError(`${submitted} submitted. Skipped: ${msgs}`);
+          // Still navigate after a short delay so user sees the message
+          setTimeout(() => navigate(-1), 2500);
+        } else {
+          navigate(-1);
+        }
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to submit reviews");
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  const ratedCount = items.filter(
+    (item) => reviewData[item.id]?.rating > 0,
+  ).length;
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <ChevronLeft size={24} />
+          </button>
+          <h1 className={styles.headerTitle}>Leave all reviews</h1>
+          <div style={{ width: 32 }} />
+        </div>
+        <div className={styles.loadingWrap}>
+          <div className={styles.spinner} />
+        </div>
+      </div>
+    );
+  }
+
+  if (!loading && items.length === 0) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <button className={styles.backBtn} onClick={() => navigate(-1)}>
+            <ChevronLeft size={24} />
+          </button>
+          <h1 className={styles.headerTitle}>Leave all reviews</h1>
+          <div style={{ width: 32 }} />
+        </div>
+        <div className={styles.emptyState}>
+          <p>No items to review in this order.</p>
+          <button onClick={() => navigate(-1)} className={styles.goBackBtn}>
+            Go back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -222,7 +302,22 @@ export default function LeaveAllReviews() {
         <div style={{ width: 32 }} />
       </div>
 
-      {/* Items */}
+      {/* Progress indicator */}
+      <div className={styles.progressBar}>
+        <div className={styles.progressText}>
+          {ratedCount} of {items.length} rated
+        </div>
+        <div className={styles.progressTrack}>
+          <div
+            className={styles.progressFill}
+            style={{
+              width: `${items.length > 0 ? (ratedCount / items.length) * 100 : 0}%`,
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Item review blocks */}
       <div className={styles.itemsList}>
         {items.map((item) => (
           <ItemReviewBlock
@@ -234,15 +329,26 @@ export default function LeaveAllReviews() {
         ))}
       </div>
 
-      {/* Bottom fixed */}
+      {/* Error message */}
+      {error && <p className={styles.errorMsg}>{error}</p>}
+
+      {/* Bottom fixed bar */}
       <div className={styles.bottomFixed}>
         <p className={styles.guidelines}>
           Please follow the{" "}
           <span className={styles.guidelinesLink}>review guidelines</span> when
           writing reviews.
         </p>
-        <button className={styles.submitBtn} onClick={handleSubmit}>
-          Submit all reviews
+        <button
+          className={styles.submitBtn}
+          onClick={handleSubmit}
+          disabled={submitting || ratedCount === 0}
+        >
+          {submitting
+            ? "Submitting…"
+            : ratedCount > 0
+              ? `Submit ${ratedCount} review${ratedCount > 1 ? "s" : ""}`
+              : "Rate items to submit"}
         </button>
         <div className={styles.hideRow}>
           <button
