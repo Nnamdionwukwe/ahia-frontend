@@ -1,6 +1,4 @@
 /* ReviewDetails.module.css */
-/* Inherits --bg-primary, --bg-secondary, --text-primary, --text-secondary,
-   --border-color, --shadow from globals.css (light + dark mode vars) */
 
 .container {
   min-height: 100vh;
@@ -24,14 +22,12 @@
     background-color 0.3s ease,
     border-color 0.3s ease;
 }
-
 .headerTitle {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
 }
-
 .iconBtn {
   background: none;
   border: none;
@@ -39,38 +35,35 @@
   color: var(--text-primary);
   display: flex;
   align-items: center;
+  justify-content: center;
   padding: 6px;
   border-radius: 8px;
-  transition: background 0.2s;
   width: 36px;
   height: 36px;
-  justify-content: center;
+  transition: background 0.2s;
 }
 .iconBtn:hover {
   background: var(--bg-secondary);
 }
 
-/* ── This Review Card ───────────────────────────────────── */
+/* ── Review Card ─────────────────────────────────────────── */
 .reviewCard {
   background: var(--bg-primary);
   padding: 16px;
   border-bottom: 10px solid var(--bg-secondary);
   transition: background-color 0.3s ease;
 }
-
 .reviewCardHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
 }
-
 .reviewerInfo {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-
 .reviewerAvatar {
   width: 34px;
   height: 34px;
@@ -83,19 +76,17 @@
   color: var(--text-secondary);
   flex-shrink: 0;
 }
-
 .reviewerName {
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
 }
-
 .reviewDate {
   font-size: 13px;
   color: var(--text-secondary);
 }
 
-/* Star row */
+/* ── Stars ───────────────────────────────────────────────── */
 .starRow {
   display: flex;
   align-items: center;
@@ -104,7 +95,7 @@
 }
 .star {
   fill: transparent;
-  stroke: var(--text-primary);
+  stroke: var(--border-color);
   stroke-width: 1.5;
   transition:
     fill 0.15s,
@@ -115,11 +106,11 @@
   transform: scale(1.15);
 }
 .starFilled {
-  fill: var(--text-primary);
-  stroke: var(--text-primary);
+  fill: #ff6f00;
+  stroke: #ff6f00;
 }
 
-/* Product strip inside review card */
+/* ── Product Strip ───────────────────────────────────────── */
 .productStrip {
   display: flex;
   align-items: center;
@@ -129,7 +120,6 @@
   padding: 12px;
   transition: background-color 0.3s ease;
 }
-
 .productStripImg {
   width: 68px;
   height: 68px;
@@ -138,12 +128,10 @@
   flex-shrink: 0;
   background: var(--bg-primary);
 }
-
 .productStripInfo {
   flex: 1;
   min-width: 0;
 }
-
 .productStripName {
   font-size: 14px;
   font-weight: 500;
@@ -153,7 +141,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .productStripVariant {
   font-size: 13px;
   color: var(--text-secondary);
@@ -167,7 +154,6 @@
   border-bottom: 10px solid var(--bg-secondary);
   transition: background-color 0.3s ease;
 }
-
 .quickReviewTitle {
   font-size: 20px;
   font-weight: 800;
@@ -185,19 +171,16 @@
   background: var(--bg-secondary);
   margin-bottom: 14px;
 }
-
 .carouselTrack {
   display: flex;
   transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
 }
-
 .carouselSlide {
   min-width: 100%;
   height: 200px;
   flex-shrink: 0;
 }
-
 .carouselImg {
   width: 100%;
   height: 100%;
@@ -220,10 +203,10 @@
   justify-content: center;
   color: #1a1a1a;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
   transition:
     background 0.2s,
     transform 0.2s;
-  z-index: 2;
 }
 .carouselArrow:hover {
   background: #fff;
@@ -236,26 +219,21 @@
   right: 10px;
 }
 
-/* dark mode arrow override */
-[data-theme="dark"] .carouselArrow,
-.dark .carouselArrow {
+[data-theme="dark"] .carouselArrow {
   background: rgba(45, 45, 45, 0.92);
   color: #fff;
 }
 
-/* Carousel footer: dots + button */
 .carouselFooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .dots {
   display: flex;
   gap: 6px;
   align-items: center;
 }
-
 .dot {
   width: 8px;
   height: 8px;
@@ -273,7 +251,6 @@
   transform: scale(1.25);
 }
 
-/* Outline "Leave a review" button (quick review section) */
 .leaveReviewOutline {
   padding: 10px 22px;
   border: 1.5px solid var(--text-primary);
@@ -284,30 +261,28 @@
   color: var(--text-primary);
   cursor: pointer;
   font-family: inherit;
+  white-space: nowrap;
   transition:
     background 0.2s,
     color 0.2s;
-  white-space: nowrap;
 }
 .leaveReviewOutline:hover {
   background: var(--text-primary);
   color: var(--bg-primary);
 }
 
-/* ── Items Ready for Review ──────────────────────────────── */
+/* ── Pending Section ─────────────────────────────────────── */
 .pendingSection {
   background: var(--bg-primary);
   padding: 20px 16px 0;
   transition: background-color 0.3s ease;
 }
-
 .pendingHeader {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 16px;
 }
-
 .pendingTitle {
   font-size: 17px;
   font-weight: 800;
@@ -315,13 +290,11 @@
   margin: 0 0 4px;
   letter-spacing: -0.2px;
 }
-
 .pendingSub {
   font-size: 13px;
   color: var(--text-secondary);
   margin: 0;
 }
-
 .seeAllBtn {
   display: flex;
   align-items: center;
@@ -335,14 +308,13 @@
   font-family: inherit;
   white-space: nowrap;
   padding: 0;
-  flex-shrink: 0;
   margin-top: 2px;
+  flex-shrink: 0;
 }
 .seeAllBtn:hover {
   color: var(--text-primary);
 }
 
-/* List */
 .pendingList {
   display: flex;
   flex-direction: column;
@@ -356,14 +328,12 @@
   border-top: none;
 }
 
-/* Product row inside each pending item */
 .pendingProductRow {
   display: flex;
   align-items: center;
   gap: 12px;
   margin-bottom: 10px;
 }
-
 .pendingImg {
   width: 76px;
   height: 76px;
@@ -372,12 +342,10 @@
   flex-shrink: 0;
   background: var(--bg-secondary);
 }
-
 .pendingInfo {
   flex: 1;
   min-width: 0;
 }
-
 .pendingName {
   font-size: 14px;
   font-weight: 600;
@@ -387,14 +355,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .pendingVariant {
   font-size: 13px;
   color: var(--text-secondary);
   margin: 0;
 }
 
-/* Orange "Leave a review" button */
 .leaveReviewOrange {
   padding: 12px 18px;
   background: #ff6f00;
@@ -419,7 +385,14 @@
   transform: scale(0.97);
 }
 
-/* Waiting row */
+.submittedTag {
+  font-size: 13px;
+  font-weight: 700;
+  color: #27ae60;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .waitingRow {
   display: flex;
   align-items: center;
@@ -431,31 +404,300 @@
   flex-wrap: wrap;
   transition: background-color 0.3s ease;
 }
-
 .flameIcon {
   color: #ff6f00;
   flex-shrink: 0;
 }
-
 .waitingCount {
   color: #ff6f00;
   font-weight: 700;
 }
-
 .waitingText {
   color: var(--text-secondary);
   flex: 1;
   min-width: 160px;
 }
 
-/* Stars in waiting row — outline style (not filled black) */
-.waitingRow .star {
-  stroke: var(--text-secondary);
-  stroke-width: 1.2;
+/* ── Leave Review Sheet ──────────────────────────────────── */
+.sheetOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  animation: fadeIn 0.2s ease;
 }
-.waitingRow .starFilled {
-  fill: #ff6f00;
-  stroke: #ff6f00;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sheet {
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 0 40px;
+  animation: slideUp 0.3s ease;
+  transition: background-color 0.3s ease;
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.sheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+.sheetRatingRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+.asterisk {
+  color: #ff6f00;
+  font-weight: 700;
+  font-size: 16px;
+}
+.ratingLabel {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.ratingWord {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.closeBtn:hover {
+  background: var(--bg-secondary);
+}
+
+.getHelpBox {
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 14px;
+  margin: 0 16px 16px;
+}
+.getHelpText {
+  font-size: 14px;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+.getHelpBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.mediaRow {
+  display: flex;
+  gap: 12px;
+  padding: 0 16px 16px;
+  flex-wrap: wrap;
+}
+.mediaBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 110px;
+  height: 110px;
+  border: 2px dashed var(--border-color);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.mediaBtn:hover {
+  border-color: #ff6f00;
+  background: rgba(255, 111, 0, 0.04);
+}
+
+.photoThumb {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.photoThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.removePhoto {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  border: none;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.textareaWrap {
+  position: relative;
+  margin: 0 16px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.textareaWrap:focus-within {
+  border-color: #4a90d9;
+}
+.textarea {
+  width: 100%;
+  padding: 14px;
+  padding-bottom: 30px;
+  border: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: background-color 0.3s ease;
+}
+.charCount {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.sheetBottom {
+  padding: 0 16px;
+}
+.guidelines {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin: 0 0 12px;
+}
+.guidelinesLink {
+  color: #4a90d9;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px;
+  background: #ff6f00;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.submitBtn:hover:not(:disabled) {
+  background: #e65100;
+  transform: translateY(-1px);
+}
+.submitBtn:disabled {
+  background: #ffb380;
+  cursor: not-allowed;
+}
+
+.hideRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+}
+.hideCheck {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.hideChecked {
+  border-color: #ff6f00;
+  background: #ff6f00;
+}
+.checkMark {
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+}
+.hideText {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.hideIcon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+.hideName {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
@@ -465,9 +707,6 @@
   }
   .carouselSlide {
     height: 160px;
-  }
-  .pendingProductRow {
-    gap: 10px;
   }
   .pendingImg {
     width: 64px;
@@ -483,5 +722,13 @@
   }
   .waitingText {
     min-width: 120px;
+  }
+  .mediaBtn {
+    width: 90px;
+    height: 90px;
+  }
+  .photoThumb {
+    width: 90px;
+    height: 90px;
   }
 }

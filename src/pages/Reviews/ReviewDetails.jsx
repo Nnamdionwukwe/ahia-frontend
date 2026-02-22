@@ -1,9 +1,21 @@
-// src/components/reviews/ReviewDetails.jsx
-import { useState } from "react";
-import { ChevronLeft, ChevronRight, Share2, Flame } from "lucide-react";
+import { useState, useRef } from "react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Share2,
+  Flame,
+  Camera,
+  Video,
+  X,
+  MessageCircle,
+  User,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import styles from "./ReviewDetails.module.css";
+
+const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
+const MAX_CHARS = 3000;
 
 const maskName = (name = "") => {
   if (!name) return "User";
@@ -14,7 +26,7 @@ const maskName = (name = "") => {
     .join(" ");
 };
 
-// ── Star Row (display only / interactive) ──────────────────────────────────
+// ── Star Row ──────────────────────────────────────────────────────────────────
 function StarRow({ rating = 0, onChange, size = 20 }) {
   const [hovered, setHovered] = useState(0);
   const active = hovered || rating;
@@ -39,34 +51,156 @@ function StarRow({ rating = 0, onChange, size = 20 }) {
   );
 }
 
-// ── Mock data ────────────────────────────────────────────────────────────────
+// ── Leave Review Sheet ────────────────────────────────────────────────────────
+function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
+  const { user } = useAuthStore();
+  const photoRef = useRef();
+  const [rating, setRating] = useState(initialRating || 0);
+  const [reviewText, setReviewText] = useState("");
+  const [hideProfile, setHideProfile] = useState(false);
+  const [photos, setPhotos] = useState([]);
+
+  const handlePhotoChange = (e) => {
+    const files = Array.from(e.target.files || []);
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setPhotos((p) => [...p, ...urls].slice(0, 9));
+  };
+
+  const handleSubmit = () => {
+    onSubmitted?.(product?.id);
+    onClose();
+  };
+
+  return (
+    <div className={styles.sheetOverlay} onClick={onClose}>
+      <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
+        {/* Sheet Header — rating + close */}
+        <div className={styles.sheetHeader}>
+          <div className={styles.sheetRatingRow}>
+            <span className={styles.asterisk}>*</span>
+            <span className={styles.ratingLabel}>Rating</span>
+            <StarRow rating={rating} onChange={setRating} size={28} />
+            {rating > 0 && (
+              <span className={styles.ratingWord}>{RATING_LABELS[rating]}</span>
+            )}
+          </div>
+          <button className={styles.closeBtn} onClick={onClose}>
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Get help — only 1 or 2 stars */}
+        {rating > 0 && rating <= 2 && (
+          <div className={styles.getHelpBox}>
+            <p className={styles.getHelpText}>
+              If you had any problems with shipping or the item, contact us!
+            </p>
+            <button className={styles.getHelpBtn}>
+              <MessageCircle size={14} /> Get help <ChevronRight size={13} />
+            </button>
+          </div>
+        )}
+
+        {/* Media */}
+        <div className={styles.mediaRow}>
+          <button
+            className={styles.mediaBtn}
+            onClick={() => photoRef.current?.click()}
+          >
+            <Camera size={24} />
+            <span>Photo</span>
+          </button>
+          <button className={styles.mediaBtn}>
+            <Video size={24} />
+            <span>Video</span>
+          </button>
+          {photos.map((p, i) => (
+            <div key={i} className={styles.photoThumb}>
+              <img src={p} alt="" />
+              <button
+                className={styles.removePhoto}
+                onClick={() => setPhotos(photos.filter((_, j) => j !== i))}
+              >
+                <X size={11} />
+              </button>
+            </div>
+          ))}
+          <input
+            ref={photoRef}
+            type="file"
+            accept="image/*"
+            multiple
+            hidden
+            onChange={handlePhotoChange}
+          />
+        </div>
+
+        {/* Textarea */}
+        <div className={styles.textareaWrap}>
+          <textarea
+            className={styles.textarea}
+            placeholder="Sharing your thought and experience about this item."
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value.slice(0, MAX_CHARS))}
+            rows={5}
+          />
+          <span className={styles.charCount}>
+            {reviewText.length}/{MAX_CHARS}
+          </span>
+        </div>
+
+        {/* Bottom */}
+        <div className={styles.sheetBottom}>
+          <p className={styles.guidelines}>
+            Please follow the{" "}
+            <span className={styles.guidelinesLink}>review guidelines</span>{" "}
+            when writing reviews.
+          </p>
+          <button
+            className={styles.submitBtn}
+            onClick={handleSubmit}
+            disabled={!rating}
+          >
+            Submit
+          </button>
+          <div className={styles.hideRow}>
+            <button
+              className={`${styles.hideCheck} ${hideProfile ? styles.hideChecked : ""}`}
+              onClick={() => setHideProfile((h) => !h)}
+            >
+              {hideProfile && <span className={styles.checkMark}>✓</span>}
+            </button>
+            <span className={styles.hideText}>
+              Hide your profile photo and name as
+            </span>
+            <User size={15} className={styles.hideIcon} />
+            <span className={styles.hideName}>{maskName(user?.full_name)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Mock data ─────────────────────────────────────────────────────────────────
 const THIS_REVIEW = {
   id: 1,
   name: "Future oriented integrated glasses with dazz...",
   variant: "C2",
   image: "https://via.placeholder.com/80/c8c8c8/333?text=👓",
   rating: 5,
-  reviewText: "",
   date: "Dec 6, 2025",
 };
 
-// Items in the same order — for "Quickly review all" carousel
 const ORDER_ITEMS = [
   {
     id: 10,
     image: "https://via.placeholder.com/360/b0b8c1/fff?text=LED+Light",
   },
-  {
-    id: 11,
-    image: "https://via.placeholder.com/360/1c1c2e/fff?text=Speaker",
-  },
-  {
-    id: 12,
-    image: "https://via.placeholder.com/360/2d4a2d/fff?text=Cap",
-  },
+  { id: 11, image: "https://via.placeholder.com/360/1c1c2e/fff?text=Speaker" },
+  { id: 12, image: "https://via.placeholder.com/360/2d4a2d/fff?text=Cap" },
 ];
 
-// Items ready for review list
 const PENDING = [
   {
     id: 1,
@@ -91,12 +225,30 @@ const PENDING = [
   },
 ];
 
-// ════════════════════════════════════════════════════════════════════════════
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function ReviewDetails() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [ratings, setRatings] = useState({});
+  const [submitted, setSubmitted] = useState({});
+  const [sheetProduct, setSheetProduct] = useState(null);
+  const [sheetInitialRating, setSheetInitialRating] = useState(0);
+
+  const openSheet = (product, initialRating = 0) => {
+    setSheetProduct(product);
+    setSheetInitialRating(initialRating);
+  };
+
+  const closeSheet = () => {
+    setSheetProduct(null);
+    setSheetInitialRating(0);
+  };
+
+  const handleSubmitted = (productId) => {
+    setSubmitted((s) => ({ ...s, [productId]: true }));
+  };
 
   const prevSlide = () => setCarouselIndex((i) => Math.max(0, i - 1));
   const nextSlide = () =>
@@ -184,7 +336,6 @@ export default function ReviewDetails() {
             ))}
           </div>
 
-          {/* Prev / Next arrows */}
           {carouselIndex > 0 && (
             <button
               className={`${styles.carouselArrow} ${styles.carouselArrowLeft}`}
@@ -203,7 +354,7 @@ export default function ReviewDetails() {
           )}
         </div>
 
-        {/* Dots + Leave a review button */}
+        {/* Dots + Leave a review */}
         <div className={styles.carouselFooter}>
           <div className={styles.dots}>
             {ORDER_ITEMS.map((_, i) => (
@@ -234,7 +385,10 @@ export default function ReviewDetails() {
               Show only delivered items below.
             </p>
           </div>
-          <button className={styles.seeAllBtn}>
+          <button
+            onClick={() => navigate("/account-profile/reviews")}
+            className={styles.seeAllBtn}
+          >
             See all <ChevronRight size={15} />
           </button>
         </div>
@@ -256,12 +410,16 @@ export default function ReviewDetails() {
                   <p className={styles.pendingName}>{item.name}</p>
                   <p className={styles.pendingVariant}>{item.variant}</p>
                 </div>
-                <button
-                  className={styles.leaveReviewOrange}
-                  onClick={() => navigate("/leave-review")}
-                >
-                  Leave a review
-                </button>
+                {submitted[item.id] ? (
+                  <span className={styles.submittedTag}>Submitted ✓</span>
+                ) : (
+                  <button
+                    className={styles.leaveReviewOrange}
+                    onClick={() => navigate("/leave-review")}
+                  >
+                    Leave a review
+                  </button>
+                )}
               </div>
 
               {/* Waiting row */}
@@ -272,16 +430,31 @@ export default function ReviewDetails() {
                   {" "}
                   people are waiting for your review.
                 </span>
-                <StarRow
-                  rating={ratings[item.id] || 0}
-                  size={20}
-                  onChange={(v) => setRatings((r) => ({ ...r, [item.id]: v }))}
-                />
+                {!submitted[item.id] && (
+                  <StarRow
+                    rating={ratings[item.id] || 0}
+                    size={20}
+                    onChange={(v) => {
+                      setRatings((r) => ({ ...r, [item.id]: v }));
+                      openSheet(item, v);
+                    }}
+                  />
+                )}
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* ── Leave Review Sheet ── */}
+      {sheetProduct && (
+        <LeaveReviewSheet
+          product={sheetProduct}
+          initialRating={sheetInitialRating}
+          onClose={closeSheet}
+          onSubmitted={handleSubmitted}
+        />
+      )}
     </div>
   );
 }
