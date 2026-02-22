@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -14,107 +14,20 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
-import axios from "axios";
-import ProductCard from "../../components/ProductCard/ProductCard";
 import ChooseOrderSheet from "./ChooseOrderSheet";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
-
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 const MAX_CHARS = 3000;
 
-const PENDING_REVIEWS = [
-  {
-    id: 1,
-    name: "109.98cm LED Square Light Kit,...",
-    variant: "10INFD110",
-    image: "https://via.placeholder.com/80/333/fff?text=LED",
-    waitingCount: "999+",
-  },
-  {
-    id: 2,
-    name: "1pc SoundWave Portable Wirele...",
-    variant: "Black",
-    image: "https://via.placeholder.com/80/111/fff?text=SPK",
-    waitingCount: "999+",
-  },
-  {
-    id: 3,
-    name: "Unadorned Pure Surface Curved...",
-    variant: "Dark Gray",
-    image: "https://via.placeholder.com/80/222/fff?text=CAP",
-    waitingCount: "999+",
-  },
-  {
-    id: 4,
-    name: "2026 New High-Quality Soft-To...",
-    variant: "Black",
-    image: "https://via.placeholder.com/80/444/fff?text=HAT",
-    waitingCount: "231",
-  },
-  {
-    id: 5,
-    name: "A Pair of Retro Small Square...",
-    variant: "Transparent Frame Gray",
-    image: "https://via.placeholder.com/80/555/fff?text=SUN",
-    waitingCount: "999+",
-  },
-  {
-    id: 6,
-    name: "Women's & Men's Oversized...",
-    variant: "All Grey",
-    image: "https://via.placeholder.com/80/666/fff?text=SUN",
-    waitingCount: "999+",
-  },
-];
-
-const REVIEWED = [
-  {
-    id: 7,
-    name: "Future oriented integrated glasses with dazzling col...",
-    variant: "C2",
-    image: "https://via.placeholder.com/80/c0c0c0/333?text=Glass",
-    rating: 5,
-    reviewText: "",
-    date: "Dec 6, 2025",
-    helpfulCount: 0,
-  },
-  {
-    id: 8,
-    name: "AOCHUAN SmartX Pro Combo 1 - Wireless Phone Gi...",
-    variant: "SmartXProCombo1",
-    image: "https://via.placeholder.com/80/1a1a2e/fff?text=Gimbal",
-    rating: 5,
-    reviewText:
-      "This my best purchase in Temu great for its price thank you Team Temu",
-    date: "Dec 6, 2025",
-    helpfulCount: 0,
-  },
-  {
-    id: 9,
-    name: "Fashionable Anti-blue Light Glasses, Trendy Fr...",
-    variant: "White",
-    image: "https://via.placeholder.com/80/e8eaf6/333?text=Frames",
-    rating: 2,
-    reviewText: "Not cool way too small than it was advertised",
-    date: "Nov 14, 2025",
-    helpfulCount: 0,
-  },
-  {
-    id: 10,
-    name: "Women's High Waist Slim Ankle Length Trousers...",
-    variant: "Black",
-    image: "https://via.placeholder.com/80/1c1c1c/fff?text=Pants",
-    rating: 5,
-    reviewText:
-      "I thought it was ankle length guess I didn't look at it properly but it's of nice quality",
-    date: "Nov 14, 2025",
-    helpfulCount: 0,
-  },
-];
+function useAuthHeaders() {
+  const { accessToken } = useAuthStore();
+  return { Authorization: `Bearer ${accessToken}` };
+}
 
 const maskName = (name = "") => {
   if (!name) return "User";
@@ -125,6 +38,7 @@ const maskName = (name = "") => {
     .join(" ");
 };
 
+// ── Star Row ──────────────────────────────────────────────────────────────────
 function StarRow({ rating, onChange, size = 20 }) {
   const [hovered, setHovered] = useState(0);
   const active = hovered || rating;
@@ -149,20 +63,21 @@ function StarRow({ rating, onChange, size = 20 }) {
   );
 }
 
-// ── Reviewed Card (matches the screenshot) ────────────────────────────────────
+// ── Reviewed Card ─────────────────────────────────────────────────────────────
 function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [helpful, setHelpful] = useState(false);
-  const navigate = useNavigate();
 
-  const handleHelpful = () => {
-    setHelpful((h) => !h);
-    onHelpful?.(item.id);
-  };
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = () => setMenuOpen(false);
+    document.addEventListener("click", handler);
+    return () => document.removeEventListener("click", handler);
+  }, [menuOpen]);
 
   return (
     <div className={styles.reviewedCard}>
-      {/* Top row: avatar + name + date + menu */}
       <div className={styles.reviewedHeader}>
         <img
           src={
@@ -177,11 +92,13 @@ function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
         />
         <div className={styles.reviewedMeta}>
           <span className={styles.reviewedName}>
-            {user?.full_name || "Guest"}
+            {item.hide_profile
+              ? maskName(user?.full_name)
+              : user?.full_name || "Guest"}
           </span>
           <span className={styles.reviewedDate}>on {item.date}</span>
         </div>
-        <div className={styles.menuWrap}>
+        <div className={styles.menuWrap} onClick={(e) => e.stopPropagation()}>
           <button
             className={styles.menuBtn}
             onClick={() => setMenuOpen((o) => !o)}
@@ -213,25 +130,41 @@ function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
         </div>
       </div>
 
-      {/* Star rating */}
       <div className={styles.reviewedStars}>
         <StarRow rating={item.rating} size={18} />
       </div>
 
-      {/* Review text */}
       {item.reviewText ? (
         <p className={styles.reviewedBody}>{item.reviewText}</p>
       ) : null}
 
-      {/* Action row: Helpful | Edit | Delete  +  Share */}
+      {item.images?.length > 0 && (
+        <div className={styles.reviewImages}>
+          {item.images.map((img, i) => (
+            <img
+              key={i}
+              src={img}
+              alt=""
+              className={styles.reviewImage}
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       <div className={styles.reviewedActions}>
         <div className={styles.reviewedActionsLeft}>
           <button
             className={`${styles.actionBtn} ${helpful ? styles.actionBtnActive : ""}`}
-            onClick={handleHelpful}
+            onClick={() => {
+              setHelpful((h) => !h);
+              onHelpful?.(item.id);
+            }}
           >
             <ThumbsUp size={14} />
-            Helpful
+            Helpful {item.helpfulCount > 0 && `(${item.helpfulCount})`}
           </button>
           <span className={styles.actionDivider}>|</span>
           <button className={styles.actionBtn} onClick={() => onEdit?.(item)}>
@@ -250,13 +183,12 @@ function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
         </button>
       </div>
 
-      {/* Product strip */}
       <div
-        onClick={() => navigate("/review-details")}
         className={styles.productStrip}
+        onClick={() => navigate("/review-details", { state: { review: item } })}
       >
         <img
-          src={item.image}
+          src={item.image || "https://via.placeholder.com/64?text=IMG"}
           alt={item.name}
           className={styles.productStripImg}
           onError={(e) => {
@@ -272,13 +204,22 @@ function ReviewedCard({ item, user, onHelpful, onEdit, onDelete, onShare }) {
   );
 }
 
+// ── Leave / Edit Review Sheet ─────────────────────────────────────────────────
 function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   const { user } = useAuthStore();
+  const headers = useAuthHeaders();
   const photoRef = useRef();
   const [rating, setRating] = useState(initialRating || 0);
-  const [reviewText, setReviewText] = useState("");
-  const [hideProfile, setHideProfile] = useState(false);
+  const [reviewText, setReviewText] = useState(product?.reviewText || "");
+  const [hideProfile, setHideProfile] = useState(
+    product?.hide_profile || false,
+  );
   const [photos, setPhotos] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  // If product has an existing review id AND a productId field it's an edit
+  const isEdit = !!(product?.id && product?.productId);
 
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -286,9 +227,33 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
     setPhotos((p) => [...p, ...urls].slice(0, 9));
   };
 
-  const handleSubmit = () => {
-    onSubmitted(product.id);
-    onClose();
+  const handleSubmit = async () => {
+    if (!rating) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      if (isEdit) {
+        // PUT /api/reviews/:reviewId/edit
+        await axios.put(
+          `${API_URL}/api/reviews/${product.id}/edit`,
+          { rating, comment: reviewText, hide_profile: hideProfile },
+          { headers },
+        );
+      } else {
+        // POST /api/reviews/:productId/add
+        await axios.post(
+          `${API_URL}/api/reviews/${product.id}/add`,
+          { rating, comment: reviewText, hide_profile: hideProfile },
+          { headers },
+        );
+      }
+      onSubmitted(); // re-fetch reviews list
+      onClose();
+    } catch (err) {
+      setError(err.response?.data?.error || "Failed to submit review");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -365,6 +330,8 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </span>
         </div>
 
+        {error && <p className={styles.errorMsg}>{error}</p>}
+
         <div className={styles.sheetBottom}>
           <p className={styles.guidelines}>
             Please follow the{" "}
@@ -374,9 +341,9 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           <button
             className={styles.submitBtn}
             onClick={handleSubmit}
-            disabled={!rating}
+            disabled={!rating || submitting}
           >
-            Submit
+            {submitting ? "Submitting…" : isEdit ? "Update Review" : "Submit"}
           </button>
           <div className={styles.hideRow}>
             <button
@@ -397,64 +364,79 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   );
 }
 
+// ── Main Reviews Page ─────────────────────────────────────────────────────────
 export default function Reviews() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const headers = useAuthHeaders();
+
   const [activeTab, setActiveTab] = useState("pending");
   const [sheetProduct, setSheetProduct] = useState(null);
   const [sheetInitialRating, setSheetInitialRating] = useState(0);
   const [ratings, setRatings] = useState({});
-  const [submitted, setSubmitted] = useState({});
-  const [reviewed, setReviewed] = useState(REVIEWED);
-  const [products, setProducts] = useState([]);
   const [showChooseOrder, setShowChooseOrder] = useState(false);
+  const [pending, setPending] = useState([]);
+  const [reviewed, setReviewed] = useState([]);
+  const [helpfulTotal, setHelpfulTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const fetchReviews = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${API_URL}/api/reviews/user/me`, {
+        headers,
+      });
+      if (res.data.success) {
+        setPending(res.data.pending || []);
+        setReviewed(res.data.reviewed || []);
+        setHelpfulTotal(res.data.helpfulTotal || 0);
+      }
+    } catch (err) {
+      console.error("Failed to fetch reviews:", err.message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchReviews();
+  }, [fetchReviews]);
 
   const openSheet = (product, initialRating = 0) => {
     setSheetProduct(product);
     setSheetInitialRating(initialRating);
   };
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await axios.get(`${API_URL}/api/products`, {
-          params: { limit: 20, sort: "shuffle" },
-        });
-        const data =
-          res.data?.products ||
-          res.data?.data ||
-          (Array.isArray(res.data) ? res.data : []);
-        setProducts(data);
-      } catch (err) {
-        console.error("Failed to fetch products:", err.message);
-      }
-    };
-    fetchProducts();
-  }, []);
-
   const closeSheet = () => {
     setSheetProduct(null);
     setSheetInitialRating(0);
   };
 
-  const handleSubmitted = (productId) => {
-    setSubmitted((s) => ({ ...s, [productId]: true }));
-  };
-
-  const handleDelete = (id) => {
-    if (window.confirm("Delete this review?")) {
-      setReviewed((r) => r.filter((item) => item.id !== id));
+  const handleDelete = async (reviewId) => {
+    if (!window.confirm("Delete this review?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/reviews/${reviewId}`, { headers });
+      setReviewed((r) => r.filter((item) => item.id !== reviewId));
+    } catch (err) {
+      alert(err.response?.data?.error || "Failed to delete review");
     }
   };
 
-  const handleEdit = (item) => {
-    openSheet(item, item.rating);
+  const handleHelpful = async (reviewId) => {
+    try {
+      await axios.put(
+        `${API_URL}/api/reviews/${reviewId}/helpful`,
+        {},
+        { headers },
+      );
+    } catch (err) {
+      console.error("Helpful error:", err.message);
+    }
   };
 
+  const handleEdit = (item) => openSheet(item, item.rating);
   const handleShare = (item) => {
-    if (navigator.share) {
+    if (navigator.share)
       navigator.share({ title: item.name, text: item.reviewText });
-    }
   };
 
   return (
@@ -485,7 +467,10 @@ export default function Reviews() {
           <p className={styles.profileName}>{user?.full_name || "Guest"}</p>
           <div className={styles.profileSub}>
             <ThumbsUp size={14} />
-            <span>1 person found your reviews helpful</span>
+            <span>
+              {helpfulTotal} {helpfulTotal === 1 ? "person" : "people"} found
+              your reviews helpful
+            </span>
           </div>
         </div>
       </div>
@@ -496,7 +481,7 @@ export default function Reviews() {
           className={`${styles.tab} ${activeTab === "pending" ? styles.tabActive : ""}`}
           onClick={() => setActiveTab("pending")}
         >
-          Ready for review ({PENDING_REVIEWS.length})
+          Ready for review ({pending.length})
         </button>
         <button
           className={`${styles.tab} ${activeTab === "reviewed" ? styles.tabActive : ""}`}
@@ -506,116 +491,125 @@ export default function Reviews() {
         </button>
       </div>
 
-      {/* Review all bar */}
-      {activeTab === "pending" && (
-        <div className={styles.reviewAllBar}>
-          <span className={styles.reviewAllText}>
-            Review all items from an order
-          </span>
-          <button
-            className={styles.chooseBtn}
-            onClick={() => setShowChooseOrder(true)}
-          >
-            Choose <ChevronRight size={15} />
-          </button>
+      {loading ? (
+        <div className={styles.loadingWrap}>
+          <div className={styles.spinner} />
         </div>
-      )}
-
-      {/* Pending list */}
-      {activeTab === "pending" && (
-        <div className={styles.list}>
-          {PENDING_REVIEWS.map((item) => (
-            <div key={item.id} className={styles.reviewBlock}>
-              <div
-                className={styles.productRow}
-                onClick={() => navigate("/leave-review")}
-              >
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className={styles.productImg}
-                  onError={(e) => {
-                    e.target.src = "https://via.placeholder.com/80?text=IMG";
-                  }}
-                />
-                <div className={styles.productInfo}>
-                  <p className={styles.productName}>{item.name}</p>
-                  <p className={styles.productVariant}>{item.variant}</p>
-                </div>
-                {submitted[item.id] ? (
-                  <span className={styles.submittedTag}>Submitted ✓</span>
-                ) : (
-                  <button
-                    onClick={() => navigate("/leave-review")}
-                    className={styles.leaveBtn}
-                  >
-                    Leave a review
-                  </button>
-                )}
-              </div>
-              <div className={styles.waitingRow}>
-                <Flame size={13} className={styles.flameIcon} />
-                <span className={styles.waitingCount}>{item.waitingCount}</span>
-                <span className={styles.waitingText}>
-                  {" "}
-                  people are waiting for your review.
+      ) : (
+        <>
+          {/* ── Pending Tab ── */}
+          {activeTab === "pending" && (
+            <>
+              <div className={styles.reviewAllBar}>
+                <span className={styles.reviewAllText}>
+                  Review all items from an order
                 </span>
-                {!submitted[item.id] && (
-                  <StarRow
-                    rating={ratings[item.id] || 0}
-                    size={18}
-                    onChange={(v) => {
-                      setRatings((r) => ({ ...r, [item.id]: v }));
-                      openSheet(item, v);
-                    }}
-                  />
+                <button
+                  className={styles.chooseBtn}
+                  onClick={() => setShowChooseOrder(true)}
+                >
+                  Choose <ChevronRight size={15} />
+                </button>
+              </div>
+              <div className={styles.list}>
+                {pending.length === 0 ? (
+                  <div className={styles.emptyReviewed}>
+                    <ThumbsUp size={40} style={{ opacity: 0.2 }} />
+                    <p>No items to review yet</p>
+                  </div>
+                ) : (
+                  pending.map((item) => (
+                    <div key={item.id} className={styles.reviewBlock}>
+                      <div
+                        className={styles.productRow}
+                        onClick={() => openSheet(item)}
+                      >
+                        <img
+                          src={
+                            item.image ||
+                            "https://via.placeholder.com/80?text=IMG"
+                          }
+                          alt={item.name}
+                          className={styles.productImg}
+                          onError={(e) => {
+                            e.target.src =
+                              "https://via.placeholder.com/80?text=IMG";
+                          }}
+                        />
+                        <div className={styles.productInfo}>
+                          <p className={styles.productName}>{item.name}</p>
+                          <p className={styles.productVariant}>
+                            {item.variant}
+                          </p>
+                        </div>
+                        <button
+                          className={styles.leaveBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openSheet(item);
+                          }}
+                        >
+                          Leave a review
+                        </button>
+                      </div>
+                      <div className={styles.waitingRow}>
+                        <Flame size={13} className={styles.flameIcon} />
+                        <span className={styles.waitingCount}>
+                          {item.waitingCount}
+                        </span>
+                        <span className={styles.waitingText}>
+                          {" "}
+                          people are waiting for your review.
+                        </span>
+                        <StarRow
+                          rating={ratings[item.id] || 0}
+                          size={18}
+                          onChange={(v) => {
+                            setRatings((r) => ({ ...r, [item.id]: v }));
+                            openSheet(item, v);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Reviewed list */}
-      {activeTab === "reviewed" && (
-        <div className={styles.list}>
-          {reviewed.length === 0 ? (
-            <div className={styles.emptyReviewed}>
-              <ThumbsUp size={40} opacity={0.2} />
-              <p>No reviews yet</p>
-            </div>
-          ) : (
-            reviewed.map((item) => (
-              <ReviewedCard
-                key={item.id}
-                item={item}
-                user={user}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onShare={handleShare}
-              />
-            ))
+            </>
           )}
-        </div>
+
+          {/* ── Reviewed Tab ── */}
+          {activeTab === "reviewed" && (
+            <div className={styles.list}>
+              {reviewed.length === 0 ? (
+                <div className={styles.emptyReviewed}>
+                  <ThumbsUp size={40} style={{ opacity: 0.2 }} />
+                  <p>No reviews yet</p>
+                </div>
+              ) : (
+                reviewed.map((item) => (
+                  <ReviewedCard
+                    key={item.id}
+                    item={item}
+                    user={user}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onHelpful={handleHelpful}
+                    onShare={handleShare}
+                  />
+                ))
+              )}
+            </div>
+          )}
+        </>
       )}
 
-      {/* Leave Review Sheet */}
       {sheetProduct && (
         <LeaveReviewSheet
           product={sheetProduct}
           initialRating={sheetInitialRating}
           onClose={closeSheet}
-          onSubmitted={handleSubmitted}
+          onSubmitted={fetchReviews}
         />
-      )}
-
-      {/* Product Feed */}
-      {products.length > 0 && (
-        <div className={styles.productGrid}>
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
       )}
 
       {showChooseOrder && (
