@@ -105,6 +105,7 @@ const App = () => {
             />
 
             <Route path="/account-profile/messages" element={<Messages />} />
+
             <Route path="/account-profile/reviews" element={<Reviews />} />
             <Route path="/leave-review" element={<LeaveReview />} />
             <Route path="/review-details" element={<ReviewDetails />} />
