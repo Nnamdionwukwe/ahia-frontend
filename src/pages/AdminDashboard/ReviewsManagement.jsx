@@ -81,9 +81,10 @@ export default function ReviewsManagement() {
   const fetchStats = useCallback(async () => {
     setStatsLoading(true);
     try {
-      const { data } = await axios.get(`${API_URL}/api/reviews/admin/stats`, {
-        headers: authHeader,
-      });
+      const { data } = await axios.get(
+        `${API_URL}/api/admin/adminReviews/stats`,
+        { headers: authHeader },
+      );
       if (data.success) setStats(data.data);
     } catch (e) {
       console.error("Review stats error:", e);
@@ -100,7 +101,7 @@ export default function ReviewsManagement() {
       if (filterRating) params.rating = filterRating;
       if (search.trim()) params.search = search.trim();
 
-      const { data } = await axios.get(`${API_URL}/api/reviews/admin/all`, {
+      const { data } = await axios.get(`${API_URL}/api/admin/adminReviews`, {
         params,
         headers: authHeader,
       });
@@ -131,7 +132,7 @@ export default function ReviewsManagement() {
   async function handleDelete(id) {
     setDeletingId(id);
     try {
-      await axios.delete(`${API_URL}/api/reviews/admin/${id}`, {
+      await axios.delete(`${API_URL}/api/admin/adminReviews/${id}`, {
         headers: authHeader,
       });
       setReviews((r) => r.filter((x) => x.id !== id));
