@@ -20,6 +20,7 @@ import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 import ChooseOrderSheet from "./ChooseOrderSheet";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import { LeavePageModal } from "./ReviewModals"; // ← ADD 1: import
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
@@ -379,6 +380,8 @@ export default function Reviews() {
   const [helpfulTotal, setHelpfulTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const [showLeaveModal, setShowLeaveModal] = useState(false); // ← ADD 2: state
+  const leaveShownRef = useRef(false); // ← ADD 2: ref (once per visit)
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -461,7 +464,18 @@ export default function Reviews() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+        {/* ← ADD 3: back button shows modal once, then navigates */}
+        <button
+          className={styles.backBtn}
+          onClick={() => {
+            if (!leaveShownRef.current && pending.length > 0) {
+              leaveShownRef.current = true;
+              setShowLeaveModal(true);
+            } else {
+              navigate(-1);
+            }
+          }}
+        >
           <ChevronLeft size={24} />
         </button>
         <h1 className={styles.headerTitle}>Your reviews</h1>
@@ -658,6 +672,27 @@ export default function Reviews() {
       {showChooseOrder && (
         <ChooseOrderSheet onClose={() => setShowChooseOrder(false)} />
       )}
+
+      {/* ← ADD 3: modal — first pending product shown, X only closes */}
+      <LeavePageModal
+        open={showLeaveModal}
+        product={pending[0] || {}}
+        onClose={() => setShowLeaveModal(false)}
+        onSubmit={async ({ rating, hideProfile }) => {
+          setShowLeaveModal(false);
+          if (pending[0]) {
+            try {
+              await axios.post(
+                `${API_URL}/api/reviews/${pending[0].id}/add`,
+                { rating, hide_profile: hideProfile },
+                { headers },
+              );
+              fetchReviews();
+            } catch (_) {}
+          }
+          navigate(-1);
+        }}
+      />
     </div>
   );
 }

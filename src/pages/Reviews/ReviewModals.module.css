@@ -1,0 +1,322 @@
+/* src/components/ReviewModals.module.css */
+
+/* ==================== OVERLAY ==================== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end; /* sheet slides up from bottom like mobile */
+  justify-content: center;
+  z-index: 9999;
+  padding: 0;
+  animation: fadeOverlay 0.2s ease;
+}
+
+@keyframes fadeOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==================== SHEET ==================== */
+.sheet {
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 28px 24px 40px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ==================== CLOSE BUTTON ==================== */
+.closeBtn {
+  position: absolute;
+  top: -46px;
+  right: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.85);
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.closeX {
+  font-size: 15px;
+  line-height: 1;
+  font-weight: 500;
+}
+
+/* ==================== QUICK / LEAVE PAGE MODAL ==================== */
+.leaveTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 1.45;
+  margin: 0 0 20px;
+}
+
+/* product card with image */
+.productPreview {
+  width: 100%;
+  background: #f7f7f7;
+  border-radius: 14px;
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+/* without image (Leave a Review page variant) */
+.productPreviewNoImg {
+  width: 100%;
+  background: #f7f7f7;
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.productImg {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+/* ── Rating label pill ── */
+.starSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.ratingLabel {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: 1.5px solid #f97316;
+  color: #f97316;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Stars ── */
+.starRow {
+  display: flex;
+  gap: 4px;
+}
+
+.starBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #e0e0e0;
+  padding: 0;
+  line-height: 1;
+  transition:
+    color 0.1s,
+    transform 0.1s;
+}
+
+.starBtn:hover,
+.starOn {
+  color: #f97316;
+}
+
+.starBtn:hover {
+  transform: scale(1.12);
+}
+
+/* ==================== HIDE PROFILE ROW ==================== */
+.hideRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  margin-top: 14px;
+  user-select: none;
+}
+
+.radioOuter {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #c0c0c0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.15s;
+}
+
+.radioChecked {
+  border-color: #f97316;
+}
+
+.radioDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #f97316;
+}
+
+.hideLabel {
+  font-size: 14px;
+  color: #555;
+}
+
+/* ==================== DELETE MODAL ==================== */
+.deleteTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-align: center;
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+
+.deleteBody {
+  font-size: 14px;
+  color: #f97316;
+  text-align: center;
+  line-height: 1.65;
+  margin: 0 0 24px;
+}
+
+/* ==================== SUCCESS MODAL ==================== */
+.successSvg {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 14px;
+}
+
+.successTitle {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.successBodyText {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  line-height: 1.6;
+  margin: 0 0 24px;
+}
+
+/* ── Inline / full-page success (image 5) ── */
+.successPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 24px 24px;
+  background: #fff;
+}
+
+.successSub {
+  font-size: 15px;
+  color: #555;
+  margin: 4px 0 6px;
+}
+
+.successCount {
+  color: #f97316;
+  font-weight: 700;
+}
+
+.goToReviews {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 4px;
+}
+
+/* ==================== BUTTONS ==================== */
+.btnOrange {
+  width: 100%;
+  padding: 16px;
+  background: #f97316;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    opacity 0.15s,
+    transform 0.1s;
+  margin-top: 4px;
+}
+
+.btnOrange:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btnOrange:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btnOutline {
+  width: 100%;
+  padding: 15px;
+  background: #fff;
+  color: #1a1a1a;
+  border: 2px solid #1a1a1a;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background-color 0.15s;
+}
+
+.btnOutline:hover:not(:disabled) {
+  background: #f5f5f5;
+}
+
+.btnOutline:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
