@@ -39,6 +39,7 @@ import Messages from "./pages/Messages/Messages";
 import Reviews from "./pages/Reviews/Reviews";
 import LeaveReview from "./pages/Reviews/Leavereview";
 import ReviewDetails from "./pages/Reviews/ReviewDetails";
+import LeaveAllReviews from "./pages/Reviews/LeaveAllReviews";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -107,6 +108,7 @@ const App = () => {
             <Route path="/account-profile/reviews" element={<Reviews />} />
             <Route path="/leave-review" element={<LeaveReview />} />
             <Route path="/review-details" element={<ReviewDetails />} />
+            <Route path="/leave-all-reviews" element={<LeaveAllReviews />} />
 
             <Route
               path="/admin-dashboard"

@@ -19,6 +19,7 @@ import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 import axios from "axios";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import ChooseOrderSheet from "./ChooseOrderSheet";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -406,6 +407,7 @@ export default function Reviews() {
   const [submitted, setSubmitted] = useState({});
   const [reviewed, setReviewed] = useState(REVIEWED);
   const [products, setProducts] = useState([]);
+  const [showChooseOrder, setShowChooseOrder] = useState(false);
 
   const openSheet = (product, initialRating = 0) => {
     setSheetProduct(product);
@@ -510,7 +512,10 @@ export default function Reviews() {
           <span className={styles.reviewAllText}>
             Review all items from an order
           </span>
-          <button className={styles.chooseBtn}>
+          <button
+            className={styles.chooseBtn}
+            onClick={() => setShowChooseOrder(true)}
+          >
             Choose <ChevronRight size={15} />
           </button>
         </div>
@@ -611,6 +616,10 @@ export default function Reviews() {
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
+      )}
+
+      {showChooseOrder && (
+        <ChooseOrderSheet onClose={() => setShowChooseOrder(false)} />
       )}
     </div>
   );
