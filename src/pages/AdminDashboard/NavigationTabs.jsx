@@ -88,11 +88,18 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
         Fraud
       </button>
       <button
-        className={`${styles.tab} ${activeTab === "fraanalyticsud" ? styles.activeTab : ""}`}
+        className={`${styles.tab} ${activeTab === "analytics" ? styles.activeTab : ""}`}
         onClick={() => setActiveTab("analytics")}
       >
         <BarChart3 size={20} />
         Analytics
+      </button>
+      <button
+        className={`${styles.tab} ${activeTab === "reviews" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("reviews")}
+      >
+        <BarChart3 size={20} />
+        Reviews
       </button>
     </nav>
   );

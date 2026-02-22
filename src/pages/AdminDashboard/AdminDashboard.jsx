@@ -21,6 +21,7 @@ import LoyaltyManagement from "./LoyaltyManagement";
 import CartManagement from "./CartManagement";
 import FraudManagement from "./FraudManagement";
 import AnalyticsManagement from "./AnalyticsManagement";
+import ReviewsManagement from "./ReviewsManagement";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -209,6 +210,7 @@ const AdminDashboard = () => {
         {activeTab === "carts" && <CartManagement />}
         {activeTab === "fraud" && <FraudManagement />}
         {activeTab === "analytics" && <AnalyticsManagement />}
+        {activeTab === "reviews" && <ReviewsManagement />}
       </TabContent>
 
       {selectedUser && (
