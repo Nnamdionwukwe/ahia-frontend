@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,9 +13,13 @@ import {
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/authStore";
 import styles from "./ReviewDetails.module.css";
+import axios from "axios";
+import ProductCard from "../../components/ProductCard/ProductCard";
 
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
 const MAX_CHARS = 3000;
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const maskName = (name = "") => {
   if (!name) return "User";
@@ -236,6 +240,26 @@ export default function ReviewDetails() {
   const [sheetProduct, setSheetProduct] = useState(null);
   const [sheetInitialRating, setSheetInitialRating] = useState(0);
 
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/products`, {
+          params: { limit: 20, sort: "shuffle" },
+        });
+        const data =
+          res.data?.products ||
+          res.data?.data ||
+          (Array.isArray(res.data) ? res.data : []);
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err.message);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   const openSheet = (product, initialRating = 0) => {
     setSheetProduct(product);
     setSheetInitialRating(initialRating);
@@ -444,6 +468,15 @@ export default function ReviewDetails() {
             </div>
           ))}
         </div>
+
+        {/* Product Feed */}
+        {products.length > 0 && (
+          <div className={styles.productGrid}>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── Leave Review Sheet ── */}
