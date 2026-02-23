@@ -20,7 +20,11 @@ import useAuthStore from "../../store/authStore";
 import styles from "./Reviews.module.css";
 import ChooseOrderSheet from "./ChooseOrderSheet";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import { LeavePageModal } from "./ReviewModals"; // ← ADD 1: import
+import {
+  LeavePageModal,
+  SuccessModal,
+  DeleteReviewModal,
+} from "./ReviewModals"; // ← added SuccessModal
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
@@ -219,6 +223,7 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
   const [photos, setPhotos] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // ← added
 
   // product.productId present = editing existing review; otherwise = new
   const isEdit = !!(product?.id && product?.productId);
@@ -248,7 +253,7 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
         );
       }
       onSubmitted();
-      onClose();
+      setShowSuccessModal(true); // ← show instead of closing directly
     } catch (err) {
       setError(err.response?.data?.error || "Failed to submit review");
     } finally {
@@ -360,6 +365,19 @@ function LeaveReviewSheet({ product, initialRating, onClose, onSubmitted }) {
           </div>
         </div>
       </div>
+
+      {/* ← Success Modal inside the sheet overlay so it sits on top */}
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          onClose();
+        }}
+        onGoToReviews={() => {
+          setShowSuccessModal(false);
+          onClose();
+        }}
+      />
     </div>
   );
 }
@@ -380,8 +398,9 @@ export default function Reviews() {
   const [helpfulTotal, setHelpfulTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
-  const [showLeaveModal, setShowLeaveModal] = useState(false); // ← ADD 2: state
-  const leaveShownRef = useRef(false); // ← ADD 2: ref (once per visit)
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const leaveShownRef = useRef(false);
+  const [deleteTarget, setDeleteTarget] = useState(null); // id of review pending delete
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -432,13 +451,19 @@ export default function Reviews() {
     setSheetInitialRating(0);
   };
 
-  const handleDelete = async (reviewId) => {
-    if (!window.confirm("Delete this review?")) return;
+  const handleDelete = (reviewId) => {
+    setDeleteTarget(reviewId); // open modal
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await axios.delete(`${API_URL}/api/reviews/${reviewId}`, { headers });
-      setReviewed((r) => r.filter((item) => item.id !== reviewId));
+      await axios.delete(`${API_URL}/api/reviews/${deleteTarget}`, { headers });
+      setReviewed((r) => r.filter((item) => item.id !== deleteTarget));
     } catch (err) {
       alert(err.response?.data?.error || "Failed to delete review");
+    } finally {
+      setDeleteTarget(null);
     }
   };
 
@@ -464,7 +489,6 @@ export default function Reviews() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        {/* ← ADD 3: back button shows modal once, then navigates */}
         <button
           className={styles.backBtn}
           onClick={() => {
@@ -673,7 +697,17 @@ export default function Reviews() {
         <ChooseOrderSheet onClose={() => setShowChooseOrder(false)} />
       )}
 
-      {/* ← ADD 3: modal — first pending product shown, X only closes */}
+      <DeleteReviewModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onEdit={() => {
+          const item = reviewed.find((r) => r.id === deleteTarget);
+          setDeleteTarget(null);
+          if (item) handleEdit(item);
+        }}
+        onDelete={confirmDelete}
+      />
+
       <LeavePageModal
         open={showLeaveModal}
         product={pending[0] || {}}

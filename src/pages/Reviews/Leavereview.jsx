@@ -13,6 +13,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./Leavereview.module.css";
+import { LeavePageModal, SuccessModal } from "./ReviewModals";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
@@ -63,9 +64,6 @@ export default function LeaveReview() {
   const headers = useAuthHeaders();
   const photoRef = useRef();
 
-  // ── Product + edit context from navigation state ──────────────────────────
-  // New review:  navigate("/leave-review", { state: { product: { id, name, variant, image } } })
-  // Edit review: navigate("/leave-review", { state: { product: {...}, review: { id, rating, comment, hide_profile } } })
   const product = location.state?.product || null;
   const editReview = location.state?.review || null;
   const isEdit = !!editReview;
@@ -84,10 +82,12 @@ export default function LeaveReview() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  const handleRatingChange = (val) => {
-    setRating(val);
-    // setShowSheet(true);
-  };
+  // ── Modal state ───────────────────────────────────────────────────────────
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const leaveShownRef = useRef(false);
+
+  const handleRatingChange = (val) => setRating(val);
 
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files || []);
@@ -114,14 +114,47 @@ export default function LeaveReview() {
           { headers },
         );
       }
-      navigate(-1);
+      // Show success modal instead of navigating immediately
+      setShowSuccessModal(true);
     } catch (err) {
       setError(err.response?.data?.error || "Failed to submit review");
       setSubmitting(false);
     }
   };
 
-  // ── No product guard ───────────────────────────────────────────────────────
+  // ── Back button: show leave modal once per mount ──────────────────────────
+  const handleBack = () => {
+    if (!isEdit && !leaveShownRef.current) {
+      leaveShownRef.current = true;
+      setShowLeaveModal(true);
+    } else {
+      navigate(-1);
+    }
+  };
+
+  // ── LeavePageModal submit: quick-rate then show success ──────────────────
+  const handleLeaveModalSubmit = async ({
+    rating: quickRating,
+    hideProfile: quickHide,
+  }) => {
+    setShowLeaveModal(false);
+    if (product?.id && quickRating) {
+      try {
+        await axios.post(
+          `${API_URL}/api/reviews/${product.id}/add`,
+          { rating: quickRating, hide_profile: quickHide },
+          { headers },
+        );
+        setShowSuccessModal(true);
+        return; // don't navigate yet — let success modal do it
+      } catch (_) {
+        // silent — user is leaving anyway
+      }
+    }
+    navigate(-1);
+  };
+
+  // ── No product guard ──────────────────────────────────────────────────────
   if (!product) {
     return (
       <div className={styles.container}>
@@ -158,7 +191,7 @@ export default function LeaveReview() {
     );
   }
 
-  // ── Shared sub-sections ────────────────────────────────────────────────────
+  // ── Shared sub-sections ───────────────────────────────────────────────────
   const RatingHeader = () => (
     <div className={styles.ratingHeader}>
       <div className={styles.ratingHeaderLeft}>
@@ -257,7 +290,7 @@ export default function LeaveReview() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <button className={styles.backBtn} onClick={() => navigate(-1)}>
+        <button className={styles.backBtn} onClick={handleBack}>
           <ChevronLeft size={24} />
         </button>
         <h1 className={styles.headerTitle}>
@@ -266,7 +299,7 @@ export default function LeaveReview() {
         <div style={{ width: 32 }} />
       </div>
 
-      {/* Product row — real product from navigation state */}
+      {/* Product row */}
       <div className={styles.productRow}>
         <img
           src={product.image || "https://via.placeholder.com/80?text=IMG"}
@@ -283,13 +316,9 @@ export default function LeaveReview() {
       </div>
 
       <div className={styles.divider} />
-
-      {/* Inline rating row */}
       <RatingHeader />
-
       <div className={styles.divider} />
 
-      {/* Before sheet: show full form inline */}
       {!showSheet && (
         <>
           <MediaSection />
@@ -298,14 +327,12 @@ export default function LeaveReview() {
         </>
       )}
 
-      {/* After rating selected: bottom sheet slides up */}
       {showSheet && (
         <div
           className={styles.sheetOverlay}
           onClick={() => setShowSheet(false)}
         >
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()}>
-            {/* Low-rating help banner */}
             {rating > 0 && rating <= 2 && (
               <div className={styles.getHelpBox}>
                 <p className={styles.getHelpText}>
@@ -317,13 +344,33 @@ export default function LeaveReview() {
                 </button>
               </div>
             )}
-
             <MediaSection />
             <TextSection />
             <BottomSection />
           </div>
         </div>
       )}
+
+      {/* Success Modal — shown after any review is submitted */}
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={() => {
+          setShowSuccessModal(false);
+          navigate(-1);
+        }}
+        onGoToReviews={() => {
+          setShowSuccessModal(false);
+          navigate("/account-profile/reviews");
+        }}
+      />
+
+      {/* Leave Page Modal — shown once on back press without rating */}
+      <LeavePageModal
+        open={showLeaveModal}
+        product={product}
+        onClose={() => setShowLeaveModal(false)}
+        onSubmit={handleLeaveModalSubmit}
+      />
     </div>
   );
 }
