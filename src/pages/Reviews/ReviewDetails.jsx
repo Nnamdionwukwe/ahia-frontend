@@ -17,7 +17,7 @@ import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./ReviewDetails.module.css";
 import ProductCard from "../../components/ProductCard/ProductCard";
-import { SuccessModal } from "../Reviews/ReviewModals";
+import { ShareModal, SuccessModal } from "../Reviews/ReviewModals";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
@@ -250,6 +250,7 @@ export default function ReviewDetails() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [shareTarget, setShareTarget] = useState(null); // item to share
 
   // Helpful state for the THIS review card
   const [helpfulCount, setHelpfulCount] = useState(
@@ -360,7 +361,10 @@ export default function ReviewDetails() {
           <ChevronLeft size={24} />
         </button>
         <h1 className={styles.headerTitle}>Review details</h1>
-        <button className={styles.iconBtn} onClick={handleShare}>
+        <button
+          className={styles.iconBtn}
+          onClick={(item) => setShareTarget(item)}
+        >
           <Share2 size={20} />
         </button>
       </div>
@@ -604,6 +608,12 @@ export default function ReviewDetails() {
           </div>
         </div>
       )}
+
+      <ShareModal
+        open={!!shareTarget}
+        item={shareTarget || {}}
+        onClose={() => setShareTarget(null)}
+      />
 
       {/* ── Product Feed ── */}
       {products.length > 0 && (
