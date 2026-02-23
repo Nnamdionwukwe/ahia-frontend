@@ -2,7 +2,6 @@
 import { useState } from "react";
 import styles from "./ReviewModals.module.css";
 
-// ─── Shared: Star Row ────────────────────────────────────────────────────────
 function StarRow({ rating, onChange, size = 48 }) {
   const [hovered, setHovered] = useState(0);
   const labels = ["", "Awful", "Bad", "Okay", "Good", "Excellent"];
@@ -32,7 +31,6 @@ function StarRow({ rating, onChange, size = 48 }) {
   );
 }
 
-// ─── Shared: Overlay wrapper ─────────────────────────────────────────────────
 function Overlay({ children, onClose }) {
   return (
     <div
@@ -53,9 +51,6 @@ function Overlay({ children, onClose }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1. QuickReviewModal
-// ─────────────────────────────────────────────────────────────────────────────
 export function QuickReviewModal({ open, onClose, onSubmit, product = {} }) {
   const [rating, setRating] = useState(5);
   const [hideProfile, setHideProfile] = useState(false);
@@ -111,9 +106,6 @@ export function QuickReviewModal({ open, onClose, onSubmit, product = {} }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 2. LeavePageModal
-// ─────────────────────────────────────────────────────────────────────────────
 export function LeavePageModal({ open, onClose, onSubmit, product = {} }) {
   const [rating, setRating] = useState(5);
   const [hideProfile, setHideProfile] = useState(false);
@@ -169,9 +161,6 @@ export function LeavePageModal({ open, onClose, onSubmit, product = {} }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 3. DeleteReviewModal
-// ─────────────────────────────────────────────────────────────────────────────
 export function DeleteReviewModal({
   open,
   onClose,
@@ -204,9 +193,6 @@ export function DeleteReviewModal({
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 4. SuccessModal
-// ─────────────────────────────────────────────────────────────────────────────
 export function SuccessModal({
   open,
   onClose,
@@ -283,10 +269,6 @@ function SuccessGraphic() {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 5. ShareModal  — "Share to" bottom sheet
-//    Props: open, onClose, item { name, reviewText }
-// ─────────────────────────────────────────────────────────────────────────────
 export function ShareModal({ open, onClose, item = {} }) {
   const [copied, setCopied] = useState(false);
   if (!open) return null;
@@ -362,7 +344,6 @@ export function ShareModal({ open, onClose, item = {} }) {
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className={styles.shareSheet}>
-        {/* Header */}
         <div className={styles.shareHeader}>
           <span className={styles.shareTitle}>Share to</span>
           <button className={styles.shareCloseBtn} onClick={onClose}>
@@ -370,8 +351,6 @@ export function ShareModal({ open, onClose, item = {} }) {
           </button>
         </div>
         <div className={styles.shareDivider} />
-
-        {/* Social icons grid */}
         <div className={styles.shareGrid}>
           {socials.map((s) => (
             <a
@@ -389,16 +368,13 @@ export function ShareModal({ open, onClose, item = {} }) {
             </a>
           ))}
 
-          {/* Copy Link */}
+          {/* Copy Link — neutral icon */}
           <button className={styles.shareItem} onClick={handleCopyLink}>
-            <span
-              className={styles.shareIcon}
-              style={{ background: "#e5e5ea" }}
-            >
+            <span className={`${styles.shareIcon} ${styles.shareIconNeutral}`}>
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#444"
+                stroke="currentColor"
                 strokeWidth="2"
                 width="28"
                 height="28"
@@ -412,7 +388,7 @@ export function ShareModal({ open, onClose, item = {} }) {
             </span>
           </button>
 
-          {/* More */}
+          {/* More — neutral icon */}
           <button
             className={styles.shareItem}
             onClick={() => {
@@ -424,21 +400,17 @@ export function ShareModal({ open, onClose, item = {} }) {
               onClose();
             }}
           >
-            <span
-              className={styles.shareIcon}
-              style={{ background: "#e5e5ea" }}
-            >
+            <span className={`${styles.shareIcon} ${styles.shareIconNeutral}`}>
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#444"
                 strokeWidth="2.5"
                 width="28"
                 height="28"
               >
-                <circle cx="5" cy="12" r="1.5" fill="#444" />
-                <circle cx="12" cy="12" r="1.5" fill="#444" />
-                <circle cx="19" cy="12" r="1.5" fill="#444" />
+                <circle cx="5" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+                <circle cx="19" cy="12" r="1.5" fill="currentColor" />
               </svg>
             </span>
             <span className={styles.shareLabel}>More</span>

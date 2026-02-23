@@ -1,4 +1,5 @@
 /* src/components/ReviewModals.module.css */
+/* All hardcoded colors replaced with CSS vars from globals.css */
 
 /* ==================== OVERLAY ==================== */
 .overlay {
@@ -24,7 +25,7 @@
 
 /* ==================== SHEET ==================== */
 .sheet {
-  background: #ffffff;
+  background: var(--bg-primary);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
@@ -35,6 +36,7 @@
   align-items: center;
   gap: 0;
   animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: background-color 0.3s ease;
 }
 
 @keyframes slideUp {
@@ -73,14 +75,16 @@
 .leaveTitle {
   font-size: 17px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-align: center;
   line-height: 1.45;
   margin: 0 0 20px;
+  transition: color 0.3s ease;
 }
+
 .productPreview {
   width: 100%;
-  background: #f7f7f7;
+  background: var(--bg-secondary);
   border-radius: 14px;
   padding: 16px 20px 20px;
   display: flex;
@@ -89,7 +93,9 @@
   gap: 16px;
   margin-bottom: 20px;
   position: relative;
+  transition: background-color 0.3s ease;
 }
+
 .productImg {
   width: 90px;
   height: 90px;
@@ -105,36 +111,43 @@
   gap: 10px;
   width: 100%;
 }
+
 .ratingLabel {
   position: absolute;
   top: 14px;
   right: 14px;
   background: transparent;
-  border: 1.5px solid #f97316;
-  color: #f97316;
+  border: 1.5px solid var(--warning-color);
+  color: var(--warning-color);
   font-size: 12px;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 20px;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
+
 .starRow {
   display: flex;
   gap: 4px;
 }
+
 .starBtn {
   background: none;
   border: none;
   cursor: pointer;
-  color: #e0e0e0;
+  color: var(--border-color);
   padding: 0;
   line-height: 1;
   transition:
     color 0.1s,
-    transform 0.1s;
+    transform 0.1s,
+    border-color 0.3s ease;
 }
 .starBtn:hover,
 .starOn {
-  color: #f97316;
+  color: var(--warning-color);
 }
 .starBtn:hover {
   transform: scale(1.12);
@@ -149,46 +162,52 @@
   margin-top: 14px;
   user-select: none;
 }
+
 .radioOuter {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 2px solid #c0c0c0;
+  border: 2px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s ease;
 }
 .radioChecked {
-  border-color: #f97316;
+  border-color: var(--warning-color);
 }
 .radioDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #f97316;
+  background: var(--warning-color);
 }
+
 .hideLabel {
   font-size: 14px;
-  color: #555;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
 /* ==================== DELETE MODAL ==================== */
 .deleteTitle {
   font-size: 18px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-align: center;
   margin: 0 0 14px;
   line-height: 1.4;
+  transition: color 0.3s ease;
 }
+
 .deleteBody {
   font-size: 14px;
-  color: #f97316;
+  color: var(--warning-color);
   text-align: center;
   line-height: 1.65;
   margin: 0 0 24px;
+  transition: color 0.3s ease;
 }
 
 /* ==================== SUCCESS MODAL ==================== */
@@ -197,61 +216,110 @@
   height: 100px;
   margin-bottom: 14px;
 }
+
+/* SVG adapts strokes/fills to theme */
+.successSvg circle,
+.successSvg path,
+.successSvg rect {
+  transition:
+    stroke 0.3s ease,
+    fill 0.3s ease;
+}
+
+/* Dark mode: swap black strokes to white */
+[data-theme="dark"] .successSvg circle[stroke="#1a1a1a"],
+[data-theme="dark"] .successSvg path[stroke="#1a1a1a"],
+[data-theme="dark"] .successSvg rect[stroke="#1a1a1a"],
+.dark .successSvg circle[stroke="#1a1a1a"],
+.dark .successSvg path[stroke="#1a1a1a"],
+.dark .successSvg rect[stroke="#1a1a1a"] {
+  stroke: var(--text-primary);
+}
+
+/* Dark mode: swap black fills to white */
+[data-theme="dark"] .successSvg circle[fill="#1a1a1a"],
+[data-theme="dark"] .successSvg path[fill="#1a1a1a"],
+.dark .successSvg circle[fill="#1a1a1a"],
+.dark .successSvg path[fill="#1a1a1a"] {
+  fill: var(--text-primary);
+}
+
+/* Dark mode: the white-filled rect (pencil body) uses card bg */
+[data-theme="dark"] .successSvg rect,
+.dark .successSvg rect {
+  fill: var(--bg-secondary);
+  stroke: var(--text-primary);
+}
+
 .successTitle {
   font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 8px;
   text-align: center;
+  transition: color 0.3s ease;
 }
+
 .successBodyText {
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   text-align: center;
   line-height: 1.6;
   margin: 0 0 24px;
+  transition: color 0.3s ease;
 }
+
 .successPage {
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 40px 24px 24px;
-  background: #fff;
+  background: var(--bg-primary);
+  transition: background-color 0.3s ease;
 }
+
 .successSub {
   font-size: 15px;
-  color: #555;
+  color: var(--text-secondary);
   margin: 4px 0 6px;
+  transition: color 0.3s ease;
 }
+
 .successCount {
-  color: #f97316;
+  color: var(--warning-color);
   font-weight: 700;
 }
+
 .goToReviews {
   background: none;
   border: none;
-  color: #999;
+  color: var(--text-secondary);
   font-size: 14px;
   cursor: pointer;
   padding: 0;
   margin-top: 4px;
+  transition: color 0.3s ease;
+}
+.goToReviews:hover {
+  color: var(--text-primary);
 }
 
 /* ==================== BUTTONS ==================== */
 .btnOrange {
   width: 100%;
   padding: 16px;
-  background: #f97316;
+  background: var(--warning-color);
   color: #fff;
   border: none;
   border-radius: 50px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
+  margin-top: 4px;
   transition:
     opacity 0.15s,
-    transform 0.1s;
-  margin-top: 4px;
+    transform 0.1s,
+    background-color 0.3s ease;
 }
 .btnOrange:hover:not(:disabled) {
   opacity: 0.92;
@@ -261,21 +329,25 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
 .btnOutline {
   width: 100%;
   padding: 15px;
-  background: #fff;
-  color: #1a1a1a;
-  border: 2px solid #1a1a1a;
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--text-primary);
   border-radius: 50px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
   margin-top: 12px;
-  transition: background-color 0.15s;
+  transition:
+    background-color 0.2s ease,
+    color 0.3s ease,
+    border-color 0.3s ease;
 }
 .btnOutline:hover:not(:disabled) {
-  background: #f5f5f5;
+  background: var(--bg-secondary);
 }
 .btnOutline:disabled {
   opacity: 0.5;
@@ -284,51 +356,64 @@
 
 /* ==================== SHARE MODAL ==================== */
 .shareSheet {
-  background: #ffffff;
+  background: var(--bg-primary);
   border-radius: 20px 20px 0 0;
   width: 100%;
   max-width: 480px;
   padding: 0 0 40px;
   animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: background-color 0.3s ease;
 }
+
 .shareHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px 16px;
 }
+
 .shareTitle {
   font-size: 17px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   flex: 1;
   text-align: center;
   margin-left: 36px;
+  transition: color 0.3s ease;
 }
+
 .shareCloseBtn {
   width: 32px;
   height: 32px;
   border: none;
   background: none;
   font-size: 18px;
-  color: #888;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: color 0.3s ease;
 }
+.shareCloseBtn:hover {
+  color: var(--text-primary);
+}
+
 .shareDivider {
   height: 1px;
-  background: #f0f0f0;
+  background: var(--border-color);
   margin: 0 0 24px;
+  transition: background-color 0.3s ease;
 }
+
 .shareGrid {
   display: flex;
   flex-wrap: wrap;
   gap: 24px 16px;
   padding: 0 24px;
 }
+
 .shareItem {
   display: flex;
   flex-direction: column;
@@ -341,6 +426,7 @@
   color: inherit;
   width: calc(25% - 12px);
 }
+
 .shareIcon {
   width: 64px;
   height: 64px;
@@ -349,10 +435,29 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  transition: background-color 0.3s ease;
 }
+
+/* Neutral (grey) share icons — Copy Link & More */
+.shareIconNeutral {
+  background: var(--bg-secondary) !important;
+  transition: background-color 0.3s ease;
+}
+/* In dark mode their strokes/fills flip to light */
+[data-theme="dark"] .shareIconNeutral svg,
+.dark .shareIconNeutral svg {
+  stroke: var(--text-primary) !important;
+}
+[data-theme="dark"] .shareIconNeutral svg circle[fill],
+.dark .shareIconNeutral svg circle[fill] {
+  fill: var(--text-primary) !important;
+  stroke: none !important;
+}
+
 .shareLabel {
   font-size: 12px;
-  color: #1a1a1a;
+  color: var(--text-primary);
   text-align: center;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
