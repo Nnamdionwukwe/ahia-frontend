@@ -17,6 +17,7 @@ import axios from "axios";
 import useAuthStore from "../../store/authStore";
 import styles from "./ReviewDetails.module.css";
 import ProductCard from "../../components/ProductCard/ProductCard";
+import { SuccessModal } from "../Reviews/ReviewModals";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 const RATING_LABELS = ["", "Poor", "Fair", "Average", "Good", "Excellent"];
@@ -248,9 +249,9 @@ export default function ReviewDetails() {
   const [sheetInitialRating, setSheetInitialRating] = useState(0);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Helpful state for the THIS review card
-  const [helpfulActive, setHelpfulActive] = useState(false);
   const [helpfulCount, setHelpfulCount] = useState(
     passedReview?.helpfulCount || 0,
   );
@@ -313,6 +314,7 @@ export default function ReviewDetails() {
   const handleSubmitted = (productId) => {
     setSubmitted((s) => ({ ...s, [productId]: true }));
     fetchData();
+    setShowSuccessModal(true);
   };
 
   // ── Share ─────────────────────────────────────────────────────────────────────
@@ -567,15 +569,9 @@ export default function ReviewDetails() {
                     <span className={styles.submittedTag}>Submitted ✓</span>
                   ) : (
                     // Opens LeaveReviewSheet → POST /api/reviews/:productId/add
-
                     <button
                       className={styles.leaveReviewOrange}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate("/leave-review", {
-                          state: { product: item },
-                        });
-                      }}
+                      onClick={() => openSheet(item)}
                     >
                       Leave a review
                     </button>
@@ -617,6 +613,16 @@ export default function ReviewDetails() {
           ))}
         </div>
       )}
+
+      {/* ── Success Modal ── */}
+      <SuccessModal
+        open={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        onGoToReviews={() => {
+          setShowSuccessModal(false);
+          navigate("/account-profile/reviews");
+        }}
+      />
 
       {/* ── Leave / Edit Review Sheet ── */}
       {sheetProduct && (
