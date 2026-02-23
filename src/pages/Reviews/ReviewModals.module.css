@@ -217,38 +217,10 @@
   margin-bottom: 14px;
 }
 
-/* SVG adapts strokes/fills to theme */
-.successSvg circle,
-.successSvg path,
-.successSvg rect {
-  transition:
-    stroke 0.3s ease,
-    fill 0.3s ease;
-}
-
-/* Dark mode: swap black strokes to white */
-[data-theme="dark"] .successSvg circle[stroke="#1a1a1a"],
-[data-theme="dark"] .successSvg path[stroke="#1a1a1a"],
-[data-theme="dark"] .successSvg rect[stroke="#1a1a1a"],
-.dark .successSvg circle[stroke="#1a1a1a"],
-.dark .successSvg path[stroke="#1a1a1a"],
-.dark .successSvg rect[stroke="#1a1a1a"] {
-  stroke: var(--text-primary);
-}
-
-/* Dark mode: swap black fills to white */
-[data-theme="dark"] .successSvg circle[fill="#1a1a1a"],
-[data-theme="dark"] .successSvg path[fill="#1a1a1a"],
-.dark .successSvg circle[fill="#1a1a1a"],
-.dark .successSvg path[fill="#1a1a1a"] {
-  fill: var(--text-primary);
-}
-
-/* Dark mode: the white-filled rect (pencil body) uses card bg */
-[data-theme="dark"] .successSvg rect,
-.dark .successSvg rect {
-  fill: var(--bg-secondary);
-  stroke: var(--text-primary);
+/* SVG uses currentColor throughout — inherits from var(--text-primary) automatically */
+.successSvg {
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .successTitle {

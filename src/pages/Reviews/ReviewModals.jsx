@@ -237,34 +237,70 @@ function SuccessGraphic() {
   return (
     <svg
       className={styles.successSvg}
-      viewBox="0 0 120 120"
+      viewBox="0 0 100 100"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle cx="30" cy="22" r="2.5" fill="#1a1a1a" />
-      <circle cx="90" cy="22" r="2.5" fill="#1a1a1a" />
-      <circle cx="18" cy="55" r="2" fill="#1a1a1a" />
-      <circle cx="102" cy="55" r="2" fill="#1a1a1a" />
-      <circle cx="55" cy="60" r="32" stroke="#1a1a1a" strokeWidth="3" />
+      {/* Decorative dots — use currentColor so they flip with theme */}
+      <circle cx="20" cy="18" r="2.5" fill="currentColor" opacity="0.35" />
+      <circle cx="80" cy="18" r="2.5" fill="currentColor" opacity="0.35" />
+      <circle cx="10" cy="50" r="2" fill="currentColor" opacity="0.25" />
+      <circle cx="90" cy="50" r="2" fill="currentColor" opacity="0.25" />
+
+      {/* Main circle */}
+      <circle cx="50" cy="55" r="32" stroke="currentColor" strokeWidth="3" />
+
+      {/* Checkmark — fully stroked, no fills */}
       <path
-        d="M40 60 L51 71 L70 48"
-        stroke="#1a1a1a"
-        strokeWidth="3.5"
+        d="M35 55 L46 67 L66 42"
+        stroke="currentColor"
+        strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <rect
-        x="72"
-        y="68"
-        width="10"
-        height="24"
-        rx="2"
-        transform="rotate(-38 72 68)"
-        stroke="#1a1a1a"
-        strokeWidth="2.5"
-        fill="white"
-      />
-      <path d="M79 83 L83 92 L74 88 Z" fill="#1a1a1a" />
+
+      {/* Pencil — positioned outside the circle, top-right */}
+      <g transform="translate(68, 10) rotate(45)">
+        {/* Pencil body */}
+        <rect
+          x="0"
+          y="0"
+          width="9"
+          height="22"
+          rx="2"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="var(--bg-primary)"
+        />
+        {/* Pencil tip triangle */}
+        <path
+          d="M0 22 L4.5 30 L9 22 Z"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinejoin="round"
+          fill="var(--bg-primary)"
+        />
+        {/* Pencil tip point */}
+        <line
+          x1="4.5"
+          y1="28"
+          x2="4.5"
+          y2="31"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        {/* Eraser band */}
+        <line
+          x1="0"
+          y1="5"
+          x2="9"
+          y2="5"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          opacity="0.5"
+        />
+      </g>
     </svg>
   );
 }
