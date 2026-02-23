@@ -6,7 +6,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.55);
   display: flex;
-  align-items: flex-end; /* sheet slides up from bottom like mobile */
+  align-items: flex-end;
   justify-content: center;
   z-index: 9999;
   padding: 0;
@@ -63,7 +63,6 @@
   cursor: pointer;
   padding: 0;
 }
-
 .closeX {
   font-size: 15px;
   line-height: 1;
@@ -79,8 +78,6 @@
   line-height: 1.45;
   margin: 0 0 20px;
 }
-
-/* product card with image */
 .productPreview {
   width: 100%;
   background: #f7f7f7;
@@ -93,19 +90,6 @@
   margin-bottom: 20px;
   position: relative;
 }
-
-/* without image (Leave a Review page variant) */
-.productPreviewNoImg {
-  width: 100%;
-  background: #f7f7f7;
-  border-radius: 14px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
 .productImg {
   width: 90px;
   height: 90px;
@@ -113,7 +97,7 @@
   border-radius: 8px;
 }
 
-/* ── Rating label pill ── */
+/* ── Stars ── */
 .starSection {
   display: flex;
   flex-direction: column;
@@ -121,7 +105,6 @@
   gap: 10px;
   width: 100%;
 }
-
 .ratingLabel {
   position: absolute;
   top: 14px;
@@ -134,13 +117,10 @@
   padding: 3px 10px;
   border-radius: 20px;
 }
-
-/* ── Stars ── */
 .starRow {
   display: flex;
   gap: 4px;
 }
-
 .starBtn {
   background: none;
   border: none;
@@ -152,12 +132,10 @@
     color 0.1s,
     transform 0.1s;
 }
-
 .starBtn:hover,
 .starOn {
   color: #f97316;
 }
-
 .starBtn:hover {
   transform: scale(1.12);
 }
@@ -171,7 +149,6 @@
   margin-top: 14px;
   user-select: none;
 }
-
 .radioOuter {
   width: 20px;
   height: 20px;
@@ -183,18 +160,15 @@
   flex-shrink: 0;
   transition: border-color 0.15s;
 }
-
 .radioChecked {
   border-color: #f97316;
 }
-
 .radioDot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   background: #f97316;
 }
-
 .hideLabel {
   font-size: 14px;
   color: #555;
@@ -209,7 +183,6 @@
   margin: 0 0 14px;
   line-height: 1.4;
 }
-
 .deleteBody {
   font-size: 14px;
   color: #f97316;
@@ -224,7 +197,6 @@
   height: 100px;
   margin-bottom: 14px;
 }
-
 .successTitle {
   font-size: 20px;
   font-weight: 700;
@@ -232,7 +204,6 @@
   margin: 0 0 8px;
   text-align: center;
 }
-
 .successBodyText {
   font-size: 14px;
   color: #666;
@@ -240,8 +211,6 @@
   line-height: 1.6;
   margin: 0 0 24px;
 }
-
-/* ── Inline / full-page success (image 5) ── */
 .successPage {
   display: flex;
   flex-direction: column;
@@ -249,18 +218,15 @@
   padding: 40px 24px 24px;
   background: #fff;
 }
-
 .successSub {
   font-size: 15px;
   color: #555;
   margin: 4px 0 6px;
 }
-
 .successCount {
   color: #f97316;
   font-weight: 700;
 }
-
 .goToReviews {
   background: none;
   border: none;
@@ -287,17 +253,14 @@
     transform 0.1s;
   margin-top: 4px;
 }
-
 .btnOrange:hover:not(:disabled) {
   opacity: 0.92;
   transform: translateY(-1px);
 }
-
 .btnOrange:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
-
 .btnOutline {
   width: 100%;
   padding: 15px;
@@ -311,12 +274,85 @@
   margin-top: 12px;
   transition: background-color 0.15s;
 }
-
 .btnOutline:hover:not(:disabled) {
   background: #f5f5f5;
 }
-
 .btnOutline:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ==================== SHARE MODAL ==================== */
+.shareSheet {
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 0 0 40px;
+  animation: slideUp 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+.shareHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px 16px;
+}
+.shareTitle {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  flex: 1;
+  text-align: center;
+  margin-left: 36px;
+}
+.shareCloseBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: #888;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.shareDivider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 0 0 24px;
+}
+.shareGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 16px;
+  padding: 0 24px;
+}
+.shareItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  width: calc(25% - 12px);
+}
+.shareIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.shareLabel {
+  font-size: 12px;
+  color: #1a1a1a;
+  text-align: center;
+  font-weight: 500;
 }

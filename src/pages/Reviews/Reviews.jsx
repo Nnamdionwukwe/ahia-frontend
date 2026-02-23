@@ -24,6 +24,7 @@ import {
   LeavePageModal,
   SuccessModal,
   DeleteReviewModal,
+  ShareModal,
 } from "./ReviewModals"; // ← added SuccessModal
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
@@ -401,6 +402,7 @@ export default function Reviews() {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const leaveShownRef = useRef(false);
   const [deleteTarget, setDeleteTarget] = useState(null); // id of review pending delete
+  const [shareTarget, setShareTarget] = useState(null); // item to share
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -480,10 +482,7 @@ export default function Reviews() {
   };
 
   const handleEdit = (item) => openSheet(item, item.rating);
-  const handleShare = (item) => {
-    if (navigator.share)
-      navigator.share({ title: item.name, text: item.reviewText });
-  };
+  const handleShare = (item) => setShareTarget(item);
 
   return (
     <div className={styles.container}>
@@ -696,6 +695,12 @@ export default function Reviews() {
       {showChooseOrder && (
         <ChooseOrderSheet onClose={() => setShowChooseOrder(false)} />
       )}
+
+      <ShareModal
+        open={!!shareTarget}
+        item={shareTarget || {}}
+        onClose={() => setShareTarget(null)}
+      />
 
       <DeleteReviewModal
         open={!!deleteTarget}
