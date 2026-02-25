@@ -5,10 +5,19 @@ import { Package } from "lucide-react";
 import OrderCard from "./OrderCard";
 import styles from "./Delivered.module.css";
 import {
+  BuyAgainSheet,
   DotsMenu,
   ReturnWindowClosedModal,
-  BuyAgainSheet,
 } from "./OrderModals";
+
+console.log(
+  "DotsMenu:",
+  DotsMenu,
+  "ReturnModal:",
+  ReturnWindowClosedModal,
+  "BuyAgain:",
+  BuyAgainSheet,
+);
 
 const Delivered = ({
   orders,
@@ -21,44 +30,34 @@ const Delivered = ({
 }) => {
   const navigate = useNavigate();
 
-  // ── Modal state ─────────────────────────────────────────────────────────────
   const [returnModal, setReturnModal] = useState(false);
   const [returnDates, setReturnDates] = useState({
     closed: null,
     ordered: null,
   });
-
   const [buyAgainSheet, setBuyAgainSheet] = useState(false);
   const [buyAgainItems, setBuyAgainItems] = useState([]);
 
-  // ── Handlers ─────────────────────────────────────────────────────────────────
   const handleTrack = (order) => {
     navigate("/track-order", { state: { orderId: order._id || order.id } });
   };
 
   const handleReturnRefund = (order) => {
     const orderedAt = order.created_at || order.createdAt || order.ordered_at;
-    const returnWindowDays = 90;
     const closedAt = orderedAt
-      ? new Date(
-          new Date(orderedAt).getTime() +
-            returnWindowDays * 24 * 60 * 60 * 1000,
-        )
+      ? new Date(new Date(orderedAt).getTime() + 90 * 24 * 60 * 60 * 1000)
       : null;
     const windowStillOpen = closedAt && closedAt > new Date();
 
     if (windowStillOpen) {
-      // Return window is still open — navigate to return/refund page
       navigate("/return-refund", { state: { order } });
     } else {
-      // Window closed — show the modal
       setReturnDates({ closed: closedAt, ordered: orderedAt });
       setReturnModal(true);
     }
   };
 
   const handleBuyAgain = (order) => {
-    // Map order items to the shape BuyAgainSheet expects
     const items = (order.items || order.order_items || []).map((item) => ({
       id: item.id || item.product_id || item._id,
       name: item.name || item.product_name || item.product?.name || "Product",
@@ -72,19 +71,13 @@ const Delivered = ({
 
     setBuyAgainItems(items);
     setBuyAgainSheet(true);
-
-    // Also call parent handler if provided
     onBuyAgainClick?.(order);
   };
 
   const handleAddToCart = (selectedItems) => {
-    // selectedItems: [{ id, name, price, quantity, ... }]
-    // Wire to your cart store / API here
     console.log("Adding to cart:", selectedItems);
-    // e.g. selectedItems.forEach(item => cartStore.addItem(item));
   };
 
-  // ── Filtered orders ───────────────────────────────────────────────────────────
   const filtered = orders.filter((o) => o.status === "delivered");
 
   if (loading) {
@@ -117,7 +110,6 @@ const Delivered = ({
           onCancelClick={onCancelClick}
           onBuyAgainClick={() => handleBuyAgain(order)}
           onChangePaymentClick={onChangePaymentClick}
-          // Pass the DotsMenu component so OrderCard can render it
           dotsMenu={
             <DotsMenu
               onTrack={() => handleTrack(order)}
@@ -129,7 +121,6 @@ const Delivered = ({
         />
       ))}
 
-      {/* ── Return Window Closed Modal ── */}
       <ReturnWindowClosedModal
         open={returnModal}
         onClose={() => setReturnModal(false)}
@@ -137,7 +128,6 @@ const Delivered = ({
         orderedDate={returnDates.ordered}
       />
 
-      {/* ── Buy This Again Sheet ── */}
       <BuyAgainSheet
         open={buyAgainSheet}
         onClose={() => setBuyAgainSheet(false)}

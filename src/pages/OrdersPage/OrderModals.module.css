@@ -1,28 +1,29 @@
 /* OrderModals.module.css */
 
 /* ══════════════════════════════════════════
-   SHARED OVERLAY BASE
+   OVERLAYS
 ══════════════════════════════════════════ */
-.overlayCenter,
-.overlayBottom {
+.overlayCenter {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.52);
-  z-index: 1000;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
   display: flex;
+  align-items: center;
   justify-content: center;
+  padding: 20px;
   animation: fadeOverlay 0.2s ease;
 }
 
-/* Return modal — vertically centered */
-.overlayCenter {
-  align-items: center;
-  padding: 20px;
-}
-
-/* Buy Again sheet — anchored to bottom */
 .overlayBottom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
   align-items: flex-end;
+  justify-content: center;
+  animation: fadeOverlay 0.2s ease;
 }
 
 @keyframes fadeOverlay {
@@ -100,7 +101,6 @@
   }
 }
 
-/* Speech-bubble downward tail */
 .popoverTail {
   position: absolute;
   bottom: -7px;
@@ -133,7 +133,6 @@
     background-color 0.15s,
     color 0.3s ease;
 }
-
 .popoverItem:hover {
   background: var(--bg-secondary);
 }
@@ -142,13 +141,13 @@
 }
 
 /* ══════════════════════════════════════════
-   2. RETURN WINDOW CLOSED MODAL
+   SHARED CENTERED MODAL CARD (modals 2, 4, 5, 6)
 ══════════════════════════════════════════ */
 .centeredModal {
   background: var(--bg-primary);
   border-radius: 20px;
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   padding: 28px 24px 24px;
   position: relative;
   display: flex;
@@ -158,7 +157,6 @@
   transition: background-color 0.3s ease;
 }
 
-/* X button floating above the modal */
 .centeredClose {
   position: absolute;
   top: -48px;
@@ -173,12 +171,13 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: border-color 0.15s;
 }
 .centeredClose:hover {
   border-color: #fff;
+  opacity: 0.85;
 }
 
+/* ── Return Window Closed ── */
 .returnTitle {
   font-size: 20px;
   font-weight: 800;
@@ -188,7 +187,6 @@
   line-height: 1.3;
   transition: color 0.3s ease;
 }
-
 .returnBody {
   font-size: 15px;
   color: var(--text-primary);
@@ -197,12 +195,10 @@
   margin: 0 0 18px;
   transition: color 0.3s ease;
 }
-
 .returnOrange {
   color: var(--warning-color);
   font-weight: 500;
 }
-
 .returnDateBox {
   width: 100%;
   background: var(--bg-secondary);
@@ -212,21 +208,18 @@
   margin-bottom: 22px;
   transition: background-color 0.3s ease;
 }
-
 .returnDateLabel {
   font-size: 13px;
   color: var(--text-secondary);
   margin: 0 0 8px;
   transition: color 0.3s ease;
 }
-
 .returnDateMain {
   font-size: 18px;
   font-weight: 800;
   color: var(--warning-color);
   margin: 0 0 10px;
 }
-
 .returnDateSub {
   font-size: 14px;
   font-weight: 600;
@@ -234,7 +227,6 @@
   margin: 0;
   transition: color 0.3s ease;
 }
-
 .returnOkBtn {
   width: 100%;
   padding: 16px;
@@ -254,7 +246,6 @@
 .returnOkBtn:hover {
   opacity: 0.9;
 }
-
 .returnPolicyBtn {
   display: flex;
   align-items: center;
@@ -267,10 +258,108 @@
   cursor: pointer;
   font-family: inherit;
   padding: 0;
-  transition: color 0.3s ease;
 }
 .returnPolicyBtn:hover {
   opacity: 0.8;
+}
+
+/* ── Shared modal text (modals 4, 5, 6) ── */
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.45;
+  margin: 0 0 18px;
+  transition: color 0.3s ease;
+}
+.modalHighlight {
+  color: var(--warning-color);
+  font-weight: 700;
+}
+.modalDescription {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+.inlineIcon {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 3px;
+  color: var(--text-primary);
+}
+.modalList {
+  width: 100%;
+  padding-left: 20px;
+  margin: 0 0 22px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+.modalList li {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 6px;
+}
+
+.modalIconWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.modalIconGreen {
+  color: #4caf50;
+  padding: 14px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 50%;
+  box-sizing: content-box;
+}
+[data-theme="dark"] .modalIconGreen,
+.dark .modalIconGreen {
+  background: rgba(76, 175, 80, 0.18);
+}
+
+.modalPrimaryBtn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 10px;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+.modalPrimaryBtn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.modalSecondaryBtn {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background-color 0.15s,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+.modalSecondaryBtn:hover {
+  background: var(--bg-secondary);
 }
 
 /* ══════════════════════════════════════════
@@ -287,7 +376,6 @@
   animation: buySheetIn 0.28s cubic-bezier(0.32, 0.72, 0, 1);
   transition: background-color 0.3s ease;
 }
-
 @keyframes buySheetIn {
   from {
     transform: translateY(100%);
@@ -306,7 +394,6 @@
   border-bottom: 1px solid var(--border-color);
   transition: border-color 0.3s ease;
 }
-
 .buySheetTitle {
   font-size: 18px;
   font-weight: 700;
@@ -314,7 +401,6 @@
   margin: 0;
   transition: color 0.3s ease;
 }
-
 .buySheetClose {
   width: 32px;
   height: 32px;
@@ -341,7 +427,6 @@
   padding: 4px 16px 8px;
 }
 
-/* ── Item row ── */
 .buyItem {
   display: flex;
   align-items: center;
@@ -354,7 +439,6 @@
   border-bottom: none;
 }
 
-/* Circular checkbox */
 .buyCheck {
   width: 26px;
   height: 26px;
@@ -380,7 +464,6 @@
   background: var(--bg-secondary);
 }
 
-/* Product image */
 .buyItemImg {
   width: 100px;
   height: 100px;
@@ -398,7 +481,6 @@
   filter: grayscale(60%) opacity(0.55);
 }
 
-/* Info */
 .buyItemInfo {
   flex: 1;
   min-width: 0;
@@ -406,7 +488,6 @@
   flex-direction: column;
   gap: 6px;
 }
-
 .buyItemName {
   font-size: 14px;
   font-weight: 500;
@@ -451,7 +532,6 @@
   justify-content: space-between;
   gap: 8px;
 }
-
 .buyItemPrice {
   font-size: 16px;
   font-weight: 700;
@@ -459,7 +539,6 @@
   transition: color 0.3s ease;
 }
 
-/* Qty controls */
 .qtyRow {
   display: flex;
   align-items: center;
@@ -502,7 +581,6 @@
     border-color 0.3s ease;
 }
 
-/* Unavailable */
 .unavailableTitle {
   font-size: 15px;
   font-weight: 700;
@@ -513,7 +591,6 @@
 .buyItemUnavailable {
   cursor: pointer;
 }
-
 .soldOutInfo {
   display: flex;
   align-items: center;
@@ -526,7 +603,6 @@
   color: var(--text-secondary);
   flex-shrink: 0;
 }
-
 .similarBtn {
   display: inline-flex;
   align-items: center;
@@ -550,7 +626,6 @@
   background: var(--bg-secondary);
 }
 
-/* Footer */
 .buySheetFooter {
   display: flex;
   align-items: center;
@@ -561,7 +636,6 @@
   flex-shrink: 0;
   transition: border-color 0.3s ease;
 }
-
 .selectAllBtn {
   display: flex;
   align-items: center;
@@ -578,7 +652,6 @@
   color: var(--text-primary);
   transition: color 0.3s ease;
 }
-
 .addToCartBtn {
   flex: 1;
   padding: 14px 20px;
@@ -603,7 +676,6 @@
   cursor: not-allowed;
 }
 
-/* Sold out toast */
 .soldOutToast {
   position: fixed;
   top: 50%;
@@ -615,7 +687,7 @@
   border-radius: 10px;
   font-size: 14px;
   font-weight: 500;
-  z-index: 2000;
+  z-index: 10000;
   pointer-events: none;
   animation: fadeInOut 2s ease forwards;
 }
@@ -632,165 +704,4 @@
   100% {
     opacity: 0;
   }
-}
-
-/* ══════════════════════════════════════════
-   SHARED CENTERED OVERLAY (for modals 4-6)
-══════════════════════════════════════════ */
-.overlayCenter {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  animation: fadeOverlay 0.2s ease;
-}
-
-/* ── Shared modal title / body for modals 4-6 ── */
-.modalTitle {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-  text-align: center;
-  line-height: 1.45;
-  margin: 0 0 18px;
-  transition: color 0.3s ease;
-}
-
-.modalHighlight {
-  color: var(--warning-color);
-  font-weight: 700;
-}
-
-.modalDescription {
-  font-size: 14px;
-  line-height: 1.65;
-  color: var(--text-primary);
-  margin: 0 0 14px;
-  text-align: center;
-  transition: color 0.3s ease;
-}
-
-.inlineIcon {
-  display: inline-block;
-  vertical-align: middle;
-  margin: 0 3px;
-  color: var(--text-primary);
-}
-
-.modalList {
-  width: 100%;
-  padding-left: 20px;
-  margin: 0 0 22px;
-  color: var(--text-primary);
-  transition: color 0.3s ease;
-}
-
-.modalList li {
-  font-size: 14px;
-  line-height: 1.8;
-  margin-bottom: 6px;
-}
-
-/* Green icon circle for cancel modal */
-.modalIconWrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
-}
-
-.modalIconGreen {
-  color: #4caf50;
-  width: 64px;
-  height: 64px;
-  padding: 14px;
-  background: rgba(76, 175, 80, 0.1);
-  border-radius: 50%;
-  box-sizing: content-box;
-}
-
-[data-theme="dark"] .modalIconGreen,
-.dark .modalIconGreen {
-  background: rgba(76, 175, 80, 0.18);
-}
-
-/* Primary / Secondary buttons for modals 4-6 */
-.modalPrimaryBtn {
-  width: 100%;
-  padding: 15px;
-  background: linear-gradient(135deg, #ff6f00, #ff8f00);
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  font-family: inherit;
-  margin-bottom: 10px;
-  transition:
-    opacity 0.15s,
-    transform 0.15s;
-}
-
-.modalPrimaryBtn:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
-}
-
-.modalSecondaryBtn {
-  width: 100%;
-  padding: 14px;
-  background: transparent;
-  color: var(--text-primary);
-  border: 2px solid var(--border-color);
-  border-radius: 50px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    background-color 0.15s,
-    color 0.3s ease,
-    border-color 0.3s ease;
-}
-
-.modalSecondaryBtn:hover {
-  background: var(--bg-secondary);
-}
-
-/* overlayBottom is already used by BuyAgainSheet */
-.overlayBottom {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  animation: fadeOverlay 0.2s ease;
-}
-
-/* Should exist in OrderModals.module.css */
-.overlayCenter {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 1000;
-  display: flex;
-  align-items: center; /* ← centered vertically */
-  justify-content: center;
-  padding: 20px;
-}
-
-.overlayBottom {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  display: flex;
-  align-items: flex-end; /* ← pinned to bottom */
-  justify-content: center;
 }
