@@ -1,0 +1,796 @@
+/* OrderModals.module.css */
+
+/* ══════════════════════════════════════════
+   SHARED OVERLAY BASE
+══════════════════════════════════════════ */
+.overlayCenter,
+.overlayBottom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  animation: fadeOverlay 0.2s ease;
+}
+
+/* Return modal — vertically centered */
+.overlayCenter {
+  align-items: center;
+  padding: 20px;
+}
+
+/* Buy Again sheet — anchored to bottom */
+.overlayBottom {
+  align-items: flex-end;
+}
+
+@keyframes fadeOverlay {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ══════════════════════════════════════════
+   1. THREE DOTS MENU
+══════════════════════════════════════════ */
+.dotsWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.dotsBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 4px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  display: block;
+  transition: background-color 0.3s ease;
+}
+
+.dotsPopover {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  min-width: 160px;
+  z-index: 500;
+  overflow: hidden;
+  animation: popIn 0.15s ease;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Speech-bubble downward tail */
+.popoverTail {
+  position: absolute;
+  bottom: -7px;
+  left: 16px;
+  width: 14px;
+  height: 14px;
+  background: var(--bg-primary);
+  border-right: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  transform: rotate(45deg);
+  z-index: -1;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.popoverItem {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 15px 18px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background-color 0.15s,
+    color 0.3s ease;
+}
+
+.popoverItem:hover {
+  background: var(--bg-secondary);
+}
+.popoverItem + .popoverItem {
+  border-top: 1px solid var(--border-color);
+}
+
+/* ══════════════════════════════════════════
+   2. RETURN WINDOW CLOSED MODAL
+══════════════════════════════════════════ */
+.centeredModal {
+  background: var(--bg-primary);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 400px;
+  padding: 28px 24px 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.25s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: background-color 0.3s ease;
+}
+
+/* X button floating above the modal */
+.centeredClose {
+  position: absolute;
+  top: -48px;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.centeredClose:hover {
+  border-color: #fff;
+}
+
+.returnTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 14px;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.returnBody {
+  font-size: 15px;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.6;
+  margin: 0 0 18px;
+  transition: color 0.3s ease;
+}
+
+.returnOrange {
+  color: var(--warning-color);
+  font-weight: 500;
+}
+
+.returnDateBox {
+  width: 100%;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 22px;
+  transition: background-color 0.3s ease;
+}
+
+.returnDateLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  transition: color 0.3s ease;
+}
+
+.returnDateMain {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--warning-color);
+  margin: 0 0 10px;
+}
+
+.returnDateSub {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.returnOkBtn {
+  width: 100%;
+  padding: 16px;
+  background: var(--warning-color);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 14px;
+  transition:
+    opacity 0.15s,
+    background-color 0.3s ease;
+}
+.returnOkBtn:hover {
+  opacity: 0.9;
+}
+
+.returnPolicyBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--warning-color);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  transition: color 0.3s ease;
+}
+.returnPolicyBtn:hover {
+  opacity: 0.8;
+}
+
+/* ══════════════════════════════════════════
+   3. BUY THIS AGAIN — bottom sheet
+══════════════════════════════════════════ */
+.buySheet {
+  background: var(--bg-primary);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  animation: buySheetIn 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+  transition: background-color 0.3s ease;
+}
+
+@keyframes buySheetIn {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.buySheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 20px 14px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+
+.buySheetTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+.buySheetClose {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 50%;
+  transition:
+    background-color 0.15s,
+    color 0.3s ease;
+}
+.buySheetClose:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.buySheetBody {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px 16px 8px;
+}
+
+/* ── Item row ── */
+.buyItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
+}
+.buyItem:last-child {
+  border-bottom: none;
+}
+
+/* Circular checkbox */
+.buyCheck {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    border-color 0.15s,
+    background-color 0.15s;
+}
+.buyCheckOn {
+  background: var(--warning-color);
+  border-color: var(--warning-color);
+}
+.buyCheckDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: var(--bg-secondary);
+}
+
+/* Product image */
+.buyItemImg {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+}
+.buyItemImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.buyItemImgGrey img {
+  filter: grayscale(60%) opacity(0.55);
+}
+
+/* Info */
+.buyItemInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.buyItemName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.3s ease;
+}
+.buyItemNameGrey {
+  color: var(--text-secondary);
+}
+
+.buyVariantBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  align-self: flex-start;
+  transition:
+    background-color 0.15s,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+.buyVariantBtn:hover {
+  background: var(--border-color);
+}
+
+.buyItemBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.buyItemPrice {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Qty controls */
+.qtyRow {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.qtyBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-secondary);
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.3s ease;
+}
+.qtyBtn:hover {
+  background: var(--border-color);
+}
+.qtyVal {
+  width: 36px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  height: 32px;
+  line-height: 32px;
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+/* Unavailable */
+.unavailableTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 16px 0 4px;
+  transition: color 0.3s ease;
+}
+.buyItemUnavailable {
+  cursor: pointer;
+}
+
+.soldOutInfo {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+.infoIcon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.similarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  align-self: flex-start;
+  transition:
+    background-color 0.15s,
+    border-color 0.3s ease,
+    color 0.3s ease;
+}
+.similarBtn:hover {
+  background: var(--bg-secondary);
+}
+
+/* Footer */
+.buySheetFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 24px;
+  border-top: 1px solid var(--border-color);
+  gap: 14px;
+  flex-shrink: 0;
+  transition: border-color 0.3s ease;
+}
+
+.selectAllBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+.selectAllLabel {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.addToCartBtn {
+  flex: 1;
+  padding: 14px 20px;
+  background: var(--warning-color);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    opacity 0.15s,
+    background-color 0.3s ease;
+  white-space: nowrap;
+}
+.addToCartBtn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+.addToCartBtn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+/* Sold out toast */
+.soldOutToast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.76);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 2000;
+  pointer-events: none;
+  animation: fadeInOut 2s ease forwards;
+}
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ══════════════════════════════════════════
+   SHARED CENTERED OVERLAY (for modals 4-6)
+══════════════════════════════════════════ */
+.overlayCenter {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeOverlay 0.2s ease;
+}
+
+/* ── Shared modal title / body for modals 4-6 ── */
+.modalTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.45;
+  margin: 0 0 18px;
+  transition: color 0.3s ease;
+}
+
+.modalHighlight {
+  color: var(--warning-color);
+  font-weight: 700;
+}
+
+.modalDescription {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-primary);
+  margin: 0 0 14px;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.inlineIcon {
+  display: inline-block;
+  vertical-align: middle;
+  margin: 0 3px;
+  color: var(--text-primary);
+}
+
+.modalList {
+  width: 100%;
+  padding-left: 20px;
+  margin: 0 0 22px;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.modalList li {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 6px;
+}
+
+/* Green icon circle for cancel modal */
+.modalIconWrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.modalIconGreen {
+  color: #4caf50;
+  width: 64px;
+  height: 64px;
+  padding: 14px;
+  background: rgba(76, 175, 80, 0.1);
+  border-radius: 50%;
+  box-sizing: content-box;
+}
+
+[data-theme="dark"] .modalIconGreen,
+.dark .modalIconGreen {
+  background: rgba(76, 175, 80, 0.18);
+}
+
+/* Primary / Secondary buttons for modals 4-6 */
+.modalPrimaryBtn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, #ff6f00, #ff8f00);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 10px;
+  transition:
+    opacity 0.15s,
+    transform 0.15s;
+}
+
+.modalPrimaryBtn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.modalSecondaryBtn {
+  width: 100%;
+  padding: 14px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background-color 0.15s,
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.modalSecondaryBtn:hover {
+  background: var(--bg-secondary);
+}
+
+/* overlayBottom is already used by BuyAgainSheet */
+.overlayBottom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeOverlay 0.2s ease;
+}
+
+/* Should exist in OrderModals.module.css */
+.overlayCenter {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center; /* ← centered vertically */
+  justify-content: center;
+  padding: 20px;
+}
+
+.overlayBottom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end; /* ← pinned to bottom */
+  justify-content: center;
+}

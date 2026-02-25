@@ -74,11 +74,12 @@ const App = () => {
                 isAuthenticated ? <CheckoutPage /> : <Navigate to="/auth" />
               }
             />
-            <Route path="/bank-transfer" element={<BankTransferPayment />} />
-            <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
 
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/order-success-page" element={<OrderSuccessPage />} />
+            <Route path="/orders/:orderId" element={<OrderDetailsPage />} />
+
+            <Route path="/bank-transfer" element={<BankTransferPayment />} />
             <Route path="/flash-sales" element={<FlashSalesList />} />
 
             <Route path="/seasonal-sales" element={<SeasonalSalesList />} />

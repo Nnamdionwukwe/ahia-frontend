@@ -1,36 +1,40 @@
+// src/pages/Orders/OrdersPage.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import {
   Search,
-  ChevronRight,
-  Star,
-  MoreHorizontal,
-  AlertCircle,
-  Clock,
   Package,
   Truck,
   CheckCircle,
   XCircle,
-  X,
-  Building2,
+  Clock,
 } from "lucide-react";
+import axios from "axios";
 import styles from "./OrdersPage.module.css";
 import useAuthStore from "../../store/authStore";
+import AllOrders from "./AllOrders";
+import Processing from "./Processing";
+import Shipped from "./Shipped";
+import Delivered from "./Delivered";
+import Returns from "./Returns";
+import {
+  CancelOrderModal,
+  PaymentConfirmModal,
+  PlaceOrderAgainModal,
+} from "./OrderModals";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 const OrdersPage = () => {
   const navigate = useNavigate();
-  const { user, accessToken } = useAuthStore();
+  const { accessToken } = useAuthStore();
 
   const [activeTab, setActiveTab] = useState("all");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [showMenu, setShowMenu] = useState(null);
 
-  // Modal states
+  // ── Modal state ─────────────────────────────────────────────────────────────
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPlaceOrderModal, setShowPlaceOrderModal] = useState(false);
@@ -45,33 +49,10 @@ const OrdersPage = () => {
     { id: "returns", label: "Returns", icon: XCircle },
   ];
 
+  // ── Fetch orders ─────────────────────────────────────────────────────────────
   useEffect(() => {
     fetchOrders();
   }, [activeTab]);
-
-  // Countdown timer for payment processing orders
-  useEffect(() => {
-    if (!selectedOrder || !selectedOrder.payment_expires_at) return;
-
-    const updateCountdown = () => {
-      const expiresAt = new Date(selectedOrder.payment_expires_at);
-      const now = new Date();
-      const diff = Math.max(0, expiresAt - now);
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      setCountdown(
-        `${hours}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`,
-      );
-    };
-
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
-
-    return () => clearInterval(timer);
-  }, [selectedOrder]);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -82,11 +63,8 @@ const OrdersPage = () => {
           page: 1,
           limit: 50,
         },
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
-
       setOrders(response.data.orders || []);
     } catch (error) {
       console.error("Failed to fetch orders:", error);
@@ -95,33 +73,47 @@ const OrdersPage = () => {
     }
   };
 
-  const getOrderStatus = (order) => {
-    if (order.payment_status === "refunded") return "refunded";
-    if (order.payment_status === "pending") return "payment_processing";
-    if (order.status === "cancelled") return "cancelled";
-    if (order.status === "delivered") return "delivered";
-    if (order.status === "shipped") return "shipped";
-    if (order.status === "processing") return "processing";
-    return "pending";
-  };
+  // ── Countdown for payment expiry ──────────────────────────────────────────
+  useEffect(() => {
+    if (!selectedOrder?.payment_expires_at) return;
+    const update = () => {
+      const diff = Math.max(
+        0,
+        new Date(selectedOrder.payment_expires_at) - new Date(),
+      );
+      const h = Math.floor(diff / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      const s = Math.floor((diff % 60_000) / 1_000);
+      setCountdown(
+        `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`,
+      );
+    };
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
+  }, [selectedOrder]);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const formatCurrency = (amount) => {
-    return `₦${Number(amount).toLocaleString()}`;
-  };
-
+  // ── Handlers ─────────────────────────────────────────────────────────────────
   const handleCancelOrderClick = (order) => {
     setSelectedOrder(order);
     setShowCancelModal(true);
     setShowMenu(null);
+  };
+
+  const handleConfirmCancel = async () => {
+    try {
+      await axios.put(
+        `${API_URL}/api/orders/${selectedOrder.id}/cancel`,
+        {},
+        { headers: { Authorization: `Bearer ${accessToken}` } },
+      );
+      setShowCancelModal(false);
+      setSelectedOrder(null);
+      fetchOrders();
+    } catch (error) {
+      console.error("Failed to cancel order:", error);
+      alert("Failed to cancel order. Please try again.");
+    }
   };
 
   const handleBuyAgainClick = (order) => {
@@ -132,29 +124,7 @@ const OrdersPage = () => {
 
   const handleConfirmBuyAgain = () => {
     setShowPlaceOrderModal(false);
-    // Add items to cart and navigate to checkout
     navigate("/checkout");
-  };
-
-  const handleConfirmCancel = async () => {
-    try {
-      await axios.put(
-        `${API_URL}/api/orders/${selectedOrder.id}/cancel`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
-      );
-      setShowCancelModal(false);
-      setSelectedOrder(null);
-      fetchOrders();
-      alert("Order cancelled successfully");
-    } catch (error) {
-      console.error("Failed to cancel order:", error);
-      alert("Failed to cancel order. Please try again.");
-    }
   };
 
   const handleChangePaymentClick = (order) => {
@@ -170,22 +140,12 @@ const OrdersPage = () => {
 
   const handleAlreadyPaid = async () => {
     try {
-      // Call API to mark as paid/confirm payment
       await axios.post(
         `${API_URL}/api/payments/bank-transfer/confirm`,
-        {
-          reference: selectedOrder.payment_reference,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        },
+        { reference: selectedOrder.payment_reference },
+        { headers: { Authorization: `Bearer ${accessToken}` } },
       );
       setShowPaymentModal(false);
-      alert(
-        "Payment confirmation received! We'll verify your transfer shortly.",
-      );
       fetchOrders();
     } catch (error) {
       console.error("Failed to confirm payment:", error);
@@ -193,271 +153,7 @@ const OrdersPage = () => {
     }
   };
 
-  const OrderCard = ({ order }) => {
-    const status = getOrderStatus(order);
-    const isPaymentProcessing = status === "payment_processing";
-    const isRefunded = status === "refunded";
-
-    return (
-      <div className={styles.orderCard}>
-        {/* Order Header */}
-        <div className={styles.orderHeader}>
-          {status === "delivered" && (
-            <p className={styles.deliveryDate}>
-              Delivered on {formatDate(order.delivered_at || order.updated_at)}
-            </p>
-          )}
-          {isPaymentProcessing && (
-            <div className={styles.statusBadge}>
-              <Clock size={16} />
-              <span>Payment processing</span>
-            </div>
-          )}
-          {isRefunded && <p className={styles.refundedText}>Refunded</p>}
-        </div>
-
-        {/* Order Items Preview */}
-        <div
-          className={styles.orderItems}
-          onClick={() => {
-            const id = order._id || order._id || order.id;
-            if (id) {
-              navigate(`/orders/${id}`);
-            } else {
-              console.error("Order ID is missing:", order);
-              alert("Unable to view order details");
-            }
-          }}
-        >
-          <div className={styles.itemsPreview}>
-            {order.items?.slice(0, 6).map((item, index) => (
-              <div key={index} className={styles.itemImage}>
-                <img
-                  src={item.images?.[0] || item.image || "/placeholder.png"}
-                  alt={item.name || "Product"}
-                  onError={(e) => {
-                    e.target.src = "/placeholder.png";
-                  }}
-                />
-                {item.quantity > 1 && (
-                  <span className={styles.quantityBadge}>x{item.quantity}</span>
-                )}
-              </div>
-            ))}
-            {order.items && order.items.length > 6 && (
-              <div className={styles.moreItems}>+{order.items.length - 6}</div>
-            )}
-          </div>
-          <div className={styles.orderSummary}>
-            <p className={styles.orderTotal}>
-              {formatCurrency(order.total_amount)}
-            </p>
-            <p className={styles.itemCount}>
-              {order.item_count || order.items?.length || 0} items
-            </p>
-          </div>
-          <ChevronRight size={20} className={styles.chevron} />
-        </div>
-
-        {/* Refund Information */}
-        {isRefunded && (
-          <div className={styles.refundInfo}>
-            <div className={styles.refundHeader}>
-              <AlertCircle size={18} />
-              <p>
-                Refund issued by Temu for the cancelled items. It needs to be
-                processed by your financial institution
-              </p>
-            </div>
-            <p className={styles.refundDescription}>
-              We've issued your refund for the entire order of{" "}
-              {order.item_count} items that you have requested to cancel.
-            </p>
-
-            <div className={styles.refundDetails}>
-              <div className={styles.refundRow}>
-                <span>Total refund amount:</span>
-                <strong>{formatCurrency(order.total_amount)}</strong>
-              </div>
-
-              <div className={styles.paymentMethod}>
-                <Building2 size={24} className={styles.paymentLogo} />
-                <span>Opay</span>
-                <span>{formatCurrency(order.total_amount)}</span>
-              </div>
-
-              <button className={styles.proofLink}>
-                View proof of refund sent by Temu →
-              </button>
-
-              <div className={styles.refundDate}>
-                <p>The date refund will be issued by financial institution:</p>
-                <p className={styles.dateHighlight}>
-                  {formatDate(order.refund_date || order.updated_at)}
-                </p>
-              </div>
-
-              <button className={styles.trackButton}>Track</button>
-            </div>
-
-            <p className={styles.requestedDate}>
-              Requested on {formatDate(order.created_at)}
-            </p>
-          </div>
-        )}
-
-        {/* Payment Processing Info */}
-        {isPaymentProcessing && (
-          <div className={styles.paymentProcessing}>
-            <Clock size={18} className={styles.processingIcon} />
-            <div className={styles.processingText}>
-              <p>
-                We've reserved your order.{" "}
-                <span className={styles.highlight}>If you haven't paid</span>{" "}
-                with {order.payment_method}, you can change your payment method
-                to <span className={styles.paymentIcons}>💳 💰 🍎</span> or
-                another payment method to{" "}
-                <span className={styles.highlight}>
-                  receive your items faster.
-                </span>
-              </p>
-            </div>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className={styles.actionButtons}>
-          <button
-            className={styles.moreButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowMenu(
-                showMenu === order._id || order.id
-                  ? null
-                  : order._id || order.id,
-              );
-            }}
-          >
-            <MoreHorizontal size={20} />
-          </button>
-
-          {showMenu === order._id ||
-            (order.id && (
-              <div className={styles.menuDropdown}>
-                {status === "payment_processing" && (
-                  <>
-                    <button
-                      onClick={() => {
-                        setShowMenu(null);
-                        navigate(
-                          `/orders/${order._id || order.id}/edit-address`,
-                        );
-                      }}
-                    >
-                      Change address
-                    </button>
-                    <button onClick={() => handleBuyAgainClick(order)}>
-                      Buy this again
-                    </button>
-                  </>
-                )}
-                {(status === "delivered" || status === "refunded") && (
-                  <button onClick={() => handleBuyAgainClick(order)}>
-                    Buy this again
-                  </button>
-                )}
-                <button
-                  onClick={() => {
-                    setShowMenu(null);
-                    navigate(`/orders/${order._id || order.id}`);
-                  }}
-                >
-                  View details
-                </button>
-                <button
-                  onClick={() => {
-                    setShowMenu(null);
-                    navigate(`/support?order_id=${order._id || order.id}`);
-                  }}
-                >
-                  Contact support
-                </button>
-                {(status === "pending" || status === "payment_processing") && (
-                  <button onClick={() => handleCancelOrderClick(order)}>
-                    Cancel order
-                  </button>
-                )}
-              </div>
-            ))}
-
-          {status === "delivered" && (
-            <>
-              <button className={styles.secondaryButton}>Return/Refund</button>
-              <button className={styles.secondaryButton}>Buy this again</button>
-              <button className={styles.primaryButton}>Leave a review</button>
-            </>
-          )}
-
-          {status === "refunded" && (
-            <>
-              <button className={styles.secondaryButton}>Refund details</button>
-              <button className={styles.secondaryButton}>Buy this again</button>
-            </>
-          )}
-
-          {isPaymentProcessing && (
-            <>
-              <button
-                className={styles.secondaryButton}
-                onClick={() => handleCancelOrderClick(order)}
-              >
-                Cancel order
-              </button>
-              <button
-                className={styles.primaryButton}
-                onClick={() => handleChangePaymentClick(order)}
-              >
-                Change payment method
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  const ItemsReadyForReview = () => {
-    const deliveredOrders = orders.filter((o) => o.status === "delivered");
-    if (deliveredOrders.length === 0) return null;
-
-    return (
-      <div className={styles.reviewSection}>
-        <div className={styles.reviewHeader}>
-          <h3>Items ready for review ({deliveredOrders.length})</h3>
-          <button onClick={() => setActiveTab("delivered")}>See all →</button>
-        </div>
-        <div className={styles.reviewItems}>
-          {deliveredOrders.slice(0, 3).map((order) =>
-            order.items?.slice(0, 1).map((item, idx) => (
-              <div key={idx} className={styles.reviewItem}>
-                <img
-                  src={item.images?.[0] || "/placeholder.png"}
-                  alt={item.name}
-                />
-                <p>{item.name}</p>
-                <div className={styles.stars}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star key={star} size={20} />
-                  ))}
-                </div>
-              </div>
-            )),
-          )}
-        </div>
-      </div>
-    );
-  };
-
+  // ── Auth guard ────────────────────────────────────────────────────────────────
   if (!accessToken) {
     return (
       <div className={styles.container}>
@@ -469,6 +165,16 @@ const OrdersPage = () => {
     );
   }
 
+  const sharedProps = {
+    orders,
+    loading,
+    showMenu,
+    setShowMenu,
+    onCancelClick: handleCancelOrderClick,
+    onBuyAgainClick: handleBuyAgainClick,
+    onChangePaymentClick: handleChangePaymentClick,
+  };
+
   return (
     <div className={styles.container}>
       {/* Header */}
@@ -477,7 +183,7 @@ const OrdersPage = () => {
           ←
         </button>
         <h1>Your orders</h1>
-        <button className={styles.searchButton} onClick={() => {}}>
+        <button className={styles.searchButton}>
           <Search size={24} />
         </button>
       </header>
@@ -497,173 +203,33 @@ const OrdersPage = () => {
 
       {/* Content */}
       <div className={styles.content}>
-        {loading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner} />
-            <p>Loading orders...</p>
-          </div>
-        ) : orders.length === 0 ? (
-          <div className={styles.emptyState}>
-            <Package size={64} className={styles.emptyIcon} />
-            <p>No orders found</p>
-            <button onClick={() => navigate("/")}>Start shopping</button>
-          </div>
-        ) : (
-          <>
-            {activeTab === "all" && <ItemsReadyForReview />}
-            {orders.map((order) => (
-              <OrderCard key={order._id || order.id} order={order} />
-            ))}
-          </>
-        )}
+        {activeTab === "all" && <AllOrders {...sharedProps} />}
+        {activeTab === "processing" && <Processing {...sharedProps} />}
+        {activeTab === "shipped" && <Shipped {...sharedProps} />}
+        {activeTab === "delivered" && <Delivered {...sharedProps} />}
+        {activeTab === "returns" && <Returns {...sharedProps} />}
       </div>
 
-      {/* Cancel Order Modal */}
-      {showCancelModal && selectedOrder && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowCancelModal(false)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.closeButton}
-              onClick={() => setShowCancelModal(false)}
-            >
-              <X size={24} />
-            </button>
+      {/* ── Modals (all from OrderModals.jsx) ── */}
+      <CancelOrderModal
+        open={showCancelModal}
+        onClose={() => setShowCancelModal(false)}
+        onConfirmCancel={handleConfirmCancel}
+      />
 
-            <div className={styles.modalIcon}>
-              <CheckCircle size={48} />
-            </div>
+      <PaymentConfirmModal
+        open={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onContinueToPay={handleContinueToPay}
+        onAlreadyPaid={handleAlreadyPaid}
+        countdown={countdown}
+      />
 
-            <h2 className={styles.modalTitle}>
-              Your order will be processed{" "}
-              <span className={styles.modalHighlight}>within 5 min.</span> Are
-              you sure you want to cancel this order?
-            </h2>
-
-            <ul className={styles.modalList}>
-              <li>We will keep your payment safe.</li>
-              <li>Once the payment is completed, you will receive an email.</li>
-              <li>If canceled, item(s) will be returned to your cart.</li>
-            </ul>
-
-            <button
-              className={styles.modalPrimaryButton}
-              onClick={() => setShowCancelModal(false)}
-            >
-              Keep this order
-            </button>
-
-            <button
-              className={styles.modalSecondaryButton}
-              onClick={handleConfirmCancel}
-            >
-              Cancel this order
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Payment Confirmation Modal */}
-      {showPaymentModal && selectedOrder && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowPaymentModal(false)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.closeButton}
-              onClick={() => setShowPaymentModal(false)}
-            >
-              <X size={24} />
-            </button>
-
-            <h2 className={styles.modalTitle}>
-              Have you already paid for this order?
-            </h2>
-
-            <p className={styles.modalDescription}>
-              <span className={styles.modalHighlight}>
-                If you have already paid with
-              </span>{" "}
-              <Building2 size={20} className={styles.inlineIcon} /> Bank
-              transfer, please wait for your order status to be updated.
-            </p>
-
-            <p className={styles.modalDescription}>
-              If you haven't paid yet, you can change the payment method to
-              complete the payment{" "}
-              <span className={styles.modalHighlight}>
-                within {countdown || "14:47:50"}
-              </span>
-              .
-            </p>
-
-            <button
-              className={styles.modalPrimaryButton}
-              onClick={handleContinueToPay}
-            >
-              Continue to pay
-            </button>
-
-            <button
-              className={styles.modalSecondaryButton}
-              onClick={handleAlreadyPaid}
-            >
-              Already paid with Bank transfer, update
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Place Order Again Modal */}
-      {showPlaceOrderModal && selectedOrder && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowPlaceOrderModal(false)}
-        >
-          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <button
-              className={styles.closeButton}
-              onClick={() => setShowPlaceOrderModal(false)}
-            >
-              <X size={24} />
-            </button>
-
-            <h2 className={styles.modalTitle}>
-              Are you sure you want to place another order?
-            </h2>
-
-            <p className={styles.modalDescription}>
-              The payment is pending for the original order you placed.{" "}
-              <span className={styles.modalHighlight}>
-                If you would like to place this order again, the original order
-                will be canceled.
-              </span>
-            </p>
-
-            <p className={styles.modalDescription}>
-              If the payment has already been completed, please wait for the
-              status to be updated.
-            </p>
-
-            <button
-              className={styles.modalPrimaryButton}
-              onClick={handleConfirmBuyAgain}
-            >
-              Cancel the original order and buy this again
-            </button>
-
-            <button
-              className={styles.modalSecondaryButton}
-              onClick={() => setShowPlaceOrderModal(false)}
-            >
-              Wait for the payment status to update
-            </button>
-          </div>
-        </div>
-      )}
+      <PlaceOrderAgainModal
+        open={showPlaceOrderModal}
+        onClose={() => setShowPlaceOrderModal(false)}
+        onConfirm={handleConfirmBuyAgain}
+      />
     </div>
   );
 };
