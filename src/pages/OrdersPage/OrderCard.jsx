@@ -219,7 +219,7 @@ const OrderCard = ({
       )}
 
       {/* ── Order Processing Banner (status === "processing") ── */}
-      {isProcessing && (
+      {/* {isProcessing && (
         <div className={styles.orderProcessingBanner}>
           <Package size={18} className={styles.processingIcon} />
           <div className={styles.processingText}>
@@ -232,7 +232,7 @@ const OrderCard = ({
             </p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* ── Shipped Banner ── */}
       {showShippedBanner && (
@@ -286,7 +286,8 @@ const OrderCard = ({
                     {paymentInfo.icon}
                     {paymentInfo.label}
                   </span>{" "}
-                  · We're preparing your order now.
+                  Your items are being handpicked! Our team is carefully
+                  selecting, packing, and sealing your order with care.
                 </p>
               </div>
             </div>
