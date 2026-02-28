@@ -156,7 +156,8 @@ const ProductVariantModal = ({
     const label = [selectedVariant.color, selectedVariant.size]
       .filter(Boolean)
       .join(" / ");
-    onAddToCart(selectedVariant.id, quantity, selectedImage, label);
+    const newPrice = calculatePrice();
+    onAddToCart(selectedVariant.id, quantity, selectedImage, label, newPrice);
     onClose();
   };
 

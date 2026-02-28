@@ -319,6 +319,16 @@
   color: #ffb74d;
 }
 
+/* Inline payment method chip inside the processing text */
+.paymentMethodLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
 .paymentIcons {
   font-size: 16px;
 }
@@ -569,4 +579,71 @@
 :global(.dark) .orderCard {
   background-color: var(--bg-primary);
   border-color: var(--border-color);
+}
+
+/* ========================================
+   CARD PAYMENT CONFIRMED BANNER
+   (replaces paymentProcessing for card/paystack)
+======================================== */
+.cardPaymentConfirmed {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background-color: #f0faf4;
+  border-top: 1px solid #c8edd6;
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+:global([data-theme="dark"]) .cardPaymentConfirmed,
+:global(.dark) .cardPaymentConfirmed {
+  background-color: #0d2b1a;
+  border-top-color: #1a4a2e;
+}
+
+.cardPaymentIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardPaymentText {
+  flex: 1;
+}
+
+.cardPaymentTitle {
+  margin: 0 0 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #27ae60;
+  transition: color 0.3s ease;
+}
+
+:global([data-theme="dark"]) .cardPaymentTitle,
+:global(.dark) .cardPaymentTitle {
+  color: #4cd980;
+}
+
+.cardPaymentSub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  transition: color 0.3s ease;
+}
+
+.cardPaymentMethodChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }

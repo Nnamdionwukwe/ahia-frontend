@@ -101,6 +101,13 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
         <BarChart3 size={20} />
         Reviews
       </button>
+      <button
+        className={`${styles.tab} ${activeTab === "bank-transfers" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("bank-transfers")}
+      >
+        <BarChart3 size={20} />
+        Bank Tranfers
+      </button>
     </nav>
   );
 };

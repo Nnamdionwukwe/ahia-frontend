@@ -1,7 +1,13 @@
 // src/pages/Orders/OrderCard.jsx
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, Clock, AlertCircle, Building2 } from "lucide-react";
+import {
+  ChevronRight,
+  Clock,
+  AlertCircle,
+  Building2,
+  CreditCard,
+} from "lucide-react";
 import styles from "./OrderCard.module.css";
 
 export function getOrderStatus(order) {
@@ -26,16 +32,54 @@ export function formatCurrency(amount) {
   return `₦${Number(amount).toLocaleString()}`;
 }
 
+// ── Payment method config ─────────────────────────────────────────────────────
+// Returns { label, logo } for any payment_method value.
+// "paystack" and "bank_transfer" (and aliases) both show the same card UI.
+function getPaymentInfo(paymentMethod) {
+  const method = (paymentMethod || "").toLowerCase().replace(/[\s_-]/g, "");
+
+  if (
+    method === "paystack" ||
+    method === "card" ||
+    method === "debitcard" ||
+    method === "creditcard"
+  ) {
+    return {
+      label: "Paystack",
+      icon: <CreditCard size={22} className={styles.paymentLogo} />,
+    };
+  }
+
+  if (method === "banktransfer" || method === "transfer" || method === "bank") {
+    return {
+      label: "Bank Transfer",
+      icon: <Building2 size={22} className={styles.paymentLogo} />,
+    };
+  }
+
+  if (method === "opay") {
+    return {
+      label: "Opay",
+      icon: <Building2 size={22} className={styles.paymentLogo} />,
+    };
+  }
+
+  // Default fallback
+  return {
+    label: paymentMethod || "Payment",
+    icon: <Building2 size={22} className={styles.paymentLogo} />,
+  };
+}
+
 const OrderCard = ({
   order,
   showMenu,
   setShowMenu,
-  onCancelClick, // OrdersPage → CancelOrderModal
-  onBuyAgainClick, // OrdersPage → PlaceOrderAgainModal  (non-delivered)
-  // Delivered.jsx → BuyAgainSheet       (delivered)
-  onChangePaymentClick, // OrdersPage → PaymentConfirmModal
-  onReturnRefundClick, // Delivered.jsx → ReturnWindowClosedModal (delivered only)
-  dotsMenu, // Pre-built <DotsMenu> from Delivered.jsx
+  onCancelClick,
+  onBuyAgainClick,
+  onChangePaymentClick,
+  onReturnRefundClick,
+  dotsMenu,
 }) => {
   const navigate = useNavigate();
   const status = getOrderStatus(order);
@@ -43,10 +87,10 @@ const OrderCard = ({
   const isRefunded = status === "refunded";
   const isDelivered = status === "delivered";
   const orderId = order._id || order.id;
-
-  // When dotsMenu is provided we're on the Delivered tab.
-  // Use the Delivered-specific handlers; otherwise fall back to OrdersPage handlers.
   const isDeliveredTab = !!dotsMenu;
+
+  // Resolve payment display info once
+  const paymentInfo = getPaymentInfo(order.payment_method);
 
   return (
     <div className={styles.orderCard}>
@@ -122,11 +166,14 @@ const OrderCard = ({
               <span>Total refund amount:</span>
               <strong>{formatCurrency(order.total_amount)}</strong>
             </div>
+
+            {/* ── Dynamic payment method row ── */}
             <div className={styles.paymentMethod}>
-              <Building2 size={24} className={styles.paymentLogo} />
-              <span>Opay</span>
+              {paymentInfo.icon}
+              <span>{paymentInfo.label}</span>
               <span>{formatCurrency(order.total_amount)}</span>
             </div>
+
             <button className={styles.proofLink}>
               View proof of refund sent →
             </button>
@@ -152,8 +199,12 @@ const OrderCard = ({
             <p>
               We've reserved your order.{" "}
               <span className={styles.highlight}>If you haven't paid</span> with{" "}
-              {order.payment_method}, you can change your payment method to
-              receive your items faster.
+              {/* ── Show dynamic payment method label ── */}
+              <span className={styles.paymentMethodLabel}>
+                {paymentInfo.icon}
+                {paymentInfo.label}
+              </span>
+              , you can change your payment method to receive your items faster.
             </p>
           </div>
         </div>
@@ -161,10 +212,6 @@ const OrderCard = ({
 
       {/* ── Action Buttons ── */}
       <div className={styles.actionButtons}>
-        {/* THREE DOTS
-            • Delivered tab  → dotsMenu prop (Track / Return / Reviews / Buy Again)
-            • All other tabs → generic dropdown (View details / Contact support / Cancel)
-        */}
         {isDeliveredTab ? (
           dotsMenu
         ) : (
@@ -246,11 +293,10 @@ const OrderCard = ({
           <>
             <button
               className={styles.secondaryButton}
-              onClick={
-                () =>
-                  isDeliveredTab
-                    ? onReturnRefundClick?.(order) // Delivered tab → ReturnWindowClosedModal
-                    : onCancelClick?.(order) // All Orders tab → CancelOrderModal (fallback)
+              onClick={() =>
+                isDeliveredTab
+                  ? onReturnRefundClick?.(order)
+                  : onCancelClick?.(order)
               }
             >
               Return/Refund
@@ -258,8 +304,6 @@ const OrderCard = ({
             <button
               className={styles.secondaryButton}
               onClick={() => onBuyAgainClick?.(order)}
-              // Delivered tab  → Delivered.jsx handleBuyAgain → BuyAgainSheet
-              // All Orders tab → OrdersPage handleBuyAgainClick → PlaceOrderAgainModal
             >
               Buy this again
             </button>
