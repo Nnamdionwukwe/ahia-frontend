@@ -34,8 +34,8 @@
   font-weight: 600;
 }
 
-[data-theme="dark"] .statusBadge,
-.dark .statusBadge {
+:global([data-theme="dark"]) .statusBadge,
+:global(.dark) .statusBadge {
   background-color: #4a3000;
   color: #ffb74d;
 }
@@ -148,8 +148,8 @@
   border-top: 1px solid var(--border-color);
 }
 
-[data-theme="dark"] .refundInfo,
-.dark .refundInfo {
+:global([data-theme="dark"]) .refundInfo,
+:global(.dark) .refundInfo {
   background-color: #4a3000;
 }
 
@@ -277,8 +277,9 @@
     border-color 0.3s ease;
 }
 
-[data-theme="dark"] .paymentProcessing,
-.dark .paymentProcessing {
+/* :global ensures the selector escapes CSS module scoping */
+:global([data-theme="dark"]) .paymentProcessing,
+:global(.dark) .paymentProcessing {
   background-color: #2a1a00;
   border-top-color: #3d2800;
 }
@@ -290,8 +291,8 @@
   transition: color 0.3s ease;
 }
 
-[data-theme="dark"] .processingIcon,
-.dark .processingIcon {
+:global([data-theme="dark"]) .processingIcon,
+:global(.dark) .processingIcon {
   color: #ffb74d;
 }
 
@@ -313,8 +314,8 @@
   transition: color 0.3s ease;
 }
 
-[data-theme="dark"] .highlight,
-.dark .highlight {
+:global([data-theme="dark"]) .highlight,
+:global(.dark) .highlight {
   color: #ffb74d;
 }
 
@@ -380,8 +381,8 @@
   }
 }
 
-[data-theme="dark"] .menuDropdown,
-.dark .menuDropdown {
+:global([data-theme="dark"]) .menuDropdown,
+:global(.dark) .menuDropdown {
   background-color: var(--bg-primary);
   border-color: var(--border-color);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
@@ -564,8 +565,8 @@
 /* ========================================
    DARK MODE
 ======================================== */
-[data-theme="dark"] .orderCard,
-.dark .orderCard {
+:global([data-theme="dark"]) .orderCard,
+:global(.dark) .orderCard {
   background-color: var(--bg-primary);
   border-color: var(--border-color);
 }
