@@ -20,6 +20,7 @@ import Processing from "./Processing";
 import Shipped from "./Shipped";
 import Delivered from "./Delivered";
 import Returns from "./Returns";
+import { BuyAgainSheet } from "./OrderModals";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -37,6 +38,7 @@ const OrdersPage = () => {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [showPlaceOrderModal, setShowPlaceOrderModal] = useState(false);
+  const [showBuyAgainSheet, setShowBuyAgainSheet] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [countdown, setCountdown] = useState("");
 
@@ -107,6 +109,13 @@ const OrdersPage = () => {
   const handleBuyAgainClick = (order) => {
     setSelectedOrder(order);
     setShowPlaceOrderModal(true);
+    setShowMenu(null);
+  };
+
+  // Dots menu "Buy this again" → BuyAgainSheet (not PlaceOrderAgainModal)
+  const handleBuyAgainSheetClick = (order) => {
+    setSelectedOrder(order);
+    setShowBuyAgainSheet(true);
     setShowMenu(null);
   };
 
@@ -191,6 +200,7 @@ const OrdersPage = () => {
     setShowMenu,
     onCancelClick: handleCancelOrderClick,
     onBuyAgainClick: handleBuyAgainClick,
+    onBuyAgainSheetClick: handleBuyAgainSheetClick,
     onChangePaymentClick: handleChangePaymentClick,
   };
 
@@ -375,6 +385,33 @@ const OrdersPage = () => {
           </div>
         </div>
       )}
+
+      {/* Buy Again Sheet — opened from dots menu */}
+      <BuyAgainSheet
+        open={showBuyAgainSheet}
+        onClose={() => setShowBuyAgainSheet(false)}
+        items={
+          selectedOrder?.items?.map((item) => ({
+            id: item.id || item._id,
+            name: item.name,
+            image: item.images?.[0] || item.image,
+            price: item.unit_price || item.price,
+            variantName:
+              item.variantName ||
+              item.variant_name ||
+              [item.color, item.size].filter(Boolean).join(" / ") ||
+              null,
+            variantId: item.variantId || item.product_variant_id || null,
+            available: item.available !== false,
+          })) || []
+        }
+        onAddToCart={(items) => {
+          // items is array of { id, quantity, variantId, ... }
+          // wire to your cart API / store here
+          console.log("Add to cart:", items);
+          setShowBuyAgainSheet(false);
+        }}
+      />
     </div>
   );
 };

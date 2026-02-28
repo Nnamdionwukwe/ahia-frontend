@@ -50,6 +50,7 @@ const Processing = ({
           onCancelClick={onCancelClick}
           onBuyAgainClick={onBuyAgainClick}
           onChangePaymentClick={onChangePaymentClick}
+          hideStatusBadge
         />
       ))}
     </>

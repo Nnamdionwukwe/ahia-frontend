@@ -7,12 +7,32 @@ import {
   AlertCircle,
   Building2,
   CreditCard,
+  CheckCircle2,
+  Package,
 } from "lucide-react";
 import styles from "./OrderCard.module.css";
 
 export function getOrderStatus(order) {
   if (order.payment_status === "refunded") return "refunded";
   if (order.payment_status === "pending") return "payment_processing";
+
+  // Card/Paystack: payment_status is "success"/"paid" immediately but order
+  // not yet fulfilled — treat as payment_processing to show confirmed banner
+  const method = (order.payment_method || "")
+    .toLowerCase()
+    .replace(/[\s_-]/g, "");
+  const isCardMethod =
+    method === "paystack" ||
+    method === "card" ||
+    method === "debitcard" ||
+    method === "creditcard";
+  if (
+    isCardMethod &&
+    (order.status === "pending" || order.status === "processing")
+  ) {
+    return "payment_processing";
+  }
+
   if (order.status === "cancelled") return "cancelled";
   if (order.status === "delivered") return "delivered";
   if (order.status === "shipped") return "shipped";
@@ -33,8 +53,7 @@ export function formatCurrency(amount) {
 }
 
 // ── Payment method config ─────────────────────────────────────────────────────
-// Returns { label, logo } for any payment_method value.
-// "paystack" and "bank_transfer" (and aliases) both show the same card UI.
+// Returns { label, icon, isCard } for any payment_method value.
 function getPaymentInfo(paymentMethod) {
   const method = (paymentMethod || "").toLowerCase().replace(/[\s_-]/g, "");
 
@@ -47,6 +66,7 @@ function getPaymentInfo(paymentMethod) {
     return {
       label: "Paystack",
       icon: <CreditCard size={22} className={styles.paymentLogo} />,
+      isCard: true,
     };
   }
 
@@ -54,6 +74,7 @@ function getPaymentInfo(paymentMethod) {
     return {
       label: "Bank Transfer",
       icon: <Building2 size={22} className={styles.paymentLogo} />,
+      isCard: false,
     };
   }
 
@@ -61,6 +82,7 @@ function getPaymentInfo(paymentMethod) {
     return {
       label: "Opay",
       icon: <Building2 size={22} className={styles.paymentLogo} />,
+      isCard: false,
     };
   }
 
@@ -68,6 +90,7 @@ function getPaymentInfo(paymentMethod) {
   return {
     label: paymentMethod || "Payment",
     icon: <Building2 size={22} className={styles.paymentLogo} />,
+    isCard: false,
   };
 }
 
@@ -77,7 +100,9 @@ const OrderCard = ({
   setShowMenu,
   onCancelClick,
   onBuyAgainClick,
+  onBuyAgainSheetClick, // dots menu "Buy this again" → BuyAgainSheet
   onChangePaymentClick,
+  hideStatusBadge = false,
   onReturnRefundClick,
   dotsMenu,
 }) => {
@@ -86,6 +111,7 @@ const OrderCard = ({
   const isPaymentProcessing = status === "payment_processing";
   const isRefunded = status === "refunded";
   const isDelivered = status === "delivered";
+  const isProcessing = status === "processing";
   const orderId = order._id || order.id;
   const isDeliveredTab = !!dotsMenu;
 
@@ -101,7 +127,7 @@ const OrderCard = ({
             Delivered on {formatDate(order.delivered_at || order.updated_at)}
           </p>
         )}
-        {isPaymentProcessing && (
+        {isPaymentProcessing && !hideStatusBadge && (
           <div className={styles.statusBadge}>
             <Clock size={16} />
             <span>Payment processing</span>
@@ -118,7 +144,7 @@ const OrderCard = ({
         }}
       >
         <div className={styles.itemsPreview}>
-          {order.items?.slice(0, 6).map((item, index) => (
+          {(order.items || []).slice(0, 6).map((item, index) => (
             <div key={index} className={styles.itemImage}>
               <img
                 src={item.images?.[0] || item.image || "/placeholder.png"}
@@ -132,7 +158,7 @@ const OrderCard = ({
               )}
             </div>
           ))}
-          {order.items?.length > 6 && (
+          {(order.items?.length ?? 0) > 6 && (
             <div className={styles.moreItems}>+{order.items.length - 6}</div>
           )}
         </div>
@@ -158,8 +184,8 @@ const OrderCard = ({
             </p>
           </div>
           <p className={styles.refundDescription}>
-            We've issued your refund for the entire order of {order.item_count}{" "}
-            items.
+            We've issued your refund for the entire order of{" "}
+            {order.item_count || order.items?.length || 0} items.
           </p>
           <div className={styles.refundDetails}>
             <div className={styles.refundRow}>
@@ -191,23 +217,66 @@ const OrderCard = ({
         </div>
       )}
 
-      {/* ── Payment Processing Info ── */}
-      {isPaymentProcessing && (
-        <div className={styles.paymentProcessing}>
-          <Clock size={18} className={styles.processingIcon} />
+      {/* ── Order Processing Banner (status === "processing") ── */}
+      {isProcessing && (
+        <div className={styles.orderProcessingBanner}>
+          <Package size={18} className={styles.processingIcon} />
           <div className={styles.processingText}>
             <p>
-              We've reserved your order.{" "}
-              <span className={styles.highlight}>If you haven't paid</span> with{" "}
-              {/* ── Show dynamic payment method label ── */}
-              <span className={styles.paymentMethodLabel}>
-                {paymentInfo.icon}
-                {paymentInfo.label}
-              </span>
-              , you can change your payment method to receive your items faster.
+              <span className={styles.highlight}>
+                Your order is being prepared!
+              </span>{" "}
+              Our team is picking, packing, and getting everything ready. You'll
+              get a notification the moment it ships. 🚀
             </p>
           </div>
         </div>
+      )}
+
+      {/* ── Payment Processing Info ── */}
+      {isPaymentProcessing && (
+        <>
+          {order.payment_status === "pending" ||
+          order.payment_status === "processing" ? (
+            /* ══ PAYMENT NOT YET CONFIRMED (pending = not paid, processing = awaiting admin approval) ══ */
+            <div className={styles.paymentProcessing}>
+              <Clock size={18} className={styles.processingIcon} />
+              <div className={styles.processingText}>
+                <p>
+                  We've reserved your order.{" "}
+                  <span className={styles.highlight}>If you haven't paid</span>{" "}
+                  with{" "}
+                  <span className={styles.paymentMethodLabel}>
+                    {paymentInfo.icon}
+                    {paymentInfo.label}
+                  </span>
+                  , you can change your payment method to receive your items
+                  faster.
+                </p>
+              </div>
+            </div>
+          ) : (
+            /* ══ PAYMENT CONFIRMED (card/paystack paid successfully) ══ */
+            <div className={styles.cardPaymentConfirmed}>
+              <div className={styles.cardPaymentIcon}>
+                <CheckCircle2 size={22} color="#27ae60" />
+              </div>
+              <div className={styles.cardPaymentText}>
+                <p className={styles.cardPaymentTitle}>Payment received</p>
+                <p className={styles.cardPaymentSub}>
+                  Paid via{" "}
+                  <span className={styles.cardPaymentMethodChip}>
+                    {paymentInfo.icon}
+                    {paymentInfo.label}
+                  </span>{" "}
+                  Your items are being handpicked! Our team is carefully
+                  selecting, packing, and sealing your order with care. It'll be
+                  on its way to you very soon!.
+                </p>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* ── Action Buttons ── */}
@@ -251,7 +320,7 @@ const OrderCard = ({
                   <button
                     onClick={() => {
                       setShowMenu(null);
-                      onBuyAgainClick?.(order);
+                      (onBuyAgainSheetClick ?? onBuyAgainClick)?.(order);
                     }}
                   >
                     Buy this again
@@ -273,16 +342,6 @@ const OrderCard = ({
                 >
                   Contact support
                 </button>
-                {(status === "pending" || isPaymentProcessing) && (
-                  <button
-                    onClick={() => {
-                      setShowMenu(null);
-                      onCancelClick?.(order);
-                    }}
-                  >
-                    Cancel order
-                  </button>
-                )}
               </div>
             )}
           </div>
@@ -332,18 +391,23 @@ const OrderCard = ({
         {/* ── PAYMENT PROCESSING action buttons ── */}
         {isPaymentProcessing && (
           <>
+            {/* Cancel order — always shown for both card and bank transfer */}
             <button
               className={styles.secondaryButton}
               onClick={() => onCancelClick?.(order)}
             >
               Cancel order
             </button>
-            <button
-              className={styles.primaryButton}
-              onClick={() => onChangePaymentClick?.(order)}
-            >
-              Change payment method
-            </button>
+            {/* Change payment method — only when payment not yet received */}
+            {(order.payment_status === "pending" ||
+              order.payment_status === "processing") && (
+              <button
+                className={styles.primaryButton}
+                onClick={() => onChangePaymentClick?.(order)}
+              >
+                Change payment method
+              </button>
+            )}
           </>
         )}
       </div>

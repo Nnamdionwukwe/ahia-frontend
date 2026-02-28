@@ -9,9 +9,7 @@ import {
   ReturnWindowClosedModal,
   ReturnWindowOpenModal,
   BuyAgainSheet,
-  PlaceOrderAgainModal,
 } from "./OrderModals";
-import useCartStore from "../../store/cartStore";
 
 const Delivered = ({
   orders,
@@ -22,7 +20,6 @@ const Delivered = ({
   onChangePaymentClick,
 }) => {
   const navigate = useNavigate();
-  const { addToCart } = useCartStore();
 
   // Return modals
   const [returnClosedModal, setReturnClosedModal] = useState(false);
@@ -37,13 +34,9 @@ const Delivered = ({
   const [buyAgainSheet, setBuyAgainSheet] = useState(false);
   const [buyAgainItems, setBuyAgainItems] = useState([]);
 
-  // Place Order Again modal (live variant preview)
-  const [placeAgainModal, setPlaceAgainModal] = useState(false);
-  const [placeAgainOrder, setPlaceAgainOrder] = useState(null);
-
   // Add-to-cart feedback
   const [addingToCart, setAddingToCart] = useState(false);
-  const [cartToast, setCartToast] = useState(null); // { success, message }
+  const [cartToast, setCartToast] = useState(null);
 
   // ── Return/Refund handler ─────────────────────────────────────────────────
   const handleReturnRefund = (order) => {
@@ -65,12 +58,10 @@ const Delivered = ({
   // ── Buy Again handler — opens BuyAgainSheet ───────────────────────────────
   const handleBuyAgain = (order) => {
     const items = (order.items || order.order_items || []).map((item) => {
-      // This backend stores items by product_variant_id, not product_id
       const variantId =
         item.product_variant_id || item.variant_id || item.variantId || null;
       const productId =
         item.product_id || item.productId || item.product?.id || null;
-
       return {
         id: item.id,
         productId,
@@ -87,40 +78,24 @@ const Delivered = ({
         stock: item.stock ?? null,
       };
     });
-
     setBuyAgainItems(items);
     setBuyAgainSheet(true);
   };
 
-  // ── Place Order Again handler — opens PlaceOrderAgainModal ───────────────
-  const handlePlaceAgain = (order) => {
-    setPlaceAgainOrder(order);
-    setPlaceAgainModal(true);
-  };
-
-  const handleConfirmPlaceAgain = () => {
-    setPlaceAgainModal(false);
-    navigate("/checkout");
-  };
-
-  // ── Add to cart — called by BuyAgainSheet "Add N items to cart" ──────────
+  // ── Add to cart ───────────────────────────────────────────────────────────
   const handleAddToCart = async (selectedItems) => {
     if (!selectedItems.length) return;
-
     setAddingToCart(true);
-
     const results = await Promise.all(
       selectedItems.map(async (item) => {
         const token = localStorage.getItem("accessToken");
         try {
-          // Backend requires product_variant_id (NOT NULL in carts table)
           const payload = {
             product_variant_id: item.variantId,
             quantity: item.quantity || 1,
           };
           if (item.productId) payload.product_id = item.productId;
           if (item.image) payload.selected_image_url = item.image;
-
           const res = await fetch(
             `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api/cart/add`,
             {
@@ -141,12 +116,9 @@ const Delivered = ({
         }
       }),
     );
-
     setAddingToCart(false);
-
     const failed = results.filter((r) => !r.success);
     const success = results.filter((r) => r.success);
-
     if (failed.length === 0) {
       showToast(
         true,
@@ -166,8 +138,7 @@ const Delivered = ({
 
   // ── Track handler ─────────────────────────────────────────────────────────
   const handleTrack = (order) => {
-    const id = order._id || order.id;
-    navigate(`/orders/${id}`);
+    navigate(`/orders/${order._id || order.id}`);
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -202,18 +173,9 @@ const Delivered = ({
           setShowMenu={setShowMenu}
           onCancelClick={onCancelClick}
           onChangePaymentClick={onChangePaymentClick}
-          // Card buttons "Buy this again" → BuyAgainSheet (full variant picker)
           onBuyAgainClick={() => handleBuyAgain(order)}
           onReturnRefundClick={() => handleReturnRefund(order)}
-          dotsMenu={
-            <DotsMenu
-              onTrack={() => handleTrack(order)}
-              onReturnRefund={() => handleReturnRefund(order)}
-              onReviews={() => navigate("/reviews")}
-              // DotsMenu "Buy this again" → PlaceOrderAgainModal (live variant preview)
-              onBuyAgain={() => handlePlaceAgain(order)}
-            />
-          }
+          dotsMenu={<DotsMenu onTrack={() => handleTrack(order)} />}
         />
       ))}
 
@@ -235,21 +197,13 @@ const Delivered = ({
         }
       />
 
-      {/* Buy This Again sheet — full variant picker */}
+      {/* Buy This Again sheet */}
       <BuyAgainSheet
         open={buyAgainSheet}
         onClose={() => setBuyAgainSheet(false)}
         items={buyAgainItems}
         onAddToCart={handleAddToCart}
         loading={addingToCart}
-      />
-
-      {/* Place Order Again modal — live product preview with variant selection */}
-      <PlaceOrderAgainModal
-        open={placeAgainModal}
-        onClose={() => setPlaceAgainModal(false)}
-        onConfirm={handleConfirmPlaceAgain}
-        order={placeAgainOrder}
       />
 
       {/* Add-to-cart toast */}
