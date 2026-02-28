@@ -228,6 +228,7 @@ const AllOrders = ({
             onBuyAgainSheetClick={onBuyAgainSheetClick}
             onChangePaymentClick={onChangePaymentClick}
             hideStatusBadge
+            showShippedBanner={order.status === "shipped"}
           />
         );
       })}

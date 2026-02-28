@@ -103,6 +103,7 @@ const OrderCard = ({
   onBuyAgainSheetClick, // dots menu "Buy this again" → BuyAgainSheet
   onChangePaymentClick,
   hideStatusBadge = false,
+  showShippedBanner = false,
   onReturnRefundClick,
   dotsMenu,
 }) => {
@@ -224,10 +225,26 @@ const OrderCard = ({
           <div className={styles.processingText}>
             <p>
               <span className={styles.highlight}>
-                Your order is being prepared!
+                Your items are being handpicked! 🎯
               </span>{" "}
-              Our team is picking, packing, and getting everything ready. You'll
-              get a notification the moment it ships. 🚀
+              Our team is carefully selecting, packing, and sealing your order
+              with care. Sit tight — it'll be on its way to you very soon! 📦✨
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Shipped Banner ── */}
+      {showShippedBanner && (
+        <div className={styles.shippedBanner}>
+          <span className={styles.shippedBannerIcon}>🚚</span>
+          <div className={styles.processingText}>
+            <p>
+              <span className={styles.highlight}>
+                Your order is on the move!
+              </span>{" "}
+              It's out and heading straight to the Airport to be Shipped to your
+              Country.
             </p>
           </div>
         </div>
@@ -269,9 +286,7 @@ const OrderCard = ({
                     {paymentInfo.icon}
                     {paymentInfo.label}
                   </span>{" "}
-                  Your items are being handpicked! Our team is carefully
-                  selecting, packing, and sealing your order with care. It'll be
-                  on its way to you very soon!.
+                  · We're preparing your order now.
                 </p>
               </div>
             </div>

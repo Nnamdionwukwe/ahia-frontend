@@ -48,6 +48,7 @@ const Shipped = ({
           onCancelClick={onCancelClick}
           onBuyAgainClick={onBuyAgainClick}
           onChangePaymentClick={onChangePaymentClick}
+          showShippedBanner
         />
       ))}
     </>
