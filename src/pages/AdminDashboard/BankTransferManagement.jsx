@@ -6,7 +6,7 @@ import styles from "./BankTransferManagement.module.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
-// ─── helpers ────────────────────────────────────────────────────────────────
+// ─── helpers ─────────────────────────────────────────────────────────────────
 const fmtMoney = (n) =>
   `₦${Number(n || 0).toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
 
@@ -44,7 +44,6 @@ const formatCountdown = (ms) => {
   return `${h}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`;
 };
 
-// status colour map  (matches backend values: pending / processing / success / failed)
 const STATUS = {
   pending: {
     label: "Pending",
@@ -72,7 +71,7 @@ const STATUS = {
   },
 };
 
-// ─── tiny components ─────────────────────────────────────────────────────────
+// ─── tiny shared components ───────────────────────────────────────────────────
 const Badge = ({ status }) => {
   const s = STATUS[status] || {
     label: status,
@@ -91,16 +90,14 @@ const Badge = ({ status }) => {
   );
 };
 
-// Live ticking countdown — only mounts for pending/processing rows
 const Countdown = ({ expiresAt }) => {
   const [ms, setMs] = useState(() => msLeft(expiresAt));
   useEffect(() => {
     const id = setInterval(() => setMs(msLeft(expiresAt)), 1_000);
     return () => clearInterval(id);
   }, [expiresAt]);
-  const expired = ms === 0;
   return (
-    <span className={expired ? styles.expired : styles.countdown}>
+    <span className={ms === 0 ? styles.expired : styles.countdown}>
       {formatCountdown(ms)}
     </span>
   );
@@ -114,7 +111,180 @@ const StatCard = ({ label, value, sub, color }) => (
   </div>
 );
 
-// ─── Detail drawer ────────────────────────────────────────────────────────────
+// ─── Clear All Modal ──────────────────────────────────────────────────────────
+const ClearModal = ({ onClose, onConfirm, clearing }) => {
+  const [status, setStatus] = useState("failed");
+  const [olderThanDays, setOlderThanDays] = useState("");
+  const [confirmPaid, setConfirmPaid] = useState(false);
+  const [dryRunResult, setDryRunResult] = useState(null);
+  const [dryRunning, setDryRunning] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
+
+  const STATUS_OPTS = [
+    { value: "failed", label: "Failed only" },
+    { value: "pending", label: "Pending only" },
+    { value: "processing", label: "Processing only" },
+    { value: "cancelled", label: "Cancelled only" },
+    { value: "all", label: "⚠ All statuses", danger: true },
+  ];
+
+  const buildParams = () => ({
+    status,
+    olderThanDays: olderThanDays ? Number(olderThanDays) : undefined,
+    confirmPaid: status === "all" ? confirmPaid : false,
+  });
+
+  const runDryRun = async () => {
+    setDryRunning(true);
+    setDryRunResult(null);
+    try {
+      const res = await onConfirm({ ...buildParams(), dryRun: true });
+      setDryRunResult(res);
+    } finally {
+      setDryRunning(false);
+    }
+  };
+
+  const handleConfirm = () => {
+    if (!confirmed) return;
+    onConfirm({ ...buildParams(), dryRun: false });
+  };
+
+  // reset confirmation whenever options change
+  useEffect(() => {
+    setConfirmed(false);
+    setDryRunResult(null);
+  }, [status, olderThanDays, confirmPaid]);
+
+  return (
+    <div className={styles.modalOverlay} onClick={onClose}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+        {/* header */}
+        <div className={styles.modalHead}>
+          <div className={styles.modalHeadLeft}>
+            <span className={styles.modalWarningIcon}>⚠</span>
+            <h2 className={styles.modalTitle}>Clear Transfers</h2>
+          </div>
+          <button className={styles.closeBtn} onClick={onClose}>
+            ✕
+          </button>
+        </div>
+
+        <div className={styles.modalBody}>
+          <p className={styles.modalDesc}>
+            Permanently delete bank transfer records. This{" "}
+            <strong>cannot be undone</strong>. Use the dry run to preview what
+            will be deleted first.
+          </p>
+
+          {/* Status picker */}
+          <label className={styles.fieldLabel}>
+            Delete transfers with status
+          </label>
+          <div className={styles.statusPicker}>
+            {STATUS_OPTS.map((opt) => (
+              <button
+                key={opt.value}
+                className={`${styles.statusOpt} ${status === opt.value ? styles.statusOptOn : ""} ${opt.danger ? styles.statusOptDanger : ""}`}
+                onClick={() => setStatus(opt.value)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Age filter */}
+          <label className={styles.fieldLabel}>
+            Only older than (days){" "}
+            <span className={styles.optional}>optional</span>
+          </label>
+          <input
+            className={styles.fieldInput}
+            type="number"
+            min="1"
+            placeholder="e.g. 30 — leave blank for all ages"
+            value={olderThanDays}
+            onChange={(e) => setOlderThanDays(e.target.value)}
+          />
+
+          {/* Paid orders toggle — only relevant for "all" */}
+          {status === "all" && (
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                checked={confirmPaid}
+                onChange={(e) => setConfirmPaid(e.target.checked)}
+                className={styles.checkbox}
+              />
+              <span>
+                Also delete <strong>paid</strong> transfers{" "}
+                <span className={styles.dangerText}>(dangerous)</span>
+              </span>
+            </label>
+          )}
+
+          {/* Dry run result */}
+          {dryRunResult !== null && (
+            <div
+              className={`${styles.dryRunBox} ${dryRunResult === 0 ? styles.dryRunEmpty : styles.dryRunHot}`}
+            >
+              {dryRunResult === 0
+                ? "✓ No records match — nothing would be deleted."
+                : `⚠ ${dryRunResult} transfer record${dryRunResult !== 1 ? "s" : ""} would be permanently deleted.`}
+            </div>
+          )}
+
+          {/* Confirm checkbox — only shown after seeing dry run count > 0 */}
+          {dryRunResult > 0 && (
+            <label className={styles.checkRow}>
+              <input
+                type="checkbox"
+                checked={confirmed}
+                onChange={(e) => setConfirmed(e.target.checked)}
+                className={styles.checkbox}
+              />
+              <span>
+                I understand this will permanently delete{" "}
+                <strong>
+                  {dryRunResult} record{dryRunResult !== 1 ? "s" : ""}
+                </strong>
+              </span>
+            </label>
+          )}
+        </div>
+
+        {/* footer */}
+        <div className={styles.modalFoot}>
+          <button
+            className={styles.dryRunBtn}
+            onClick={runDryRun}
+            disabled={dryRunning || clearing}
+          >
+            {dryRunning ? "Checking…" : "🔍 Dry Run (preview)"}
+          </button>
+          <div className={styles.modalFootRight}>
+            <button
+              className={styles.cancelModalBtn}
+              onClick={onClose}
+              disabled={clearing}
+            >
+              Cancel
+            </button>
+            <button
+              className={styles.deleteBtn}
+              onClick={handleConfirm}
+              disabled={!confirmed || clearing || dryRunResult === 0}
+            >
+              {clearing ? "Deleting…" : "Delete Records"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─── Detail Drawer ────────────────────────────────────────────────────────────
 const Drawer = ({ row, onClose, onApprove, onReject, busy }) => {
   if (!row) return null;
   const meta = parseMeta(row.metadata);
@@ -124,7 +294,6 @@ const Drawer = ({ row, onClose, onApprove, onReject, busy }) => {
   return (
     <div className={styles.overlay} onClick={onClose}>
       <aside className={styles.drawer} onClick={(e) => e.stopPropagation()}>
-        {/* header */}
         <div className={styles.drawerHead}>
           <div>
             <h2 className={styles.drawerTitle}>Transfer Details</h2>
@@ -140,7 +309,6 @@ const Drawer = ({ row, onClose, onApprove, onReject, busy }) => {
         </div>
 
         <div className={styles.drawerScroll}>
-          {/* hero */}
           <div className={styles.hero}>
             <div>
               <p className={styles.heroLabel}>Amount</p>
@@ -149,7 +317,6 @@ const Drawer = ({ row, onClose, onApprove, onReject, busy }) => {
             <Badge status={row.status} />
           </div>
 
-          {/* bank details — the main thing admin needs */}
           <Section title="Bank Details">
             <DRow label="Bank" val={bank.bank_name || "—"} />
             <DRow
@@ -193,7 +360,6 @@ const Drawer = ({ row, onClose, onApprove, onReject, busy }) => {
             )}
           </Section>
 
-          {/* admin action */}
           {needs && (
             <Section title="Action">
               <p className={styles.actionNote}>
@@ -249,17 +415,18 @@ const BankTransferManagement = () => {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
 
-  // filters
   const [statusFilter, setStatusFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const PER_PAGE = 25;
 
-  // drawer
   const [selected, setSelected] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  // toast
+  // clear modal
+  const [showClear, setShowClear] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
   const [toast, setToast] = useState(null);
   const toastTimer = useRef();
   const notify = (msg, ok = true) => {
@@ -268,10 +435,7 @@ const BankTransferManagement = () => {
     toastTimer.current = setTimeout(() => setToast(null), 3500);
   };
 
-  // ── fetch ──────────────────────────────────────────────────────────────────
-  // The existing GET /:reference endpoint requires a reference, so we use the
-  // admin payments list endpoint. If you don't have one, fall back to
-  // /api/payments?method=bank_transfer (adjust to match your actual admin route).
+  // ── load ───────────────────────────────────────────────────────────────────
   const load = useCallback(async () => {
     setLoading(true);
     setErr(null);
@@ -280,7 +444,6 @@ const BankTransferManagement = () => {
         params: { method: "bank_transfer", limit: 500, page: 1 },
         headers: hdrs,
       });
-      // backend returns: { payments: [...] } or { data: [...] }
       setRows(res.data.payments || res.data.data || []);
     } catch (e) {
       setErr(e.response?.data?.message || "Failed to load bank transfers");
@@ -293,7 +456,7 @@ const BankTransferManagement = () => {
     load();
   }, [load]);
 
-  // ── open drawer — enrich with GET /:reference if needed ───────────────────
+  // ── open drawer ────────────────────────────────────────────────────────────
   const openDrawer = async (row) => {
     setSelected(row);
     try {
@@ -301,11 +464,8 @@ const BankTransferManagement = () => {
         `${API}/api/payments/bank-transfer/${row.reference}`,
         { headers: hdrs },
       );
-      // response shape from getBankTransferDetails: { data: { ... } }
-      if (res.data?.data) {
-        // Merge so we keep local fields (user_id etc.) plus enriched detail
+      if (res.data?.data)
         setSelected((prev) => ({ ...prev, ...res.data.data }));
-      }
     } catch {
       /* keep local data */
     }
@@ -333,7 +493,7 @@ const BankTransferManagement = () => {
   // ── reject ─────────────────────────────────────────────────────────────────
   const handleReject = async (reference) => {
     const reason = window.prompt("Rejection reason (optional):");
-    if (reason === null) return; // cancelled
+    if (reason === null) return;
     setBusy(true);
     try {
       await axios.post(
@@ -348,6 +508,40 @@ const BankTransferManagement = () => {
       notify(e.response?.data?.message || "Rejection failed", false);
     } finally {
       setBusy(false);
+    }
+  };
+
+  // ── clear all ──────────────────────────────────────────────────────────────
+  // Called by ClearModal for both dry run (dryRun:true) and real delete.
+  // Returns count for dry run so the modal can display it.
+  const handleClear = async (params) => {
+    if (params.dryRun) {
+      try {
+        const res = await axios.delete(`${API}/api/admin/orders/clear`, {
+          data: params,
+          headers: hdrs,
+        });
+        return res.data.wouldDelete ?? 0;
+      } catch (e) {
+        notify(e.response?.data?.message || "Dry run failed", false);
+        return null;
+      }
+    }
+
+    // Real delete
+    setClearing(true);
+    try {
+      const res = await axios.delete(`${API}/api/admin/orders/clear`, {
+        data: params,
+        headers: hdrs,
+      });
+      notify(`Deleted ${res.data.deletedCount} transfer record(s)`);
+      setShowClear(false);
+      load();
+    } catch (e) {
+      notify(e.response?.data?.message || "Clear failed", false);
+    } finally {
+      setClearing(false);
     }
   };
 
@@ -405,9 +599,21 @@ const BankTransferManagement = () => {
             Review and approve manual bank transfer payments
           </p>
         </div>
-        <button className={styles.refreshBtn} onClick={load} disabled={loading}>
-          {loading ? "Loading…" : "↻ Refresh"}
-        </button>
+        <div className={styles.headerBtns}>
+          <button
+            className={styles.clearBtn}
+            onClick={() => setShowClear(true)}
+          >
+            🗑 Clear Records
+          </button>
+          <button
+            className={styles.refreshBtn}
+            onClick={load}
+            disabled={loading}
+          >
+            {loading ? "Loading…" : "↻ Refresh"}
+          </button>
+        </div>
       </div>
 
       {/* stats row */}
@@ -460,7 +666,7 @@ const BankTransferManagement = () => {
         />
       </div>
 
-      {/* content */}
+      {/* table */}
       {loading ? (
         <div className={styles.center}>
           <span className={styles.spinner} />
@@ -489,7 +695,6 @@ const BankTransferManagement = () => {
               <tbody>
                 {pageRows.map((r) => {
                   const meta = parseMeta(r.metadata);
-                  const expires = meta.expires_at;
                   const needsAction =
                     r.status === "pending" || r.status === "processing";
                   return (
@@ -522,7 +727,7 @@ const BankTransferManagement = () => {
                         ) : r.status === "failed" ? (
                           <span className={styles.failedText}>—</span>
                         ) : (
-                          <Countdown expiresAt={expires} />
+                          <Countdown expiresAt={meta.expires_at} />
                         )}
                       </td>
                       <td>
@@ -537,7 +742,6 @@ const BankTransferManagement = () => {
             </table>
           </div>
 
-          {/* pagination */}
           {totalPages > 1 && (
             <div className={styles.pager}>
               <button
@@ -562,7 +766,7 @@ const BankTransferManagement = () => {
         </>
       )}
 
-      {/* drawer */}
+      {/* detail drawer */}
       <Drawer
         row={selected}
         onClose={() => setSelected(null)}
@@ -570,6 +774,15 @@ const BankTransferManagement = () => {
         onReject={handleReject}
         busy={busy}
       />
+
+      {/* clear modal */}
+      {showClear && (
+        <ClearModal
+          onClose={() => setShowClear(false)}
+          onConfirm={handleClear}
+          clearing={clearing}
+        />
+      )}
     </div>
   );
 };
