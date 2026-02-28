@@ -7,7 +7,7 @@
   background-color: var(--bg-primary);
   margin-bottom: 8px;
   border-radius: 8px;
-  overflow: hidden;
+  /* overflow: hidden REMOVED — was clipping the three-dots dropdown */
 }
 
 .orderHeader {
@@ -272,17 +272,27 @@
   padding: 16px;
   background-color: #fff3e0;
   border-top: 1px solid var(--border-color);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 [data-theme="dark"] .paymentProcessing,
 .dark .paymentProcessing {
-  background-color: #4a3000;
+  background-color: #2a1a00;
+  border-top-color: #3d2800;
 }
 
 .processingIcon {
   flex-shrink: 0;
   margin-top: 2px;
   color: #ff6f00;
+  transition: color 0.3s ease;
+}
+
+[data-theme="dark"] .processingIcon,
+.dark .processingIcon {
+  color: #ffb74d;
 }
 
 .processingText {
@@ -294,11 +304,18 @@
   font-size: 13px;
   color: var(--text-primary);
   line-height: 1.6;
+  transition: color 0.3s ease;
 }
 
 .highlight {
   color: #ff6f00;
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+[data-theme="dark"] .highlight,
+.dark .highlight {
+  color: #ffb74d;
 }
 
 .paymentIcons {
@@ -316,6 +333,8 @@
   border-top: 1px solid var(--border-color);
   flex-wrap: wrap;
   position: relative;
+  /* Ensure dropdown can overflow above sibling cards */
+  overflow: visible;
 }
 
 .moreButton {
@@ -344,7 +363,7 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 9999; /* raised from 1000 — floats above all sibling cards */
   min-width: 220px;
   overflow: hidden;
   animation: menuFadeIn 0.2s ease;

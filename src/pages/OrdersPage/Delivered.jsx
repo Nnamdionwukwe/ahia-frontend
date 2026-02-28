@@ -9,6 +9,7 @@ import {
   ReturnWindowClosedModal,
   ReturnWindowOpenModal,
   BuyAgainSheet,
+  PlaceOrderAgainModal,
 } from "./OrderModals";
 import useCartStore from "../../store/cartStore";
 
@@ -18,7 +19,6 @@ const Delivered = ({
   showMenu,
   setShowMenu,
   onCancelClick,
-  onBuyAgainClick,
   onChangePaymentClick,
 }) => {
   const navigate = useNavigate();
@@ -33,9 +33,13 @@ const Delivered = ({
   });
   const [activeOrder, setActiveOrder] = useState(null);
 
-  // Buy Again sheet
+  // Buy Again sheet (full variant picker)
   const [buyAgainSheet, setBuyAgainSheet] = useState(false);
   const [buyAgainItems, setBuyAgainItems] = useState([]);
+
+  // Place Order Again modal (live variant preview)
+  const [placeAgainModal, setPlaceAgainModal] = useState(false);
+  const [placeAgainOrder, setPlaceAgainOrder] = useState(null);
 
   // Add-to-cart feedback
   const [addingToCart, setAddingToCart] = useState(false);
@@ -58,7 +62,7 @@ const Delivered = ({
     }
   };
 
-  // ── Buy Again handler — opens the sheet ──────────────────────────────────
+  // ── Buy Again handler — opens BuyAgainSheet ───────────────────────────────
   const handleBuyAgain = (order) => {
     const items = (order.items || order.order_items || []).map((item) => {
       // This backend stores items by product_variant_id, not product_id
@@ -75,7 +79,7 @@ const Delivered = ({
         image:
           item.images?.[0] || item.image || item.product?.images?.[0] || null,
         price: parseFloat(item.unit_price || item.price || 0),
-        available: variantId != null, // available if we have something to add
+        available: variantId != null,
         variantName:
           [item.color, item.size].filter(Boolean).join(" / ") ||
           item.variant_name ||
@@ -88,9 +92,19 @@ const Delivered = ({
     setBuyAgainSheet(true);
   };
 
+  // ── Place Order Again handler — opens PlaceOrderAgainModal ───────────────
+  const handlePlaceAgain = (order) => {
+    setPlaceAgainOrder(order);
+    setPlaceAgainModal(true);
+  };
+
+  const handleConfirmPlaceAgain = () => {
+    setPlaceAgainModal(false);
+    navigate("/checkout");
+  };
+
   // ── Add to cart — called by BuyAgainSheet "Add N items to cart" ──────────
   const handleAddToCart = async (selectedItems) => {
-    // selectedItems: [{ productId, variantId, image, quantity, ... }]
     if (!selectedItems.length) return;
 
     setAddingToCart(true);
@@ -100,7 +114,6 @@ const Delivered = ({
         const token = localStorage.getItem("accessToken");
         try {
           // Backend requires product_variant_id (NOT NULL in carts table)
-          // product_id is optional — controller resolves it from the variant
           const payload = {
             product_variant_id: item.variantId,
             quantity: item.quantity || 1,
@@ -189,6 +202,7 @@ const Delivered = ({
           setShowMenu={setShowMenu}
           onCancelClick={onCancelClick}
           onChangePaymentClick={onChangePaymentClick}
+          // Card buttons "Buy this again" → BuyAgainSheet (full variant picker)
           onBuyAgainClick={() => handleBuyAgain(order)}
           onReturnRefundClick={() => handleReturnRefund(order)}
           dotsMenu={
@@ -196,7 +210,8 @@ const Delivered = ({
               onTrack={() => handleTrack(order)}
               onReturnRefund={() => handleReturnRefund(order)}
               onReviews={() => navigate("/reviews")}
-              onBuyAgain={() => handleBuyAgain(order)}
+              // DotsMenu "Buy this again" → PlaceOrderAgainModal (live variant preview)
+              onBuyAgain={() => handlePlaceAgain(order)}
             />
           }
         />
@@ -220,13 +235,21 @@ const Delivered = ({
         }
       />
 
-      {/* Buy This Again sheet */}
+      {/* Buy This Again sheet — full variant picker */}
       <BuyAgainSheet
         open={buyAgainSheet}
         onClose={() => setBuyAgainSheet(false)}
         items={buyAgainItems}
         onAddToCart={handleAddToCart}
         loading={addingToCart}
+      />
+
+      {/* Place Order Again modal — live product preview with variant selection */}
+      <PlaceOrderAgainModal
+        open={placeAgainModal}
+        onClose={() => setPlaceAgainModal(false)}
+        onConfirm={handleConfirmPlaceAgain}
+        order={placeAgainOrder}
       />
 
       {/* Add-to-cart toast */}

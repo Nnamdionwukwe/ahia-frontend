@@ -115,7 +115,6 @@ export function ReturnWindowClosedModal({
   };
 
   return (
-    // ✅ overlayCenter keeps the modal vertically centered, not bottom-aligned
     <div className={styles.overlayCenter} onClick={onClose}>
       <div
         className={styles.centeredModal}
@@ -530,42 +529,218 @@ export function PaymentConfirmModal({
 // ─────────────────────────────────────────────────────────────────────────────
 // 6. PLACE ORDER AGAIN MODAL
 // ─────────────────────────────────────────────────────────────────────────────
-export function PlaceOrderAgainModal({ open, onClose, onConfirm }) {
+const _API = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
+export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
+  /*
+   * liveImages: { [itemId]: string }
+   * Stores the currently-displayed image URL per item.
+   * Separate from selectedItems so a variant image update is a simple
+   * string swap — no risk of clobbering other fields.
+   */
+  const [liveImages, setLiveImages] = useState({});
+  const [liveVariants, setLiveVariants] = useState({}); // { [itemId]: label }
+  const [pickerItem, setPickerItem] = useState(null); // item currently in picker
+
+  // Reset when modal opens
+  useEffect(() => {
+    if (!open) return;
+    setPickerItem(null);
+    if (!order?.items) return;
+    const imgs = {};
+    const vars = {};
+    order.items.forEach((item) => {
+      const id = item.id || item._id;
+      imgs[id] = item.images?.[0] || item.image || null;
+      vars[id] =
+        item.variantName ||
+        item.variant_name ||
+        [item.color, item.size].filter(Boolean).join(" / ") ||
+        null;
+    });
+    setLiveImages(imgs);
+    setLiveVariants(vars);
+  }, [open, order]);
+
   if (!open) return null;
+
+  const items = order?.items || [];
+
   return (
-    <div className={styles.overlayCenter} onClick={onClose}>
-      <div
-        className={styles.centeredModal}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <button className={styles.centeredClose} onClick={onClose}>
-          <X size={18} />
-        </button>
+    <>
+      <div className={styles.overlayCenter} onClick={onClose}>
+        <div
+          className={styles.centeredModal}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button className={styles.centeredClose} onClick={onClose}>
+            <X size={18} />
+          </button>
 
-        <h2 className={styles.modalTitle}>
-          Are you sure you want to place another order?
-        </h2>
+          <h2 className={styles.modalTitle}>
+            Are you sure you want to place another order?
+          </h2>
 
-        <p className={styles.modalDescription}>
-          The payment is pending for the original order you placed.{" "}
-          <span className={styles.modalHighlight}>
-            If you would like to place this order again, the original order will
-            be canceled.
-          </span>
-        </p>
+          <p className={styles.modalDescription}>
+            The payment is pending for the original order you placed.{" "}
+            <span className={styles.modalHighlight}>
+              If you would like to place this order again, the original order
+              will be canceled.
+            </span>
+          </p>
 
-        <p className={styles.modalDescription}>
-          If the payment has already been completed, please wait for the status
-          to be updated.
-        </p>
+          {/* ── Live product preview ── */}
+          {items.length > 0 && (
+            <div className={styles.placeAgainItems}>
+              {items.map((item) => {
+                const id = item.id || item._id;
+                const displayImage =
+                  liveImages[id] || "https://via.placeholder.com/64?text=IMG";
+                const displayLabel = liveVariants[id] || null;
+                const variantId =
+                  item.variantId || item.product_variant_id || null;
+                const price = item.unit_price || item.price || 0;
 
-        <button className={styles.modalPrimaryBtn} onClick={onConfirm}>
-          Cancel the original order and buy this again
-        </button>
-        <button className={styles.modalSecondaryBtn} onClick={onClose}>
-          Wait for the payment status to update
-        </button>
+                return (
+                  <div key={id} className={styles.placeAgainItem}>
+                    <div className={styles.placeAgainImgWrap}>
+                      {/* key={displayImage} forces img remount when URL changes */}
+                      <img
+                        key={displayImage}
+                        src={displayImage}
+                        alt={item.name}
+                        className={styles.placeAgainImg}
+                        onError={(e) => {
+                          e.target.src =
+                            "https://via.placeholder.com/64?text=IMG";
+                        }}
+                      />
+                    </div>
+                    <div className={styles.placeAgainInfo}>
+                      <p className={styles.placeAgainName}>{item.name}</p>
+                      {(displayLabel || variantId) && (
+                        <button
+                          className={styles.placeAgainVariantBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            // variantId must be the UUID that ProductVariantModal
+                            // passes to resolveProductFromVariant — use every
+                            // possible field name the backend might send
+                            const vid =
+                              item.variantId ||
+                              item.product_variant_id ||
+                              item.variant_id ||
+                              null;
+                            setPickerItem({
+                              id,
+                              name: item.name,
+                              variantId: vid,
+                              images:
+                                item.images || (item.image ? [item.image] : []),
+                              image: item.images?.[0] || item.image || null,
+                              price,
+                            });
+                          }}
+                        >
+                          {displayLabel || "Select variant"}
+                          <ChevronRight size={12} />
+                        </button>
+                      )}
+                      <p className={styles.placeAgainPrice}>
+                        ₦{Number(price).toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          <p className={styles.modalDescription}>
+            If the payment has already been completed, please wait for the
+            status to be updated.
+          </p>
+
+          <button className={styles.modalPrimaryBtn} onClick={onConfirm}>
+            Cancel the original order and buy this again
+          </button>
+          <button className={styles.modalSecondaryBtn} onClick={onClose}>
+            Wait for the payment status to update
+          </button>
+        </div>
       </div>
+
+      {/* Variant picker — mounts only when pickerItem is set */}
+      {pickerItem && (
+        <VariantPickerOverlay
+          item={pickerItem}
+          apiBase={_API}
+          onClose={() => setPickerItem(null)}
+          onSelect={(itemId, imageUrl, variantLabel) => {
+            setLiveImages((prev) => ({ ...prev, [itemId]: imageUrl }));
+            setLiveVariants((prev) => ({ ...prev, [itemId]: variantLabel }));
+            setPickerItem(null);
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+/*
+ * VariantPickerOverlay
+ * A small wrapper that:
+ *  1. Captures itemId at mount time (so it cannot go stale)
+ *  2. Renders ProductVariantModal
+ *  3. On confirm, fetches the real image from the API and calls onSelect
+ */
+function VariantPickerOverlay({ item, apiBase, onClose, onSelect }) {
+  // itemId captured at mount — never goes stale
+  const itemId = item.id;
+  // Always pass variantId so ProductVariantModal pre-selects the current
+  // variant. Without this, selectedVariant stays null, handleAction() hits
+  // the "Please select all product options" guard and returns early —
+  // onAddToCart never fires, so we never get a new image.
+  const variantId = item.variantId || null;
+
+  const handleConfirm = async (
+    newVariantId,
+    _qty,
+    imageFromPicker,
+    variantLabel,
+  ) => {
+    // Use whatever image the picker returned as an instant update
+    let imageUrl = imageFromPicker || item.image || null;
+
+    // Then fetch the authoritative image from the API
+    try {
+      const res = await fetch(
+        `${apiBase}/api/products/variant/${newVariantId}`,
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const api =
+          data?.variant?.image_url || data?.product?.images?.[0] || null;
+        if (api) imageUrl = api;
+      }
+    } catch (e) {
+      // keep imageFromPicker
+    }
+
+    onSelect(itemId, imageUrl || item.image || null, variantLabel);
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 10000 }}>
+      <ProductVariantModal
+        isOpen={true}
+        onClose={onClose}
+        variantId={variantId}
+        selectOnly={true}
+        onAddToCart={(newVariantId, qty, imageUrl, variantLabel) => {
+          handleConfirm(newVariantId, qty, imageUrl, variantLabel);
+        }}
+      />
     </div>
   );
 }
