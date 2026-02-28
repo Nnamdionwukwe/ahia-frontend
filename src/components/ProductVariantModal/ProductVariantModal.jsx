@@ -5,7 +5,22 @@ import styles from "./ProductVariantModal.module.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
-const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
+/**
+ * Props
+ *  product     – { id, name, images, price } — normal usage from ProductCard
+ *  variantId   – UUID — alternative: resolve product from variant (BuyAgainSheet usage)
+ *  selectOnly  – true → button says "Confirm", hides qty, doesn't add to cart
+ *  onAddToCart – (variantId, qty, imageUrl, variantLabel) => void
+ */
+const ProductVariantModal = ({
+  isOpen,
+  onClose,
+  product: productProp,
+  variantId: initialVariantId,
+  onAddToCart,
+  selectOnly = false,
+}) => {
+  const [product, setProduct] = useState(productProp || null);
   const [variants, setVariants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(null);
@@ -14,39 +29,64 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
     color: null,
     size: null,
   });
-
-  // State to manage the currently displayed image
   const [selectedImage, setSelectedImage] = useState(
-    product?.images?.[0] || null,
+    productProp?.images?.[0] || null,
   );
 
   useEffect(() => {
-    if (isOpen && product) {
-      // Reset image when modal opens
-      setSelectedImage(product.images?.[0] || null);
-      fetchVariants();
-    }
-  }, [isOpen, product]);
+    if (!isOpen) return;
+    setQuantity(1);
+    setSelectedOptions({ color: null, size: null });
+    setSelectedVariant(null);
 
-  const fetchVariants = async () => {
+    if (productProp) {
+      setProduct(productProp);
+      setSelectedImage(productProp.images?.[0] || null);
+      fetchVariants(productProp.id);
+    } else if (initialVariantId) {
+      // Resolve product from variant ID first
+      resolveProductFromVariant(initialVariantId);
+    }
+  }, [isOpen]);
+
+  const resolveProductFromVariant = async (vId) => {
+    setLoading(true);
+    try {
+      // Single call returns both variant and parent product
+      const res = await axios.get(`${API_URL}/api/products/variant/${vId}`);
+      const p = res.data.product;
+      setProduct(p);
+      setSelectedImage(p.images?.[0] || null);
+      await fetchVariants(p.id, vId);
+    } catch (err) {
+      console.error("Failed to resolve product from variant:", err);
+      setLoading(false);
+    }
+  };
+
+  const fetchVariants = async (productId, preSelectVariantId = null) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${API_URL}/api/products/${product.id}/variants`,
+        `${API_URL}/api/products/${productId}/variants`,
       );
-      setVariants(response.data.variants || []);
+      const fetched = response.data.variants || [];
+      setVariants(fetched);
 
-      if (response.data.variants?.length === 1) {
-        const variant = response.data.variants[0];
-        setSelectedVariant(variant);
+      // Pre-select the variant the user already had
+      const toPreselect = preSelectVariantId
+        ? fetched.find((v) => v.id === preSelectVariantId)
+        : fetched.length === 1
+          ? fetched[0]
+          : null;
+
+      if (toPreselect) {
+        setSelectedVariant(toPreselect);
         setSelectedOptions({
-          color: variant.color,
-          size: variant.size,
+          color: toPreselect.color,
+          size: toPreselect.size,
         });
-        // Update image if variant has specific image
-        if (variant.image_url) {
-          setSelectedImage(variant.image_url);
-        }
+        if (toPreselect.image_url) setSelectedImage(toPreselect.image_url);
       }
     } catch (error) {
       console.error("Failed to fetch variants:", error);
@@ -56,7 +96,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
     }
   };
 
-  // Get unique colors and sizes
   const availableColors = [
     ...new Set(variants.map((v) => v.color).filter(Boolean)),
   ];
@@ -64,103 +103,84 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
     ...new Set(variants.map((v) => v.size).filter(Boolean)),
   ];
 
+  // Sync selectedVariant when options change
   useEffect(() => {
-    if (selectedOptions.color || selectedOptions.size) {
-      const matchingVariant = variants.find((v) => {
-        const colorMatch =
-          !selectedOptions.color || v.color === selectedOptions.color;
-        const sizeMatch =
-          !selectedOptions.size || v.size === selectedOptions.size;
-        return colorMatch && sizeMatch;
-      });
+    if (!selectedOptions.color && !selectedOptions.size) return;
+    const match = variants.find((v) => {
+      const colorOk =
+        !selectedOptions.color || v.color === selectedOptions.color;
+      const sizeOk = !selectedOptions.size || v.size === selectedOptions.size;
+      return colorOk && sizeOk;
+    });
+    setSelectedVariant(match || null);
 
-      setSelectedVariant(matchingVariant || null);
-
-      // ✅ Automatically update image when variant changes
-      if (matchingVariant?.image_url) {
-        setSelectedImage(matchingVariant.image_url);
-      } else if (matchingVariant && product.images && selectedOptions.color) {
-        // ✅ Map color to image index (same logic as backend)
-        const uniqueColors = [
-          ...new Set(variants.map((v) => v.color).filter(Boolean)),
-        ];
-        const colorIndex = uniqueColors.indexOf(selectedOptions.color);
-
-        if (colorIndex !== -1 && product.images[colorIndex]) {
-          setSelectedImage(product.images[colorIndex]);
-        } else {
-          setSelectedImage(product.images[0]);
-        }
-      } else if (!matchingVariant && product.images?.[0]) {
-        // Fallback to first product image if no variant match
-        setSelectedImage(product.images[0]);
-      }
+    if (match?.image_url) {
+      setSelectedImage(match.image_url);
+    } else if (match && product?.images && selectedOptions.color) {
+      const uniqueColors = [
+        ...new Set(variants.map((v) => v.color).filter(Boolean)),
+      ];
+      const idx = uniqueColors.indexOf(selectedOptions.color);
+      setSelectedImage(
+        idx !== -1 && product.images[idx]
+          ? product.images[idx]
+          : product.images[0],
+      );
     }
-  }, [selectedOptions, variants, product]);
+  }, [selectedOptions, variants]);
 
   const handleColorSelect = (color) => {
-    setSelectedOptions((prev) => ({ ...prev, color }));
-
-    // ✅ Update image immediately when color is selected
+    setSelectedOptions((p) => ({ ...p, color }));
     const uniqueColors = [
       ...new Set(variants.map((v) => v.color).filter(Boolean)),
     ];
-    const colorIndex = uniqueColors.indexOf(color);
-
-    if (product.images && colorIndex !== -1 && product.images[colorIndex]) {
-      setSelectedImage(product.images[colorIndex]);
+    const idx = uniqueColors.indexOf(color);
+    if (product?.images && idx !== -1 && product.images[idx]) {
+      setSelectedImage(product.images[idx]);
     }
   };
 
-  const handleSizeSelect = (size) => {
-    setSelectedOptions((prev) => ({ ...prev, size }));
-  };
+  const handleSizeSelect = (size) =>
+    setSelectedOptions((p) => ({ ...p, size }));
 
   const handleQuantityChange = (delta) => {
-    const newQty = quantity + delta;
-    if (newQty >= 1 && newQty <= (selectedVariant?.stock_quantity || 999)) {
-      setQuantity(newQty);
-    }
+    const n = quantity + delta;
+    if (n >= 1 && n <= (selectedVariant?.stock_quantity || 999)) setQuantity(n);
   };
 
-  const handleAddToCart = () => {
+  const handleAction = () => {
     if (!selectedVariant) {
       alert("Please select all product options");
       return;
     }
-
-    // ✅ Pass the selected image URL along with variant and quantity
-    onAddToCart(selectedVariant.id, quantity, selectedImage);
+    const label = [selectedVariant.color, selectedVariant.size]
+      .filter(Boolean)
+      .join(" / ");
+    onAddToCart(selectedVariant.id, quantity, selectedImage, label);
     onClose();
   };
 
-  // ✅ Manual image selection from gallery
-  const handleImageSelect = (imageUrl) => {
-    setSelectedImage(imageUrl);
-  };
-
   const calculatePrice = () => {
-    if (!selectedVariant) return product.price;
-
-    const basePrice = selectedVariant.base_price || product.price;
+    if (!selectedVariant || !product) return product?.price || 0;
+    const base = selectedVariant.base_price || product.price;
     const discount = selectedVariant.discount_percentage || 0;
-    return basePrice - (basePrice * discount) / 100;
+    return base - (base * discount) / 100;
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !product) return null;
 
   return (
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div className={styles.header}>
-          <h2>Select Options</h2>
+          <h2>{selectOnly ? "Change Variant" : "Select Options"}</h2>
           <button onClick={onClose} className={styles.closeBtn}>
             <FiX size={24} />
           </button>
         </div>
 
-        {/* Product Info */}
+        {/* Product info */}
         <div className={styles.productInfo}>
           <div className={styles.imageContainer}>
             <div className={styles.productImage}>
@@ -169,7 +189,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                   src={selectedImage}
                   alt={product.name}
                   onError={(e) => {
-                    e.target.onerror = null;
                     e.target.src = product.images?.[0] || "";
                   }}
                 />
@@ -177,21 +196,17 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                 <div className={styles.noImage}>No Image</div>
               )}
             </div>
-
-            {/* Image Gallery / Thumbnail Strip */}
-            {product.images && product.images.length > 1 && (
+            {product.images?.length > 1 && (
               <div className={styles.imageGallery}>
                 {product.images.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => handleImageSelect(img)}
-                    className={`${styles.galleryThumb} ${
-                      selectedImage === img ? styles.galleryThumbActive : ""
-                    }`}
+                    onClick={() => setSelectedImage(img)}
+                    className={`${styles.galleryThumb} ${selectedImage === img ? styles.galleryThumbActive : ""}`}
                   >
                     <img
                       src={img}
-                      alt={`Variant ${idx}`}
+                      alt={`img-${idx}`}
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}
@@ -201,7 +216,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
               </div>
             )}
           </div>
-
           <div className={styles.productDetails}>
             <h3>{product.name}</h3>
             <div className={styles.price}>
@@ -233,13 +247,12 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
           </div>
         </div>
 
-        {/* Content */}
+        {/* Options */}
         <div className={styles.content}>
           {loading ? (
             <div className={styles.loading}>Loading options...</div>
           ) : (
             <>
-              {/* Color Selection */}
               {availableColors.length > 0 && (
                 <div className={styles.optionGroup}>
                   <label className={styles.optionLabel}>
@@ -260,7 +273,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                             v.size === selectedOptions.size) &&
                           v.stock_quantity > 0,
                       );
-
                       return (
                         <button
                           key={idx}
@@ -268,9 +280,7 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                             isAvailable && handleColorSelect(color)
                           }
                           disabled={!isAvailable}
-                          className={`${styles.colorBtn} ${
-                            isSelected ? styles.active : ""
-                          } ${!isAvailable ? styles.disabled : ""}`}
+                          className={`${styles.colorBtn} ${isSelected ? styles.active : ""} ${!isAvailable ? styles.disabled : ""}`}
                         >
                           <span className={styles.colorName}>{color}</span>
                           {isSelected && (
@@ -283,7 +293,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                 </div>
               )}
 
-              {/* Size Selection */}
               {availableSizes.length > 0 && (
                 <div className={styles.optionGroup}>
                   <label className={styles.optionLabel}>
@@ -304,15 +313,12 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                             v.color === selectedOptions.color) &&
                           v.stock_quantity > 0,
                       );
-
                       return (
                         <button
                           key={idx}
                           onClick={() => isAvailable && handleSizeSelect(size)}
                           disabled={!isAvailable}
-                          className={`${styles.sizeBtn} ${
-                            isSelected ? styles.active : ""
-                          } ${!isAvailable ? styles.disabled : ""}`}
+                          className={`${styles.sizeBtn} ${isSelected ? styles.active : ""} ${!isAvailable ? styles.disabled : ""}`}
                         >
                           {size}
                         </button>
@@ -322,8 +328,7 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                 </div>
               )}
 
-              {/* Quantity Selection */}
-              {selectedVariant && (
+              {!selectOnly && selectedVariant && (
                 <div className={styles.optionGroup}>
                   <label className={styles.optionLabel}>Quantity</label>
                   <div className={styles.quantityControl}>
@@ -348,7 +353,6 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
                 </div>
               )}
 
-              {/* No variants message */}
               {variants.length === 0 && !loading && (
                 <div className={styles.noVariants}>
                   <p>No variants available for this product</p>
@@ -360,14 +364,16 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
 
         {/* Footer */}
         <div className={styles.footer}>
-          <div className={styles.totalSection}>
-            <span className={styles.totalLabel}>Total:</span>
-            <span className={styles.totalPrice}>
-              ₦{parseInt(calculatePrice() * quantity).toLocaleString()}
-            </span>
-          </div>
+          {!selectOnly && (
+            <div className={styles.totalSection}>
+              <span className={styles.totalLabel}>Total:</span>
+              <span className={styles.totalPrice}>
+                ₦{parseInt(calculatePrice() * quantity).toLocaleString()}
+              </span>
+            </div>
+          )}
           <button
-            onClick={handleAddToCart}
+            onClick={handleAction}
             disabled={!selectedVariant || selectedVariant.stock_quantity === 0}
             className={styles.addToCartBtn}
           >
@@ -375,7 +381,9 @@ const ProductVariantModal = ({ isOpen, onClose, product, onAddToCart }) => {
               ? "Select Options"
               : selectedVariant.stock_quantity === 0
                 ? "Out of Stock"
-                : "Add to Cart"}
+                : selectOnly
+                  ? "Confirm"
+                  : "Add to Cart"}
           </button>
         </div>
       </div>

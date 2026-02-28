@@ -30,23 +30,29 @@ const OrderCard = ({
   order,
   showMenu,
   setShowMenu,
-  onCancelClick,
-  onBuyAgainClick,
-  onChangePaymentClick,
-  // ← DotsMenu pre-built by Delivered.jsx with all handlers wired
-  dotsMenu,
+  onCancelClick, // OrdersPage → CancelOrderModal
+  onBuyAgainClick, // OrdersPage → PlaceOrderAgainModal  (non-delivered)
+  // Delivered.jsx → BuyAgainSheet       (delivered)
+  onChangePaymentClick, // OrdersPage → PaymentConfirmModal
+  onReturnRefundClick, // Delivered.jsx → ReturnWindowClosedModal (delivered only)
+  dotsMenu, // Pre-built <DotsMenu> from Delivered.jsx
 }) => {
   const navigate = useNavigate();
   const status = getOrderStatus(order);
   const isPaymentProcessing = status === "payment_processing";
   const isRefunded = status === "refunded";
+  const isDelivered = status === "delivered";
   const orderId = order._id || order.id;
+
+  // When dotsMenu is provided we're on the Delivered tab.
+  // Use the Delivered-specific handlers; otherwise fall back to OrdersPage handlers.
+  const isDeliveredTab = !!dotsMenu;
 
   return (
     <div className={styles.orderCard}>
       {/* ── Order Header ── */}
       <div className={styles.orderHeader}>
-        {status === "delivered" && (
+        {isDelivered && (
           <p className={styles.deliveryDate}>
             Delivered on {formatDate(order.delivered_at || order.updated_at)}
           </p>
@@ -155,15 +161,13 @@ const OrderCard = ({
 
       {/* ── Action Buttons ── */}
       <div className={styles.actionButtons}>
-        {/* 
-          THREE DOTS — use the pre-wired DotsMenu from Delivered.jsx if provided,
-          otherwise fall back to the old generic dropdown 
+        {/* THREE DOTS
+            • Delivered tab  → dotsMenu prop (Track / Return / Reviews / Buy Again)
+            • All other tabs → generic dropdown (View details / Contact support / Cancel)
         */}
-        {dotsMenu ? (
-          // ✅ Delivered tab: DotsMenu with Track / Return / Reviews / Buy Again
+        {isDeliveredTab ? (
           dotsMenu
         ) : (
-          // Fallback for other tabs (Processing, Shipped, etc.)
           <div className={styles.moreMenuWrap}>
             <button
               className={styles.moreButton}
@@ -196,7 +200,7 @@ const OrderCard = ({
                     </button>
                   </>
                 )}
-                {(status === "delivered" || status === "refunded") && (
+                {(isDelivered || isRefunded) && (
                   <button
                     onClick={() => {
                       setShowMenu(null);
@@ -237,32 +241,39 @@ const OrderCard = ({
           </div>
         )}
 
-        {/* Delivered action buttons */}
-        {status === "delivered" && (
+        {/* ── DELIVERED action buttons ── */}
+        {isDelivered && (
           <>
             <button
               className={styles.secondaryButton}
-              onClick={() => onCancelClick?.(order)}
+              onClick={
+                () =>
+                  isDeliveredTab
+                    ? onReturnRefundClick?.(order) // Delivered tab → ReturnWindowClosedModal
+                    : onCancelClick?.(order) // All Orders tab → CancelOrderModal (fallback)
+              }
             >
               Return/Refund
             </button>
             <button
               className={styles.secondaryButton}
               onClick={() => onBuyAgainClick?.(order)}
+              // Delivered tab  → Delivered.jsx handleBuyAgain → BuyAgainSheet
+              // All Orders tab → OrdersPage handleBuyAgainClick → PlaceOrderAgainModal
             >
               Buy this again
             </button>
             <button
               className={styles.primaryButton}
-              onClick={() => navigate("/reviews")}
+              onClick={() => navigate("/account-profile/reviews")}
             >
               Leave a review
             </button>
           </>
         )}
 
-        {/* Refunded action buttons */}
-        {status === "refunded" && (
+        {/* ── REFUNDED action buttons ── */}
+        {isRefunded && (
           <>
             <button className={styles.secondaryButton}>Refund details</button>
             <button
@@ -274,7 +285,7 @@ const OrderCard = ({
           </>
         )}
 
-        {/* Payment processing action buttons */}
+        {/* ── PAYMENT PROCESSING action buttons ── */}
         {isPaymentProcessing && (
           <>
             <button

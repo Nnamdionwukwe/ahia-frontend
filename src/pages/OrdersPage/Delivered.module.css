@@ -59,3 +59,53 @@
   color: white;
   cursor: pointer;
 }
+
+/* ── Add-to-cart toast ── */
+.cartToast {
+  position: fixed;
+  bottom: 90px; /* above bottom nav */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 22px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 9999;
+  white-space: nowrap;
+  pointer-events: none;
+  animation:
+    toastIn 0.25s ease,
+    toastOut 0.3s ease 2.7s forwards;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+.cartToastSuccess {
+  background: #1a1a1a;
+  color: #fff;
+}
+[data-theme="dark"] .cartToastSuccess,
+.dark .cartToastSuccess {
+  background: #fff;
+  color: #1a1a1a;
+}
+.cartToastError {
+  background: #e74c3c;
+  color: #fff;
+}
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+@keyframes toastOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

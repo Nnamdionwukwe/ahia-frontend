@@ -10,6 +10,7 @@ import {
   Building2,
 } from "lucide-react";
 import styles from "./OrderModals.module.css";
+import ProductVariantModal from "../../components/ProductVariantModal/ProductVariantModal";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. THREE DOTS MENU
@@ -156,11 +157,22 @@ export function ReturnWindowClosedModal({
 // ─────────────────────────────────────────────────────────────────────────────
 // 3. BUY THIS AGAIN — bottom sheet
 // ─────────────────────────────────────────────────────────────────────────────
-export function BuyAgainSheet({ open, onClose, items = [], onAddToCart }) {
+export function BuyAgainSheet({
+  open,
+  onClose,
+  items = [],
+  onAddToCart,
+  loading = false,
+}) {
   const [quantities, setQuantities] = useState({});
   const [selected, setSelected] = useState({});
   const [soldOutToast, setSoldOutToast] = useState(false);
   const toastTimer = useRef();
+
+  // Variant modal state
+  const [variantModal, setVariantModal] = useState(null); // { item, product }
+  // Track per-item variant selections: { [itemId]: { variantId, variantName, image } }
+  const [itemVariants, setItemVariants] = useState({});
 
   useEffect(() => {
     if (!open) return;
@@ -205,9 +217,31 @@ export function BuyAgainSheet({ open, onClose, items = [], onAddToCart }) {
   const handleAdd = () => {
     const toAdd = available
       .filter((i) => selected[i.id])
-      .map((i) => ({ ...i, quantity: quantities[i.id] || 1 }));
+      .map((i) => {
+        const chosen = itemVariants[i.id];
+        return {
+          ...i,
+          quantity: quantities[i.id] || 1,
+          variantId: chosen?.variantId ?? i.variantId,
+          image: chosen?.image ?? i.image,
+          variantName: chosen?.variantName ?? i.variantName,
+        };
+      });
     onAddToCart?.(toAdd);
     onClose();
+  };
+
+  // Called by ProductVariantModal "Add to Cart" — we intercept it to just
+  // update the selected variant without adding to cart yet
+  const handleVariantSelect = (variantId, qty, imageUrl, variantLabel) => {
+    if (!variantModal) return;
+    const itemId = variantModal.item.id;
+    setItemVariants((prev) => ({
+      ...prev,
+      [itemId]: { variantId, image: imageUrl, variantName: variantLabel },
+    }));
+    if (qty) setQuantities((q) => ({ ...q, [itemId]: qty }));
+    setVariantModal(null);
   };
 
   return (
@@ -216,7 +250,6 @@ export function BuyAgainSheet({ open, onClose, items = [], onAddToCart }) {
         <div className={styles.soldOutToast}>This item is sold out.</div>
       )}
 
-      {/* ✅ overlayBottom keeps the sheet anchored to the bottom */}
       <div className={styles.overlayBottom} onClick={onClose}>
         <div className={styles.buySheet} onClick={(e) => e.stopPropagation()}>
           <div className={styles.buySheetHeader}>
@@ -264,8 +297,12 @@ export function BuyAgainSheet({ open, onClose, items = [], onAddToCart }) {
                 <div className={styles.buyItemInfo}>
                   <p className={styles.buyItemName}>{item.name}</p>
                   {item.variantName && (
-                    <button className={styles.buyVariantBtn}>
-                      {item.variantName} <ChevronRight size={12} />
+                    <button
+                      className={styles.buyVariantBtn}
+                      onClick={() => setVariantModal({ item })}
+                    >
+                      {itemVariants[item.id]?.variantName || item.variantName}
+                      <ChevronRight size={12} />
                     </button>
                   )}
                   <div className={styles.buyItemBottom}>
@@ -367,14 +404,30 @@ export function BuyAgainSheet({ open, onClose, items = [], onAddToCart }) {
             <button
               className={styles.addToCartBtn}
               onClick={handleAdd}
-              disabled={selectedCount === 0}
+              disabled={selectedCount === 0 || loading}
             >
-              Add {selectedCount > 0 ? selectedCount : ""} item
-              {selectedCount !== 1 ? "s" : ""} to cart
+              {loading
+                ? "Adding…"
+                : `Add ${selectedCount > 0 ? selectedCount : ""} item${selectedCount !== 1 ? "s" : ""} to cart`}
             </button>
           </div>
         </div>
       </div>
+
+      {/* ProductVariantModal overlays on top of the sheet when a variant btn is tapped */}
+      {variantModal && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 10000 }}>
+          <ProductVariantModal
+            isOpen={true}
+            onClose={() => setVariantModal(null)}
+            variantId={variantModal.item.variantId}
+            selectOnly={true}
+            onAddToCart={(variantId, qty, imageUrl, variantLabel) => {
+              handleVariantSelect(variantId, qty, imageUrl, variantLabel);
+            }}
+          />
+        </div>
+      )}
     </>
   );
 }
@@ -511,6 +564,132 @@ export function PlaceOrderAgainModal({ open, onClose, onConfirm }) {
         </button>
         <button className={styles.modalSecondaryBtn} onClick={onClose}>
           Wait for the payment status to update
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 7. RETURN WINDOW OPEN MODAL  (order < 90 days old)
+// ─────────────────────────────────────────────────────────────────────────────
+export function ReturnWindowOpenModal({
+  open,
+  onClose,
+  orderedDate,
+  onStartReturn,
+}) {
+  if (!open) return null;
+
+  const orderedAt = new Date(orderedDate);
+  const deadlineAt = new Date(orderedAt.getTime() + 90 * 24 * 60 * 60 * 1000);
+  const now = new Date();
+  const daysLeft = Math.max(
+    0,
+    Math.ceil((deadlineAt - now) / (1000 * 60 * 60 * 24)),
+  );
+  const daysUsed = 90 - daysLeft;
+  const progressPct = Math.min(100, Math.round((daysUsed / 90) * 100));
+
+  // Colour shifts from green → amber → red as deadline approaches
+  const barColor =
+    daysLeft > 30 ? "#27ae60" : daysLeft > 10 ? "#f39c12" : "#e74c3c";
+
+  const urgencyMsg =
+    daysLeft > 30
+      ? "You have plenty of time — no rush!"
+      : daysLeft > 10
+        ? "Time is running out. Start your return soon."
+        : `Only ${daysLeft} day${daysLeft !== 1 ? "s" : ""} left — act now!`;
+
+  const fmtDate = (d) =>
+    new Date(d).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+
+  return (
+    <div className={styles.overlayCenter} onClick={onClose}>
+      <div
+        className={styles.centeredModal}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className={styles.centeredClose} onClick={onClose}>
+          <X size={18} />
+        </button>
+
+        {/* Icon */}
+        <div className={styles.returnOpenIcon}>
+          <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
+            <circle cx="26" cy="26" r="26" fill="rgba(39,174,96,0.12)" />
+            <path
+              d="M16 26l7 7 13-13"
+              stroke="#27ae60"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+
+        <h2 className={styles.returnOpenTitle}>Your return window is open</h2>
+
+        <p className={styles.returnOpenSub}>
+          Good news! This order is still within the{" "}
+          <span className={styles.returnOpenGreen}>90-day return period.</span>{" "}
+          You can request a return or refund at any time before the deadline.
+        </p>
+
+        {/* Progress bar */}
+        <div className={styles.returnProgressWrap}>
+          <div className={styles.returnProgressLabels}>
+            <span>Day 1</span>
+            <span style={{ color: barColor, fontWeight: 700 }}>
+              {daysLeft} day{daysLeft !== 1 ? "s" : ""} left
+            </span>
+            <span>Day 90</span>
+          </div>
+          <div className={styles.returnProgressTrack}>
+            <div
+              className={styles.returnProgressFill}
+              style={{ width: `${progressPct}%`, background: barColor }}
+            />
+          </div>
+          <p className={styles.returnUrgency} style={{ color: barColor }}>
+            {urgencyMsg}
+          </p>
+        </div>
+
+        {/* Dates box */}
+        <div className={styles.returnDateBox}>
+          <div className={styles.returnOpenDateRow}>
+            <span className={styles.returnOpenDateLabel}>Ordered on</span>
+            <span className={styles.returnOpenDateVal}>
+              {fmtDate(orderedDate)}
+            </span>
+          </div>
+          <div className={styles.returnOpenDivider} />
+          <div className={styles.returnOpenDateRow}>
+            <span className={styles.returnOpenDateLabel}>Return deadline</span>
+            <span className={styles.returnOpenDeadline}>
+              {fmtDate(deadlineAt)}
+            </span>
+          </div>
+        </div>
+
+        <button
+          className={styles.returnStartBtn}
+          onClick={() => {
+            onStartReturn?.();
+            onClose();
+          }}
+        >
+          Start a Return / Refund
+        </button>
+
+        <button className={styles.returnPolicyBtn}>
+          View Return and Refund Policy <ChevronRight size={14} />
         </button>
       </div>
     </div>

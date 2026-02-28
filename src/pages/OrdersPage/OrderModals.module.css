@@ -705,3 +705,126 @@
     opacity: 0;
   }
 }
+
+/* ══════════════════════════════════════════
+   7. RETURN WINDOW OPEN MODAL
+══════════════════════════════════════════ */
+.returnOpenIcon {
+  margin-bottom: 14px;
+}
+
+.returnOpenTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-align: center;
+  margin: 0 0 12px;
+  line-height: 1.3;
+  transition: color 0.3s ease;
+}
+
+.returnOpenSub {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.65;
+  margin: 0 0 20px;
+  transition: color 0.3s ease;
+}
+
+.returnOpenGreen {
+  color: #27ae60;
+  font-weight: 600;
+}
+
+/* Progress bar */
+.returnProgressWrap {
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+.returnProgressLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  transition: color 0.3s ease;
+}
+
+.returnProgressTrack {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-secondary);
+  border-radius: 99px;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+.returnProgressFill {
+  height: 100%;
+  border-radius: 99px;
+  transition:
+    width 0.6s ease,
+    background 0.3s ease;
+}
+
+.returnUrgency {
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  margin: 8px 0 0;
+}
+
+/* Dates box */
+.returnOpenDateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.returnOpenDateLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+.returnOpenDateVal {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.returnOpenDeadline {
+  font-size: 13px;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+.returnOpenDivider {
+  height: 1px;
+  background: var(--border-color);
+  transition: background-color 0.3s ease;
+}
+
+/* CTA button */
+.returnStartBtn {
+  width: 100%;
+  padding: 15px;
+  background: #27ae60;
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  margin-bottom: 12px;
+  margin-top: 4px;
+  transition: opacity 0.15s;
+}
+.returnStartBtn:hover {
+  opacity: 0.88;
+}
