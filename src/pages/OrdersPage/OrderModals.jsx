@@ -169,7 +169,7 @@ export function BuyAgainSheet({
   const toastTimer = useRef();
 
   // Variant modal state
-  const [variantModal, setVariantModal] = useState(null); // { item, product }
+  const [variantModal, setVariantModal] = useState(null);
   // Track per-item variant selections: { [itemId]: { variantId, variantName, image } }
   const [itemVariants, setItemVariants] = useState({});
 
@@ -185,6 +185,8 @@ export function BuyAgainSheet({
     });
     setSelected(initSel);
     setQuantities(initQty);
+    // Reset variant selections when sheet opens fresh
+    setItemVariants({});
   }, [open, items]);
 
   if (!open) return null;
@@ -230,8 +232,7 @@ export function BuyAgainSheet({
     onClose();
   };
 
-  // Called by ProductVariantModal "Add to Cart" — we intercept it to just
-  // update the selected variant without adding to cart yet
+  // Called by ProductVariantModal — update selected variant + image in sheet
   const handleVariantSelect = (variantId, qty, imageUrl, variantLabel) => {
     if (!variantModal) return;
     const itemId = variantModal.item.id;
@@ -259,76 +260,88 @@ export function BuyAgainSheet({
           </div>
 
           <div className={styles.buySheetBody}>
-            {available.map((item) => (
-              <div key={item.id} className={styles.buyItem}>
-                <button
-                  className={`${styles.buyCheck} ${selected[item.id] ? styles.buyCheckOn : ""}`}
-                  onClick={() =>
-                    setSelected((s) => ({ ...s, [item.id]: !s[item.id] }))
-                  }
-                >
-                  {selected[item.id] && (
-                    <svg viewBox="0 0 12 10" width="12" height="10">
-                      <path
-                        d="M1 5l3.5 3.5L11 1"
-                        stroke="white"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        fill="none"
-                      />
-                    </svg>
-                  )}
-                </button>
+            {available.map((item) => {
+              // ── Use updated variant image if user selected a new variant ──
+              const chosenVariant = itemVariants[item.id];
+              const displayImage =
+                chosenVariant?.image ||
+                item.image ||
+                "https://via.placeholder.com/140?text=IMG";
+              const displayVariantName =
+                chosenVariant?.variantName || item.variantName;
 
-                <div className={styles.buyItemImg}>
-                  <img
-                    src={
-                      item.image || "https://via.placeholder.com/140?text=IMG"
+              return (
+                <div key={item.id} className={styles.buyItem}>
+                  <button
+                    className={`${styles.buyCheck} ${selected[item.id] ? styles.buyCheckOn : ""}`}
+                    onClick={() =>
+                      setSelected((s) => ({ ...s, [item.id]: !s[item.id] }))
                     }
-                    alt={item.name}
-                    onError={(e) => {
-                      e.target.src = "https://via.placeholder.com/140?text=IMG";
-                    }}
-                  />
-                </div>
+                  >
+                    {selected[item.id] && (
+                      <svg viewBox="0 0 12 10" width="12" height="10">
+                        <path
+                          d="M1 5l3.5 3.5L11 1"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          fill="none"
+                        />
+                      </svg>
+                    )}
+                  </button>
 
-                <div className={styles.buyItemInfo}>
-                  <p className={styles.buyItemName}>{item.name}</p>
-                  {item.variantName && (
-                    <button
-                      className={styles.buyVariantBtn}
-                      onClick={() => setVariantModal({ item })}
-                    >
-                      {itemVariants[item.id]?.variantName || item.variantName}
-                      <ChevronRight size={12} />
-                    </button>
-                  )}
-                  <div className={styles.buyItemBottom}>
-                    <span className={styles.buyItemPrice}>
-                      ₦{Number(item.price).toLocaleString()}
-                    </span>
-                    <div className={styles.qtyRow}>
+                  <div className={styles.buyItemImg}>
+                    {/* key forces remount when image URL changes → instant update */}
+                    <img
+                      key={displayImage}
+                      src={displayImage}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.target.src =
+                          "https://via.placeholder.com/140?text=IMG";
+                      }}
+                    />
+                  </div>
+
+                  <div className={styles.buyItemInfo}>
+                    <p className={styles.buyItemName}>{item.name}</p>
+                    {item.variantName && (
                       <button
-                        className={styles.qtyBtn}
-                        onClick={() => changeQty(item.id, -1)}
+                        className={styles.buyVariantBtn}
+                        onClick={() => setVariantModal({ item })}
                       >
-                        <Minus size={13} />
+                        {displayVariantName}
+                        <ChevronRight size={12} />
                       </button>
-                      <span className={styles.qtyVal}>
-                        {quantities[item.id] || 1}
+                    )}
+                    <div className={styles.buyItemBottom}>
+                      <span className={styles.buyItemPrice}>
+                        ₦{Number(item.price).toLocaleString()}
                       </span>
-                      <button
-                        className={styles.qtyBtn}
-                        onClick={() => changeQty(item.id, 1)}
-                      >
-                        <Plus size={13} />
-                      </button>
+                      <div className={styles.qtyRow}>
+                        <button
+                          className={styles.qtyBtn}
+                          onClick={() => changeQty(item.id, -1)}
+                        >
+                          <Minus size={13} />
+                        </button>
+                        <span className={styles.qtyVal}>
+                          {quantities[item.id] || 1}
+                        </span>
+                        <button
+                          className={styles.qtyBtn}
+                          onClick={() => changeQty(item.id, 1)}
+                        >
+                          <Plus size={13} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {unavailable.length > 0 && (
               <>
@@ -413,7 +426,7 @@ export function BuyAgainSheet({
         </div>
       </div>
 
-      {/* ProductVariantModal overlays on top of the sheet when a variant btn is tapped */}
+      {/* ProductVariantModal overlays on top of the sheet */}
       {variantModal && (
         <div style={{ position: "fixed", inset: 0, zIndex: 10000 }}>
           <ProductVariantModal
@@ -532,17 +545,10 @@ export function PaymentConfirmModal({
 const _API = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
 export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
-  /*
-   * liveImages: { [itemId]: string }
-   * Stores the currently-displayed image URL per item.
-   * Separate from selectedItems so a variant image update is a simple
-   * string swap — no risk of clobbering other fields.
-   */
   const [liveImages, setLiveImages] = useState({});
-  const [liveVariants, setLiveVariants] = useState({}); // { [itemId]: label }
-  const [pickerItem, setPickerItem] = useState(null); // item currently in picker
+  const [liveVariants, setLiveVariants] = useState({});
+  const [pickerItem, setPickerItem] = useState(null);
 
-  // Reset when modal opens
   useEffect(() => {
     if (!open) return;
     setPickerItem(null);
@@ -589,7 +595,6 @@ export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
             </span>
           </p>
 
-          {/* ── Live product preview ── */}
           {items.length > 0 && (
             <div className={styles.placeAgainItems}>
               {items.map((item) => {
@@ -604,7 +609,6 @@ export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
                 return (
                   <div key={id} className={styles.placeAgainItem}>
                     <div className={styles.placeAgainImgWrap}>
-                      {/* key={displayImage} forces img remount when URL changes */}
                       <img
                         key={displayImage}
                         src={displayImage}
@@ -623,9 +627,6 @@ export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
                           className={styles.placeAgainVariantBtn}
                           onClick={(e) => {
                             e.stopPropagation();
-                            // variantId must be the UUID that ProductVariantModal
-                            // passes to resolveProductFromVariant — use every
-                            // possible field name the backend might send
                             const vid =
                               item.variantId ||
                               item.product_variant_id ||
@@ -670,7 +671,6 @@ export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
         </div>
       </div>
 
-      {/* Variant picker — mounts only when pickerItem is set */}
       {pickerItem && (
         <VariantPickerOverlay
           item={pickerItem}
@@ -687,20 +687,8 @@ export function PlaceOrderAgainModal({ open, onClose, onConfirm, order }) {
   );
 }
 
-/*
- * VariantPickerOverlay
- * A small wrapper that:
- *  1. Captures itemId at mount time (so it cannot go stale)
- *  2. Renders ProductVariantModal
- *  3. On confirm, fetches the real image from the API and calls onSelect
- */
 function VariantPickerOverlay({ item, apiBase, onClose, onSelect }) {
-  // itemId captured at mount — never goes stale
   const itemId = item.id;
-  // Always pass variantId so ProductVariantModal pre-selects the current
-  // variant. Without this, selectedVariant stays null, handleAction() hits
-  // the "Please select all product options" guard and returns early —
-  // onAddToCart never fires, so we never get a new image.
   const variantId = item.variantId || null;
 
   const handleConfirm = async (
@@ -709,10 +697,8 @@ function VariantPickerOverlay({ item, apiBase, onClose, onSelect }) {
     imageFromPicker,
     variantLabel,
   ) => {
-    // Use whatever image the picker returned as an instant update
     let imageUrl = imageFromPicker || item.image || null;
 
-    // Then fetch the authoritative image from the API
     try {
       const res = await fetch(
         `${apiBase}/api/products/variant/${newVariantId}`,
@@ -766,7 +752,6 @@ export function ReturnWindowOpenModal({
   const daysUsed = 90 - daysLeft;
   const progressPct = Math.min(100, Math.round((daysUsed / 90) * 100));
 
-  // Colour shifts from green → amber → red as deadline approaches
   const barColor =
     daysLeft > 30 ? "#27ae60" : daysLeft > 10 ? "#f39c12" : "#e74c3c";
 
@@ -794,7 +779,6 @@ export function ReturnWindowOpenModal({
           <X size={18} />
         </button>
 
-        {/* Icon */}
         <div className={styles.returnOpenIcon}>
           <svg width="52" height="52" viewBox="0 0 52 52" fill="none">
             <circle cx="26" cy="26" r="26" fill="rgba(39,174,96,0.12)" />
@@ -816,7 +800,6 @@ export function ReturnWindowOpenModal({
           You can request a return or refund at any time before the deadline.
         </p>
 
-        {/* Progress bar */}
         <div className={styles.returnProgressWrap}>
           <div className={styles.returnProgressLabels}>
             <span>Day 1</span>
@@ -836,7 +819,6 @@ export function ReturnWindowOpenModal({
           </p>
         </div>
 
-        {/* Dates box */}
         <div className={styles.returnDateBox}>
           <div className={styles.returnOpenDateRow}>
             <span className={styles.returnOpenDateLabel}>Ordered on</span>

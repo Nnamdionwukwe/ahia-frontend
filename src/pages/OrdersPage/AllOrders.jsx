@@ -125,10 +125,12 @@ const AllOrders = ({
         true,
         `${success.length} item${success.length !== 1 ? "s" : ""} added to cart!`,
       );
+      setTimeout(() => navigate("/cart"), 1500);
     } else if (success.length === 0) {
       showToast(false, failed[0].error || "Failed to add items to cart.");
     } else {
       showToast(true, `${success.length} added, ${failed.length} failed.`);
+      setTimeout(() => navigate("/cart"), 1500);
     }
   };
 
@@ -216,7 +218,7 @@ const AllOrders = ({
           );
         }
 
-        // ── All other orders: original behaviour ──────────────────────────
+        // ── All other orders ──────────────────────────────────────────────
         return (
           <OrderCard
             key={order._id || order.id}
@@ -225,7 +227,7 @@ const AllOrders = ({
             setShowMenu={setShowMenu}
             onCancelClick={onCancelClick}
             onBuyAgainClick={onBuyAgainClick}
-            onBuyAgainSheetClick={onBuyAgainSheetClick}
+            onBuyAgainSheetClick={() => handleBuyAgain(order)}
             onChangePaymentClick={onChangePaymentClick}
             hideStatusBadge
             showShippedBanner={order.status === "shipped"}
@@ -259,7 +261,18 @@ const AllOrders = ({
         <div
           className={`${styles.cartToast} ${cartToast.success ? styles.cartToastSuccess : styles.cartToastError}`}
         >
-          {cartToast.success ? "✓" : "✕"} {cartToast.message}
+          <span className={styles.cartToastIcon}>
+            {cartToast.success ? "🛒" : "✕"}
+          </span>
+          <span>
+            <strong>{cartToast.message}</strong>
+            {cartToast.success && (
+              <span className={styles.cartToastSub}>
+                {" "}
+                Taking you to your cart…
+              </span>
+            )}
+          </span>
         </div>
       )}
     </>
