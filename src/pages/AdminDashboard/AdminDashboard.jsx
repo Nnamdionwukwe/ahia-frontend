@@ -23,6 +23,7 @@ import FraudManagement from "./FraudManagement";
 import AnalyticsManagement from "./AnalyticsManagement";
 import ReviewsManagement from "./ReviewsManagement";
 import BankTransferManagement from "./BankTransferManagement";
+import ReturnsManagement from "./ReturnsManagement";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
@@ -213,6 +214,7 @@ const AdminDashboard = () => {
         {activeTab === "analytics" && <AnalyticsManagement />}
         {activeTab === "reviews" && <ReviewsManagement />}
         {activeTab === "bank-transfers" && <BankTransferManagement />}
+        {activeTab === "returns" && <ReturnsManagement />}
       </TabContent>
 
       {selectedUser && (

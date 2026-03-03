@@ -119,6 +119,13 @@ const OrderCard = ({
   // Resolve payment display info once
   const paymentInfo = getPaymentInfo(order.payment_method);
 
+  // Bank transfer is unverified when payment_status is "pending" or "processing"
+  // (pending = not yet paid, processing = customer confirmed but admin not yet approved)
+  const isBankTransferUnverified =
+    !paymentInfo.isCard &&
+    (order.payment_status === "pending" ||
+      order.payment_status === "processing");
+
   return (
     <div className={styles.orderCard}>
       {/* ── Order Header ── */}
@@ -128,7 +135,7 @@ const OrderCard = ({
             Delivered on {formatDate(order.delivered_at || order.updated_at)}
           </p>
         )}
-        {isPaymentProcessing && !hideStatusBadge && (
+        {isPaymentProcessing && hideStatusBadge && (
           <div className={styles.statusBadge}>
             <Clock size={16} />
             <span>Payment processing</span>
@@ -218,21 +225,22 @@ const OrderCard = ({
         </div>
       )}
 
-      {/* ── Order Processing Banner (status === "processing") ── */}
-      {/* {isProcessing && (
+      {/* ── Order Processing Banner ── */}
+      {/* Only show when bank transfer has been verified by admin (not unverified) */}
+      {isProcessing && !isBankTransferUnverified && (
         <div className={styles.orderProcessingBanner}>
           <Package size={18} className={styles.processingIcon} />
           <div className={styles.processingText}>
             <p>
               <span className={styles.highlight}>
-                Your items are being handpicked! 🎯
+                Your order is being prepared!
               </span>{" "}
-              Our team is carefully selecting, packing, and sealing your order
-              with care. Sit tight — it'll be on its way to you very soon! 📦✨
+              Our team is picking, packing, and getting everything ready. You'll
+              get a notification the moment it ships. 🚀
             </p>
           </div>
         </div>
-      )} */}
+      )}
 
       {/* ── Shipped Banner ── */}
       {showShippedBanner && (
