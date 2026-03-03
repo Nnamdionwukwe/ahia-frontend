@@ -47,50 +47,122 @@
   padding-bottom: 32px;
 }
 
-/* ── Hero ──────────────────────────────────────────────────────────────────── */
-.hero {
-  background: var(--bg-primary, #fff);
-  padding: 22px 20px 18px;
+/* ── Loading state ─────────────────────────────────────────────────────────── */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
+}
+
+/* ── Error state ───────────────────────────────────────────────────────────── */
+.errorState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 64px 24px;
+  color: var(--text-secondary, #666);
+  font-size: 14px;
   text-align: center;
+}
+.errorState svg {
+  color: #ef4444;
+}
+.retryBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: none;
+  border: 1.5px solid var(--border-color, #e0e0e0);
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  cursor: pointer;
+  transition: border-color 0.15s;
+  margin-top: 4px;
+}
+.retryBtn:hover {
+  border-color: var(--text-primary, #1a1a1a);
+}
+
+/* ── Spin animation ────────────────────────────────────────────────────────── */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+  color: var(--text-secondary, #999);
+}
+
+/* ── Hero (status banner) ──────────────────────────────────────────────────── */
+.hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 16px 0;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+}
+.heroLabel {
+  margin: 0 0 2px;
+  font-size: 15px;
+  font-weight: 700;
+}
+.heroSub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary, #666);
+}
+
+/* ── Hero refund window row ────────────────────────────────────────────────── */
+.heroRow {
+  background: var(--bg-primary, #fff);
+  padding: 18px 16px 14px;
   border-bottom: 1px solid var(--border-color, #e0e0e0);
+  margin-top: 12px;
 }
 .heroText {
-  margin: 0 0 14px;
-  font-size: 15px;
+  margin: 0 0 12px;
+  font-size: 14px;
   line-height: 1.55;
   color: var(--text-primary, #1a1a1a);
 }
-.heroRow {
+.heroMeta {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   flex-wrap: wrap;
 }
 .heroDates {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 800;
   color: var(--text-primary, #1a1a1a);
   letter-spacing: -0.5px;
 }
 .heroSep {
   width: 1px;
-  height: 28px;
+  height: 24px;
   background: var(--border-color, #e0e0e0);
   display: inline-block;
 }
-.heroAmountWrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.heroMethodDot {
-  font-size: 18px;
-}
 .heroAmount {
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--text-primary, #1a1a1a);
+  color: #10b981;
   letter-spacing: -0.5px;
 }
 
@@ -101,6 +173,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-bottom: 16px;
 }
 .btnOrange {
   width: 100%;
@@ -133,6 +206,78 @@
   border-color: var(--text-primary, #1a1a1a);
 }
 
+/* ── Rejected banner ───────────────────────────────────────────────────────── */
+.rejectedBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 16px 16px 0;
+  padding: 14px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 10px;
+}
+.rejectedTitle {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ef4444;
+}
+.rejectedNote {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary, #666);
+  line-height: 1.5;
+}
+
+/* ── What happens next ─────────────────────────────────────────────────────── */
+.nextSteps {
+  margin: 16px 16px 0;
+  padding: 16px;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 10px;
+}
+.nextText {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary, #666);
+  line-height: 1.6;
+}
+
+/* ── Info card (key details) ───────────────────────────────────────────────── */
+.infoCard {
+  margin: 16px 16px 0;
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 10px;
+  background: var(--bg-primary, #fff);
+  overflow: hidden;
+}
+.infoRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+.infoRow:last-child {
+  border-bottom: none;
+}
+.infoLabel {
+  font-size: 13px;
+  color: var(--text-secondary, #666);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.infoValue {
+  font-size: 13px;
+  color: var(--text-primary, #1a1a1a);
+  font-weight: 500;
+  text-align: right;
+  line-height: 1.4;
+}
+
 /* ── Card ──────────────────────────────────────────────────────────────────── */
 .card {
   background: var(--bg-primary, #fff);
@@ -152,7 +297,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 20px;
+  padding: 20px;
   gap: 8px;
 }
 .tlNode {
@@ -247,26 +392,19 @@
 /* ── Sections ──────────────────────────────────────────────────────────────── */
 .section {
   padding: 18px 16px 0;
-  background: var(--bg-secondary, #f8f9fa);
 }
 .sectionTitle {
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   font-size: 16px;
   font-weight: 700;
   color: var(--text-primary, #1a1a1a);
-}
-.sectionBody {
-  margin: 0;
-  font-size: 14px;
-  color: var(--text-secondary, #666);
-  line-height: 1.5;
-  padding-bottom: 18px;
 }
 .sectionDivider {
   height: 8px;
   background: var(--bg-secondary, #f0f0f0);
   border-top: 1px solid var(--border-color, #e0e0e0);
   border-bottom: 1px solid var(--border-color, #e0e0e0);
+  margin-top: 18px;
 }
 .sectionHeadRow {
   display: flex;
@@ -346,11 +484,15 @@
   gap: 14px;
   align-items: flex-start;
   padding: 14px 0;
-  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+.itemCard:last-of-type {
+  border-bottom: none;
+  margin-bottom: 12px;
 }
 .itemImgWrap {
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   border-radius: 8px;
   border: 1px solid var(--border-color, #e0e0e0);
   overflow: hidden;
@@ -366,31 +508,34 @@
   object-fit: contain;
 }
 .itemImgPlaceholder {
-  font-size: 32px;
+  font-size: 28px;
 }
 .itemInfo {
   flex: 1;
   min-width: 0;
 }
 .itemName {
-  margin: 0 0 6px;
+  margin: 0 0 5px;
   font-size: 14px;
   font-weight: 500;
   color: var(--text-primary, #1a1a1a);
   line-height: 1.4;
 }
-.itemMeta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.itemVariant {
+  margin: 0 0 5px;
+  font-size: 12px;
+  color: var(--text-secondary, #888);
+}
+.itemPrice {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary, #1a1a1a);
 }
 .itemSku {
-  font-size: 13px;
-  color: var(--text-secondary, #666);
-}
-.itemQty {
-  font-size: 13px;
-  color: var(--text-secondary, #666);
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary, #999);
 }
 
 /* ── Meta rows ─────────────────────────────────────────────────────────────── */
@@ -506,14 +651,38 @@
 }
 [data-theme="dark"] .hero,
 .dark .hero {
-  background: var(--bg-primary);
   border-color: var(--border-color);
 }
 [data-theme="dark"] .ctaBlock,
 .dark .ctaBlock {
   background: var(--bg-primary);
 }
-[data-theme="dark"] .section,
-.dark .section {
-  background: var(--bg-secondary);
+[data-theme="dark"] .infoCard,
+.dark .infoCard {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+[data-theme="dark"] .nextSteps,
+.dark .nextSteps {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+[data-theme="dark"] .rejectedBanner,
+.dark .rejectedBanner {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+[data-theme="dark"] .heroRow,
+.dark .heroRow {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+[data-theme="dark"] .infoRow,
+.dark .infoRow {
+  border-color: var(--border-color);
+}
+[data-theme="dark"] .retryBtn,
+.dark .retryBtn {
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }

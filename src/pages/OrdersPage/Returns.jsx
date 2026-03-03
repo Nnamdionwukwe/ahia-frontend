@@ -155,6 +155,7 @@ function ReturnDetailSheet({ returnId, onClose, accessToken }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -183,7 +184,7 @@ function ReturnDetailSheet({ returnId, onClose, accessToken }) {
         <div className={styles.sheetHandle} />
 
         <div className={styles.sheetHeader}>
-          <h2 className={styles.sheetTitle}>Return Details</h2>
+          <h2 className={styles.sheetTitle}>Return Overview</h2>
           <button className={styles.sheetClose} onClick={onClose}>
             ✕
           </button>
@@ -313,6 +314,17 @@ function ReturnDetailSheet({ returnId, onClose, accessToken }) {
                       </div>
                     ))}
                   </div>
+
+                  <button
+                    className={styles.returnDetailsBtn}
+                    onClick={() =>
+                      navigate(`/returns/${ret.id}`, {
+                        state: { returnData: ret },
+                      })
+                    }
+                  >
+                    Return Details
+                  </button>
                 </div>
               )}
 
@@ -450,7 +462,7 @@ export default function Returns() {
             </p>
             <button
               className={styles.shopBtn}
-              onClick={() => navigate("/orders?tab=delivered")}
+              onClick={() => navigate("/delivered")}
             >
               View delivered orders
             </button>

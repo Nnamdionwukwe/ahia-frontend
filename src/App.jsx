@@ -41,6 +41,7 @@ import LeaveReview from "./pages/Reviews/Leavereview";
 import ReviewDetails from "./pages/Reviews/ReviewDetails";
 import LeaveAllReviews from "./pages/Reviews/LeaveAllReviews";
 import ReturnRefundPage from "./pages/OrdersPage/ReturnRefundPage";
+import ReturnDetails from "./pages/OrdersPage/ReturnDetails";
 
 const App = () => {
   const isDark = useThemeStore((state) => state.isDark);
@@ -78,6 +79,7 @@ const App = () => {
 
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/return-refund" element={<ReturnRefundPage />} />
+            <Route path="/returns/:id" element={<ReturnDetails />} />
 
             <Route path="/order-success-page" element={<OrderSuccessPage />} />
             <Route path="/orders/:orderId" element={<OrderDetailsPage />} />

@@ -526,3 +526,33 @@
   border-radius: 12px;
   padding: 14px;
 }
+
+/* Add to ReturnDetails.module.css or Returns.module.css */
+
+.returnDetailsBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 10px 20px;
+  background: none;
+  border: 1.5px solid var(--border-color, #e0e0e0);
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary, #1a1a1a);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  width: 100%;
+  justify-content: center;
+}
+.returnDetailsBtn:hover {
+  border-color: #e65100;
+  color: #e65100;
+  background: rgba(230, 81, 0, 0.05);
+}
+.returnDetailsBtn:active {
+  background: rgba(230, 81, 0, 0.1);
+}
