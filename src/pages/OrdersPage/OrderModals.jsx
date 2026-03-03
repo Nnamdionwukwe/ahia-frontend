@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import styles from "./OrderModals.module.css";
 import ProductVariantModal from "../../components/ProductVariantModal/ProductVariantModal";
+import { useNavigate } from "react-router-dom";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. THREE DOTS MENU
@@ -749,6 +750,9 @@ export function ReturnWindowOpenModal({
     0,
     Math.ceil((deadlineAt - now) / (1000 * 60 * 60 * 24)),
   );
+
+  const navigate = useNavigate();
+
   const daysUsed = 90 - daysLeft;
   const progressPct = Math.min(100, Math.round((daysUsed / 90) * 100));
 
@@ -841,6 +845,7 @@ export function ReturnWindowOpenModal({
             onStartReturn?.();
             onClose();
           }}
+          onStartReturn={() => navigate("/return-refund")}
         >
           Start a Return / Refund
         </button>
