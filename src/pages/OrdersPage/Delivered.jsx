@@ -10,6 +10,7 @@ import {
   ReturnWindowOpenModal,
   BuyAgainSheet,
 } from "./OrderModals";
+import useCartStore from "../../store/cartStore";
 
 const Delivered = ({
   orders,
@@ -17,9 +18,11 @@ const Delivered = ({
   showMenu,
   setShowMenu,
   onCancelClick,
+  onBuyAgainClick,
   onChangePaymentClick,
 }) => {
   const navigate = useNavigate();
+  const { addToCart } = useCartStore();
 
   // Return modals
   const [returnClosedModal, setReturnClosedModal] = useState(false);
@@ -30,13 +33,13 @@ const Delivered = ({
   });
   const [activeOrder, setActiveOrder] = useState(null);
 
-  // Buy Again sheet (full variant picker)
+  // Buy Again sheet
   const [buyAgainSheet, setBuyAgainSheet] = useState(false);
   const [buyAgainItems, setBuyAgainItems] = useState([]);
 
   // Add-to-cart feedback
   const [addingToCart, setAddingToCart] = useState(false);
-  const [cartToast, setCartToast] = useState(null);
+  const [cartToast, setCartToast] = useState(null); // { success, message }
 
   // ── Return/Refund handler ─────────────────────────────────────────────────
   const handleReturnRefund = (order) => {
@@ -55,13 +58,15 @@ const Delivered = ({
     }
   };
 
-  // ── Buy Again handler — opens BuyAgainSheet ───────────────────────────────
+  // ── Buy Again handler — opens the sheet ──────────────────────────────────
   const handleBuyAgain = (order) => {
     const items = (order.items || order.order_items || []).map((item) => {
+      // This backend stores items by product_variant_id, not product_id
       const variantId =
         item.product_variant_id || item.variant_id || item.variantId || null;
       const productId =
         item.product_id || item.productId || item.product?.id || null;
+
       return {
         id: item.id,
         productId,
@@ -70,7 +75,7 @@ const Delivered = ({
         image:
           item.images?.[0] || item.image || item.product?.images?.[0] || null,
         price: parseFloat(item.unit_price || item.price || 0),
-        available: variantId != null,
+        available: variantId != null, // available if we have something to add
         variantName:
           [item.color, item.size].filter(Boolean).join(" / ") ||
           item.variant_name ||
@@ -78,24 +83,31 @@ const Delivered = ({
         stock: item.stock ?? null,
       };
     });
+
     setBuyAgainItems(items);
     setBuyAgainSheet(true);
   };
 
-  // ── Add to cart ───────────────────────────────────────────────────────────
+  // ── Add to cart — called by BuyAgainSheet "Add N items to cart" ──────────
   const handleAddToCart = async (selectedItems) => {
+    // selectedItems: [{ productId, variantId, image, quantity, ... }]
     if (!selectedItems.length) return;
+
     setAddingToCart(true);
+
     const results = await Promise.all(
       selectedItems.map(async (item) => {
         const token = localStorage.getItem("accessToken");
         try {
+          // Backend requires product_variant_id (NOT NULL in carts table)
+          // product_id is optional — controller resolves it from the variant
           const payload = {
             product_variant_id: item.variantId,
             quantity: item.quantity || 1,
           };
           if (item.productId) payload.product_id = item.productId;
           if (item.image) payload.selected_image_url = item.image;
+
           const res = await fetch(
             `${import.meta.env.VITE_API_URL || "http://localhost:5001"}/api/cart/add`,
             {
@@ -116,20 +128,21 @@ const Delivered = ({
         }
       }),
     );
+
     setAddingToCart(false);
+
     const failed = results.filter((r) => !r.success);
     const success = results.filter((r) => r.success);
+
     if (failed.length === 0) {
       showToast(
         true,
         `${success.length} item${success.length !== 1 ? "s" : ""} added to cart!`,
       );
-      setTimeout(() => navigate("/cart"), 1500);
     } else if (success.length === 0) {
       showToast(false, failed[0].error || "Failed to add items to cart.");
     } else {
       showToast(true, `${success.length} added, ${failed.length} failed.`);
-      setTimeout(() => navigate("/cart"), 1500);
     }
   };
 
@@ -140,7 +153,8 @@ const Delivered = ({
 
   // ── Track handler ─────────────────────────────────────────────────────────
   const handleTrack = (order) => {
-    navigate(`/orders/${order._id || order.id}`);
+    const id = order._id || order.id;
+    navigate(`/orders/${id}`);
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
@@ -177,7 +191,14 @@ const Delivered = ({
           onChangePaymentClick={onChangePaymentClick}
           onBuyAgainClick={() => handleBuyAgain(order)}
           onReturnRefundClick={() => handleReturnRefund(order)}
-          dotsMenu={<DotsMenu onTrack={() => handleTrack(order)} />}
+          dotsMenu={
+            <DotsMenu
+              onTrack={() => handleTrack(order)}
+              onReturnRefund={() => handleReturnRefund(order)}
+              onReviews={() => navigate("/reviews")}
+              onBuyAgain={() => handleBuyAgain(order)}
+            />
+          }
         />
       ))}
 
@@ -194,9 +215,13 @@ const Delivered = ({
         open={returnOpenModal}
         onClose={() => setReturnOpenModal(false)}
         orderedDate={returnDates.ordered}
-        onStartReturn={() =>
-          navigate("/return-refund", { state: { order: activeOrder } })
-        }
+        onStartReturn={() => {
+          // activeOrder is guaranteed set — handleReturnRefund sets it
+          // before opening this modal. Close modal first, then navigate
+          // so the sheet unmounts cleanly before the page transition.
+          setReturnOpenModal(false);
+          navigate("/return-refund", { state: { order: activeOrder } });
+        }}
       />
 
       {/* Buy This Again sheet */}
@@ -213,13 +238,7 @@ const Delivered = ({
         <div
           className={`${styles.cartToast} ${cartToast.success ? styles.cartToastSuccess : styles.cartToastError}`}
         >
-          <span className={styles.cartToastIcon}>
-            {cartToast.success ? "" : "✕"}
-          </span>
-          <span>
-            <strong>{cartToast.message}</strong>
-            {cartToast.success && <span className={styles.cartToastSub}></span>}
-          </span>
+          {cartToast.success ? "✓" : "✕"} {cartToast.message}
         </div>
       )}
     </>
