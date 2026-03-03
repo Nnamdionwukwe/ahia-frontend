@@ -2,9 +2,9 @@
 //
 // Route:  /return-refund
 // State:  location.state = { order }   — passed from Delivered.jsx onStartReturn
-// API:    POST /api/orders/:id/return
+// API:    POST /api/orders/:id/return  (multipart/form-data)
 //
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
@@ -20,12 +20,16 @@ import {
   CreditCard,
   Building2,
   Info,
+  UploadCloud,
+  Film,
+  X,
 } from "lucide-react";
 import styles from "./ReturnRefundPage.module.css";
 import useAuthStore from "../../store/authStore";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function fmtCurrency(n) {
   return "₦" + Number(n || 0).toLocaleString();
 }
@@ -38,6 +42,7 @@ function fmtDate(d) {
   });
 }
 
+// ── Config ────────────────────────────────────────────────────────────────────
 const REASONS = [
   { value: "wrong_item", label: "Wrong item received", icon: "📦" },
   { value: "damaged", label: "Item arrived damaged", icon: "💔" },
@@ -142,6 +147,113 @@ function ItemsList({ items = [] }) {
   );
 }
 
+// ── Media uploader ────────────────────────────────────────────────────────────
+function MediaUploader({ files, onChange }) {
+  const inputRef = useRef(null);
+  const MAX_FILES = 5;
+
+  const handlePick = (e) => {
+    const picked = Array.from(e.target.files || []);
+    const merged = [...files];
+    for (const f of picked) {
+      if (merged.length >= MAX_FILES) break;
+      const dup = merged.some((m) => m.name === f.name && m.size === f.size);
+      if (!dup) merged.push(f);
+    }
+    onChange(merged);
+    e.target.value = ""; // reset so same file can be re-added after removal
+  };
+
+  const handleRemove = (index) => onChange(files.filter((_, i) => i !== index));
+
+  const isVideo = (f) => f.type.startsWith("video/");
+
+  return (
+    <div className={styles.uploaderBlock}>
+      <p className={styles.uploaderLabel}>
+        Evidence photos / videos{" "}
+        <span className={styles.optional}>
+          (optional · max {MAX_FILES} files, 50 MB each)
+        </span>
+      </p>
+
+      {/* Thumbnails */}
+      {files.length > 0 && (
+        <div className={styles.thumbGrid}>
+          {files.map((file, i) => {
+            const src = URL.createObjectURL(file);
+            return (
+              <div key={i} className={styles.thumb}>
+                {isVideo(file) ? (
+                  <div className={styles.thumbVideo}>
+                    <Film size={22} className={styles.thumbVideoIcon} />
+                    <p className={styles.thumbVideoName} title={file.name}>
+                      {file.name.length > 16
+                        ? file.name.slice(0, 13) + "…"
+                        : file.name}
+                    </p>
+                  </div>
+                ) : (
+                  <img
+                    src={src}
+                    alt={file.name}
+                    className={styles.thumbImg}
+                    onLoad={() => URL.revokeObjectURL(src)}
+                  />
+                )}
+                <button
+                  type="button"
+                  className={styles.thumbRemove}
+                  onClick={() => handleRemove(i)}
+                  aria-label="Remove file"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            );
+          })}
+
+          {/* Add-more slot */}
+          {files.length < MAX_FILES && (
+            <button
+              type="button"
+              className={styles.thumbAdd}
+              onClick={() => inputRef.current?.click()}
+            >
+              <UploadCloud size={20} />
+              <span>Add</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Drop zone — shown when empty */}
+      {files.length === 0 && (
+        <button
+          type="button"
+          className={styles.dropZone}
+          onClick={() => inputRef.current?.click()}
+        >
+          <UploadCloud size={28} className={styles.dropZoneIcon} />
+          <p className={styles.dropZoneTitle}>Upload photos or videos</p>
+          <p className={styles.dropZoneSub}>
+            JPEG, PNG, WEBP, GIF · MP4, MOV, WEBM
+          </p>
+        </button>
+      )}
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/quicktime,video/webm"
+        multiple
+        style={{ display: "none" }}
+        onChange={handlePick}
+      />
+    </div>
+  );
+}
+
 // ══════════════════════════════════════════════════════════════════════════════
 export default function ReturnRefundPage() {
   const navigate = useNavigate();
@@ -154,6 +266,7 @@ export default function ReturnRefundPage() {
   const [reason, setReason] = useState("");
   const [details, setDetails] = useState("");
   const [refundMethod, setRefund] = useState("original_payment");
+  const [mediaFiles, setMediaFiles] = useState([]); // ← media files
 
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setError] = useState("");
@@ -170,20 +283,31 @@ export default function ReturnRefundPage() {
   const orderedAt = order.created_at || order.createdAt;
   const items = order.items || order.order_items || [];
 
+  // ── Submit (multipart/form-data → Cloudinary via backend) ─────────────────
   const handleSubmit = async () => {
     if (!reason) return;
     setSubmitting(true);
     setError("");
     try {
+      const formData = new FormData();
+      formData.append("reason", reason);
+      formData.append("refund_method", refundMethod);
+      if (details.trim()) formData.append("details", details.trim());
+
+      // Attach media files — field name "media" matches multer config
+      mediaFiles.forEach((file) => formData.append("media", file));
+
       const res = await axios.post(
         `${API_URL}/api/orders/${orderId}/return`,
+        formData,
         {
-          reason,
-          details: details.trim() || undefined,
-          refund_method: refundMethod,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // Do NOT set Content-Type — axios sets multipart boundary automatically
+          },
         },
-        { headers: { Authorization: `Bearer ${accessToken}` } },
       );
+
       setReturnData(res.data.return);
       setSubmitted(true);
     } catch (e) {
@@ -223,7 +347,6 @@ export default function ReturnRefundPage() {
             you by email once a decision is made.
           </p>
 
-          {/* Summary card */}
           <div className={styles.successCard}>
             {returnData?.id && (
               <div className={styles.successRow}>
@@ -253,6 +376,15 @@ export default function ReturnRefundPage() {
                 {fmtCurrency(order.total_amount)}
               </strong>
             </div>
+            {mediaFiles.length > 0 && (
+              <div className={styles.successRow}>
+                <span>Evidence</span>
+                <strong>
+                  {mediaFiles.length} file{mediaFiles.length !== 1 ? "s" : ""}{" "}
+                  uploaded
+                </strong>
+              </div>
+            )}
             <div className={styles.successRow}>
               <span>Status</span>
               <span className={styles.pendingBadge}>
@@ -261,7 +393,6 @@ export default function ReturnRefundPage() {
             </div>
           </div>
 
-          {/* What happens next */}
           <div className={styles.timeline}>
             <p className={styles.timelineTitle}>What happens next</p>
             {[
@@ -330,7 +461,6 @@ export default function ReturnRefundPage() {
 
       <StepBar step={step} />
 
-      {/* Order pill */}
       <div className={styles.orderPill}>
         <Package size={14} />
         <span>
@@ -340,7 +470,7 @@ export default function ReturnRefundPage() {
       </div>
 
       <div className={styles.body}>
-        {/* ───── STEP 1: Reason ───── */}
+        {/* ───── STEP 1: Reason + evidence upload ───── */}
         {step === 1 && (
           <>
             <h2 className={styles.stepTitle}>Why are you returning this?</h2>
@@ -377,6 +507,9 @@ export default function ReturnRefundPage() {
               />
               <span className={styles.charCount}>{details.length}/500</span>
             </div>
+
+            {/* ── Evidence upload ── */}
+            <MediaUploader files={mediaFiles} onChange={setMediaFiles} />
 
             <div className={styles.sectionBlock}>
               <p className={styles.sectionTitle}>Items in this order</p>
@@ -458,7 +591,6 @@ export default function ReturnRefundPage() {
             <p className={styles.stepSub}>Check everything before submitting</p>
 
             <div className={styles.reviewCard}>
-              {/* Reason */}
               <div className={styles.reviewRow}>
                 <div className={styles.reviewRowLeft}>
                   <span className={styles.reviewEmoji}>
@@ -483,9 +615,26 @@ export default function ReturnRefundPage() {
                 </div>
               )}
 
+              {/* Media file count summary */}
+              {mediaFiles.length > 0 && (
+                <div className={styles.reviewNote}>
+                  <p className={styles.reviewMeta}>Evidence</p>
+                  <p className={styles.reviewNoteText}>
+                    {mediaFiles.length} file{mediaFiles.length !== 1 ? "s" : ""}{" "}
+                    attached —{" "}
+                    <button
+                      className={styles.editBtn}
+                      style={{ display: "inline" }}
+                      onClick={() => setStep(1)}
+                    >
+                      Edit
+                    </button>
+                  </p>
+                </div>
+              )}
+
               <div className={styles.reviewDivider} />
 
-              {/* Refund method */}
               <div className={styles.reviewRow}>
                 <div className={styles.reviewRowLeft}>
                   {(() => {
@@ -512,7 +661,6 @@ export default function ReturnRefundPage() {
 
               <div className={styles.reviewDivider} />
 
-              {/* Order summary */}
               <div className={styles.reviewOrderBlock}>
                 <p className={styles.reviewMeta}>Order details</p>
                 <div className={styles.reviewOrderRow}>
