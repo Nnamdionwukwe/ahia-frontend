@@ -1,0 +1,714 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   ReturnDetails.module.css
+   Uses project CSS variables — light/dark handled via :root & [data-theme="dark"]
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Page shell ─────────────────────────────────────────────────────────── */
+.page {
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  display: flex;
+  flex-direction: column;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue",
+    sans-serif;
+}
+
+/* ── Sticky header ──────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.backBtn:hover {
+  background: var(--bg-secondary);
+}
+
+.headerTitle {
+  flex: 1;
+  text-align: center;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.headerSpacer {
+  width: 30px;
+}
+
+/* ── Scrollable body ────────────────────────────────────────────────────── */
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 40px;
+}
+
+/* ── Hero section ───────────────────────────────────────────────────────── */
+.hero {
+  background: var(--bg-primary);
+  padding: 24px 20px 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.heroText {
+  margin: 0 0 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.heroRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.heroDates {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.heroSep {
+  width: 1px;
+  height: 30px;
+  background: var(--border-color);
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.heroAmountWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.heroMethodDot {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.heroAmount {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+/* ── CTA buttons block ──────────────────────────────────────────────────── */
+.ctaBlock {
+  padding: 16px 16px 20px;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btnOrange {
+  width: 100%;
+  padding: 15px;
+  background: var(--warning-color);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition:
+    filter 0.2s,
+    transform 0.1s;
+  box-shadow: 0 2px 8px rgba(230, 81, 0, 0.25);
+}
+.btnOrange:hover {
+  filter: brightness(1.08);
+}
+.btnOrange:active {
+  transform: scale(0.98);
+}
+
+.btnOutline {
+  width: 100%;
+  padding: 13px;
+  background: none;
+  border: 1.5px solid var(--border-color);
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.btnOutline:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+.btnOutline:active {
+  background: var(--bg-secondary);
+}
+
+/* ── Generic card ───────────────────────────────────────────────────────── */
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.cardDivider {
+  height: 1px;
+  background: var(--border-color);
+}
+
+/* ── Section wrapper ────────────────────────────────────────────────────── */
+.section {
+  padding: 20px 16px 0;
+}
+
+.sectionTitle {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.sectionBody {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  padding-bottom: 20px;
+}
+
+/* thick grey gap between sections — matches app screenshot */
+.sectionDivider {
+  height: 8px;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  margin: 0;
+}
+
+.sectionHeadRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.viewDetailsBtn {
+  background: none;
+  border: none;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  transition: color 0.15s;
+}
+.viewDetailsBtn:hover {
+  color: var(--text-primary);
+}
+
+/* ── Timeline ───────────────────────────────────────────────────────────── */
+.timeline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 18px;
+  gap: 6px;
+}
+
+.tlNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Store logo circle */
+.tlLogoWrap {
+  position: relative;
+  width: 54px;
+  height: 54px;
+}
+.tlStoreLogo {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #fff3e0;
+  border: 1.5px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--warning-color);
+  letter-spacing: 0.5px;
+}
+
+[data-theme="dark"] .tlStoreLogo,
+.dark .tlStoreLogo {
+  background: #3d2200;
+  border-color: var(--border-color);
+  color: var(--warning-color);
+}
+
+.tlCheck {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  background: var(--bg-primary);
+  border-radius: 50%;
+  padding: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--success-color);
+}
+
+/* Payment method ring */
+.tlMethodRing {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 2px solid var(--warning-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  background: var(--bg-primary);
+}
+
+.tlNodeLabel {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-align: center;
+  line-height: 1.35;
+}
+
+.tlNodeDate {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+/* Arrow between nodes */
+.tlMiddle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  padding: 0 4px;
+}
+
+.tlArrowLabel {
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.tlArrowLine {
+  width: 100%;
+  height: 2px;
+  background: var(--warning-color);
+  position: relative;
+  border-radius: 2px;
+}
+
+.tlArrowHead {
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid var(--warning-color);
+}
+
+/* ── Refund amount row ──────────────────────────────────────────────────── */
+.amountRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 16px;
+}
+
+.methodChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.methodChipIcon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.methodChipLabel {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.amountBig {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+/* ── Link / action rows inside cards ────────────────────────────────────── */
+.linkRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+.linkRow:hover {
+  background: var(--bg-secondary);
+}
+.linkRow:active {
+  background: var(--bg-secondary);
+}
+
+.linkRowIcon {
+  font-size: 20px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.linkRowLabel {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.linkRowLabelOrange {
+  flex: 1;
+  font-size: 14px;
+  color: var(--warning-color);
+  font-weight: 600;
+}
+
+/* ── Item card ──────────────────────────────────────────────────────────── */
+.itemCard {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 14px 0;
+}
+
+.itemImgWrap {
+  width: 100px;
+  height: 100px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.itemImgPlaceholder {
+  font-size: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.itemInfo {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.itemName {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.45;
+}
+
+.itemMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.itemSku {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.itemQty {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ── Meta info rows (status / return ID / request time) ─────────────────── */
+.metaBlock {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px var(--shadow);
+}
+
+.metaRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 14px;
+}
+
+.metaDivider {
+  height: 1px;
+  background: var(--border-color);
+}
+
+.metaLabel {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  padding-top: 1px;
+}
+
+.metaValue {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.metaValueRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.metaId {
+  font-size: 12px;
+  color: var(--text-primary);
+  word-break: break-all;
+  text-align: right;
+  line-height: 1.5;
+  font-family: "SF Mono", "Fira Code", monospace;
+}
+
+.copyPill {
+  padding: 4px 16px;
+  background: none;
+  border: 1.5px solid var(--border-color);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.copyPill:hover {
+  border-color: var(--text-secondary);
+  background: var(--bg-secondary);
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.footer {
+  padding: 24px 20px 36px;
+  text-align: center;
+}
+
+.footerText {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.footerLink {
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+.footerLink:hover {
+  color: var(--warning-color);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Dark mode explicit overrides
+   (most styles already inherit from CSS vars — these handle edge cases)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme="dark"] .hero,
+.dark .hero {
+  background: var(--bg-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .ctaBlock,
+.dark .ctaBlock {
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] .btnOutline,
+.dark .btnOutline {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+[data-theme="dark"] .btnOutline:hover,
+.dark .btnOutline:hover {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .card,
+.dark .card {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+[data-theme="dark"] .section,
+.dark .section {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .sectionDivider,
+.dark .sectionDivider {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .metaBlock,
+.dark .metaBlock {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+  box-shadow: 0 1px 4px var(--shadow);
+}
+
+[data-theme="dark"] .itemImgWrap,
+.dark .itemImgWrap {
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .tlMethodRing,
+.dark .tlMethodRing {
+  background: var(--card-bg);
+  border-color: var(--warning-color);
+}
+
+[data-theme="dark"] .tlCheck,
+.dark .tlCheck {
+  background: var(--bg-primary);
+}
+
+[data-theme="dark"] .copyPill,
+.dark .copyPill {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+[data-theme="dark"] .copyPill:hover,
+.dark .copyPill:hover {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .linkRow:hover,
+.dark .linkRow:hover {
+  background: var(--bg-secondary);
+}
+
+[data-theme="dark"] .backBtn:hover,
+.dark .backBtn:hover {
+  background: var(--bg-secondary);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────── */
+@media (max-width: 400px) {
+  .heroDates,
+  .heroAmount {
+    font-size: 22px;
+  }
+  .timeline {
+    padding: 18px 10px;
+  }
+  .tlStoreLogo,
+  .tlMethodRing {
+    width: 44px;
+    height: 44px;
+    font-size: 11px;
+  }
+  .tlLogoWrap {
+    width: 44px;
+    height: 44px;
+  }
+  .itemImgWrap {
+    width: 80px;
+    height: 80px;
+  }
+}

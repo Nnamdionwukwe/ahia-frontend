@@ -115,6 +115,13 @@ const NavigationTabs = ({ activeTab, setActiveTab }) => {
         <BarChart3 size={20} />
         Order Returns
       </button>
+      <button
+        className={`${styles.tab} ${activeTab === "returns-media" ? styles.activeTab : ""}`}
+        onClick={() => setActiveTab("returns-media")}
+      >
+        <BarChart3 size={20} />
+        Returns Media
+      </button>
     </nav>
   );
 };
